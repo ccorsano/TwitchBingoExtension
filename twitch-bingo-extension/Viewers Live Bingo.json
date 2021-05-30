@@ -1,0 +1,153 @@
+{
+  "allowHttpBackend": false,
+  "backendCommand": "",
+  "backendFolderName": "",
+  "certificateExceptions": [
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": true,
+      "value": "https://localhost:8180"
+    },
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": false,
+      "value": "wss://localhost:8180/sockjs-node/066/uwngbna2/websocket"
+    },
+    {
+      "isAllowed": true,
+      "isEphemeral": false,
+      "isOrigin": true,
+      "value": "wss://localhost:8180"
+    }
+  ],
+  "extensionViews": [
+    {
+      "channelId": "265737932",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "1",
+      "isPopout": false,
+      "label": "Overlay",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "video_overlay",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "265737932",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "2",
+      "isPopout": false,
+      "label": "Configuration",
+      "linked": true,
+      "linkedUserId": "265737932",
+      "orientation": "Portrait",
+      "type": "config",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "265737932",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 375,
+        "height": 822
+      },
+      "id": "3",
+      "isPopout": false,
+      "label": "",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "mobile",
+      "viewerType": "Broadcaster"
+    }
+  ],
+  "manifest": {
+    "anchor": "video_overlay",
+    "assetUrls": [],
+    "authorName": "Miekyll",
+    "bitsEnabled": false,
+    "canInstall": true,
+    "configUrl": "https://localhost:8180/config.html",
+    "configurationLocation": "hosted",
+    "description": "WIP - Customizable & interactive bingo games for streamers communities",
+    "eulaTosUrl": "",
+    "hasChatSupport": true,
+    "iconUrl": "",
+    "iconUrls": {},
+    "id": "sbx8c4432ntycy25vv256341lp1ug3",
+    "installationCount": -42,
+    "liveConfigUrl": "https://localhost:8180/live_config.html",
+    "name": "ViewersLiveBingo",
+    "panelHeight": 0,
+    "privacyPolicyUrl": "",
+    "requestIdentityLink": false,
+    "requiredBroadcasterAbilities": [],
+    "screenshotUrls": [],
+    "sku": "",
+    "state": "Testing",
+    "subscriptionsSupportLevel": "none",
+    "summary": "Viewers Live Bingo",
+    "supportEmail": "twitchext@conceptoire.com",
+    "vendorCode": "",
+    "version": "0.0.1",
+    "viewerSummary": "",
+    "viewerUrl": "",
+    "viewerUrls": {
+      "mobile": "https://localhost:8180/mobile.html",
+      "videoOverlay": "https://localhost:8180/video_overlay.html"
+    },
+    "views": {
+      "mobile": {
+        "viewerUrl": "https://localhost:8180/mobile.html"
+      },
+      "videoOverlay": {
+        "viewerUrl": "https://localhost:8180/video_overlay.html",
+        "canLinkExternalContent": false
+      },
+      "config": {
+        "viewerUrl": "https://localhost:8180/config.html",
+        "canLinkExternalContent": false
+      },
+      "liveConfig": {
+        "viewerUrl": "https://localhost:8180/live_config.html",
+        "canLinkExternalContent": false
+      }
+    },
+    "whitelistedConfigUrls": [],
+    "whitelistedPanelUrls": []
+  },
+  "frontendCommand": "yarn start",
+  "frontendFolderName": "",
+  "name": "Viewers Live Bingo",
+  "usingRandomFrontendHostingPort": false,
+  "version": 3
+}

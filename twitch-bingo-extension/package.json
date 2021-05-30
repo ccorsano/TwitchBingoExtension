@@ -1,0 +1,30 @@
+{
+  "name": "twitch-bingo-extension",
+  "version": "0.0.1",
+  "description": "Customizable Live Bingo Twitch Extension",
+  "main": "src/Config.tsx",
+  "author": "Miekyll",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch",
+    "build": "webpack --mode=production",
+    "start": "webpack serve --progress --open"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "css-loader": "^5.2.6",
+    "html-webpack-plugin": "^5.3.1",
+    "mini-css-extract-plugin": "^1.6.0",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^9.2.2",
+    "typescript": "^4.3.2",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
