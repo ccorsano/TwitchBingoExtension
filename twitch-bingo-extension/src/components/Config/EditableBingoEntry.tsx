@@ -88,12 +88,13 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
         {
             return (
                 <ListItem>
-                <IconButton onClick={this.delete}>
-                    <Icon>
-                        <Delete />
-                    </Icon>
-                </IconButton>
+                    <IconButton onClick={this.delete}>
+                        <Icon>
+                            <Delete />
+                        </Icon>
+                    </IconButton>
                     <TextField
+                        fullWidth={true}
                         ref={(input) => { this.editField = input; }} 
                         label="Bingo proposition"
                         placeholder="Proposition"

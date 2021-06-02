@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Card, CardActions, CardContent, CardHeader, Icon, IconButton, List } from '@material-ui/core'
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, Paper, Slider, Typography } from '@material-ui/core'
 import EditableBingoEntry from './EditableBingoEntry';
 import { AddCircleOutline } from '@material-ui/icons';
 import { BingoEntry } from '../../model/BingoEntry';
@@ -7,13 +7,17 @@ import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/Twit
 
 type ConfigState = {
     nextKey: number,
-    entries: BingoEntry[]
+    entries: BingoEntry[],
+    rows: number,
+    columns: number,
 }
 
 export default class Config extends React.Component<any, ConfigState> {
     state: ConfigState = {
         nextKey: 0,
-        entries: new Array(0)
+        entries: new Array(0),
+        rows: 3,
+        columns: 3,
     }
 
     constructor(props: any){
@@ -36,12 +40,13 @@ export default class Config extends React.Component<any, ConfigState> {
         var configContent = JSON.parse(extensionConfig.content);
         this.setState({
             nextKey: configContent?.nextKey ?? 0,
-            entries: configContent?.entries ?? new Array(0)
+            entries: configContent?.entries ?? new Array(0),
+            rows: configContent?.rows ?? 3,
+            columns: configContent?.columns ?? 3,
         });
     }
 
     onAdd = (): void => {
-        console.log("Key: " + this.state.nextKey);
         var newEntry = new BingoEntry();
         newEntry.text = "";
         newEntry.isNew = true;
@@ -50,15 +55,14 @@ export default class Config extends React.Component<any, ConfigState> {
             nextKey: this.state.nextKey + 1,
             entries: this.state.entries.concat([newEntry])
         });
-        console.log("NextKey: " + this.state.nextKey);
     }
 
     onSave = (): void => {
-        console.log("Saving NextKey: " + this.state.nextKey);
-        console.log("Saving entries: " + JSON.stringify(this.state.entries));
         TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
             nextKey: this.state.nextKey,
             entries: this.state.entries,
+            rows: this.state.rows,
+            columns: this.state.columns,
         }));
     }
 
@@ -89,23 +93,48 @@ export default class Config extends React.Component<any, ConfigState> {
         });
     }
 
+    onRowsChange = (rows: number): void => {
+        this.setState({
+            rows: rows
+        });
+    }
+
+    onColumnsChange = (columns: number): void => {
+        this.setState({
+            columns: columns
+        });
+    }
+
     render(){
-        return (
+        var rows = this.state.rows;
+        var columns = this.state.columns;
+
+        var jsxElement: JSX.Element = null;
+        if (this.state.entries.length == 0)
+        {
+            jsxElement = <Typography><em>No items in Bingo, go add some !</em></Typography>
+        }
+        else
+        {
+            jsxElement = <List>
+                {
+                    this.state.entries.map(value => {
+                        return <EditableBingoEntry
+                                    key={value.key}
+                                    item={value}
+                                    onDelete={(_changedEntry) => this.onDeleteEntry(value.key)}
+                                    onChange={(changedEntry) => this.onChangeEntry(value.key, changedEntry)}
+                                />
+                    })
+                }
+                </List>;
+        }
+
+        return [
             <Card>
                 <CardHeader title="Configure Bingo" />
                 <CardContent>
-                    <List>
-                        {
-                            this.state.entries.map(value => {
-                                return <EditableBingoEntry
-                                            key={value.key}
-                                            item={value}
-                                            onDelete={(_changedEntry) => this.onDeleteEntry(value.key)}
-                                            onChange={(changedEntry) => this.onChangeEntry(value.key, changedEntry)}
-                                        />
-                            })
-                        }
-                    </List>
+                    { jsxElement }
                 </CardContent>
                 <CardActions>
                     <IconButton onClick={this.onAdd}>
@@ -113,11 +142,65 @@ export default class Config extends React.Component<any, ConfigState> {
                             <AddCircleOutline />
                         </Icon>
                     </IconButton>
+                </CardActions>
+            </Card>,
+            <Card>
+                <CardHeader title="Configure Grid" />
+                <CardContent>
+                    <Typography>
+                        Columns
+                    </Typography>
+                    <Slider
+                        defaultValue={3}
+                        step={1}
+                        min={1}
+                        marks
+                        max={9}
+                        valueLabelDisplay="auto"
+                        value={columns}
+                        onChange={(_, value) => this.onColumnsChange(value as number)}
+                    />
+                    <Typography>
+                        Rows
+                    </Typography>
+                    <Slider
+                        defaultValue={3}
+                        step={1}
+                        min={1}
+                        marks
+                        max={9}
+                        valueLabelDisplay="auto"
+                        value={rows}
+                        onChange={(_, value) => this.onRowsChange(value as number)}
+                    />
+                    <Grid container xs={12}>
+                    {
+                        [...Array(rows).keys()].map(_ => {
+                            return <Grid container item xs={12} spacing={1}>
+                                {
+                                    [...Array(columns).keys()].map(_ => {
+                                        return <Grid item xs>
+                                            <Paper className="paper" elevation={3}>
+                                                <Box py={2} my={0.5}>
+                                                    <Typography>
+                                                        
+                                                    </Typography>
+                                                </Box>
+                                            </Paper>
+                                        </Grid>
+                                    })
+                                }
+                            </Grid>
+                        })
+                    }
+                    </Grid>
+                </CardContent>
+                <CardActions>
                     <Button variant="contained" color="primary" onClick={this.onSave}>
                         Save
                     </Button>
                 </CardActions>
             </Card>
-        )
+        ]
     }
 }
