@@ -4,7 +4,6 @@ import EditableBingoEntry from './EditableBingoEntry';
 import { AddCircleOutline } from '@material-ui/icons';
 import { BingoEntry } from '../../model/BingoEntry';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
-import { Twitch } from '../../services/TwitchService';
 
 type ConfigState = {
     nextKey: number,
