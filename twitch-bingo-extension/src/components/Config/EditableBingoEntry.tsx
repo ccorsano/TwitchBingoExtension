@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Icon, IconButton, ListItem, ListItemText, TextField } from '@material-ui/core'
-import { Check, Edit } from '@material-ui/icons'
+import { Check, Delete } from '@material-ui/icons'
+import { BingoEntry } from '../../model/BingoEntry';
 
 type EditableBingoEntryState = {
     isEditing: boolean,
@@ -9,8 +10,9 @@ type EditableBingoEntryState = {
 }
 
 type EditableBingoEntryProps = {
-    isNew: boolean,
-    value: string,
+    item: BingoEntry,
+    onDelete: ((entry: BingoEntry) => void),
+    onChange: ((entry: BingoEntry) => void),
 }
 
 export default class EditableBingoEntry extends React.Component<EditableBingoEntryProps, EditableBingoEntryState> {
@@ -19,12 +21,23 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
         value: "",
         editingValue: "",
     }
+    editField: HTMLDivElement;
 
     constructor(props: EditableBingoEntryProps){
         super(props)
 
-        this.state.isEditing = props.isNew;
-        this.state.value = props.value;
+        this.state.isEditing = props.item.isNew;
+        this.state.value = props.item.text;
+        if (props.item.isNew)
+        {
+            this.state.editingValue = props.item.text;
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.item.isNew){
+            this.editField.focus();
+        }
     }
 
     edit = (): void => {
@@ -39,6 +52,18 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
             isEditing: false,
             value: this.state.editingValue,
         });
+        this.props.onChange({
+            key: this.props.item.key,
+            isNew: false,
+            text: this.state.editingValue,
+        });
+    }
+
+    delete = (): void => {
+        if (this.props.onDelete)
+        {
+            this.props.onDelete(this.props.item);
+        }
     }
 
     onKeyDown = (e: React.KeyboardEvent<any>): void => {
@@ -54,7 +79,7 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
         });
     }
 
-    onDoubleClick = (_e: React.MouseEvent<any>): void => {
+    onClick = (_e: React.MouseEvent<any>): void => {
         this.edit();
     }
 
@@ -63,7 +88,13 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
         {
             return (
                 <ListItem>
+                <IconButton onClick={this.delete}>
+                    <Icon>
+                        <Delete />
+                    </Icon>
+                </IconButton>
                     <TextField
+                        ref={(input) => { this.editField = input; }} 
                         label="Bingo proposition"
                         placeholder="Proposition"
                         defaultValue={this.state.value}
@@ -71,9 +102,9 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
                         onKeyUp={this.onKeyDown}
                     />
                     <IconButton onClick={this.endEdit}>
-                            <Icon>
-                                <Check />
-                            </Icon>
+                        <Icon>
+                            <Check />
+                        </Icon>
                     </IconButton>
                 </ListItem>
             )
@@ -81,13 +112,16 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
         else
         {
             return (
-                <ListItem>
-                    <ListItemText primary={this.state.value} onDoubleClick={this.onDoubleClick} />
-                    <IconButton onClick={this.edit}>
-                            <Icon>
-                                <Edit />
-                            </Icon>
+                <ListItem button onClick={this.onClick}>
+                    <IconButton onClick={this.delete}>
+                        <Icon>
+                            <Delete />
+                        </Icon>
                     </IconButton>
+                    <ListItemText
+                        primary={this.state.value}
+                        onDoubleClick={this.onClick}
+                    />
                 </ListItem>
             )
         }

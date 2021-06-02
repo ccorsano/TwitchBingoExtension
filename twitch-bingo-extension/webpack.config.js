@@ -109,8 +109,12 @@ module.exports = (_env, argv) => {
                 'Access-Control-Allow-Origin': '*'
             },
             port: 8180,
-            https: true
+            https: true,
+            hot: true,
         }
+        config.watchOptions = {
+            aggregateTimeout: 2000
+        };
         plugins.push(new webpack.HotModuleReplacementPlugin())
     }
 
