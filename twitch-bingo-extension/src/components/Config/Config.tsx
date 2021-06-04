@@ -64,6 +64,14 @@ export default class Config extends React.Component<any, ConfigState> {
             rows: this.state.rows,
             columns: this.state.columns,
         }));
+        TwitchExtHelper.send('broadcast','application/json', {
+            type: "set-config",
+            payload: {
+                entries: this.state.entries,
+                rows: this.state.rows,
+                columns: this.state.columns,
+            }
+        });
     }
 
     onChangeEntry = (key: number, entry: BingoEntry): void => {
