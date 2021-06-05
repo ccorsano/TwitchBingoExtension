@@ -3,3 +3,10 @@ export class BingoEntry {
     public text: string;
     public isNew: boolean;
 }
+
+export enum BingoEntryState {
+    Idle,
+    Pending,
+    Confirmed,
+    Missed,
+}

@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { config } = require('webpack');
 
 module.exports = (_env, argv) => {
@@ -13,7 +14,8 @@ module.exports = (_env, argv) => {
     let plugins = [
         new MiniCssExtractPlugin({
             filename: '[name].css',
-        })
+        }),
+        new ForkTsCheckerWebpackPlugin(),
     ];
 
     let entryPoints = {
@@ -84,9 +86,21 @@ module.exports = (_env, argv) => {
                 {
                     test: /\.scss$/,
                     use: [
-                        "style-loader",
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                            options:{
+                                publicPath: '/dist',
+                            },
+                        },
+                        // "style-loader",
                         "css-loader",
-                        "sass-loader",
+                        {
+                            loader: "sass-loader",
+                            options: {
+                              implementation: require("sass"),
+                              sourceMap: true,
+                            },
+                        }
                     ]
                 }
             ]
@@ -113,7 +127,7 @@ module.exports = (_env, argv) => {
             hot: true,
         }
         config.watchOptions = {
-            aggregateTimeout: 2000
+            aggregateTimeout: 1000
         };
         plugins.push(new webpack.HotModuleReplacementPlugin())
     }

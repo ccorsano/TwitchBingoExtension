@@ -1,23 +1,31 @@
-import * as React from 'react';
+import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
+import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
 
-type MobileState = {
 
+interface MobileProps extends ViewerBingoComponentBaseProps {
 }
 
-export default class Mobile extends React.Component<any, MobileState> {
-    state: MobileState = {
+interface MobileState extends ViewerBingoComponentBaseState {
+}
 
+export default class Mobile extends ViewerBingoComponentBase<MobileProps, MobileState> {
+    state: MobileState = {
+        entries: new Array(0),
+        rows: 3,
+        columns: 3,
+        canModerate: false,
+        canVote: false,
     }
 
     constructor(props: any){
         super(props)
-    }
+    };
+
+    componentDidMount() {
+        super.componentDidMount();
+    };
 
     render(){
-        return (
-            <div>
-                Mobile
-            </div>
-        )
+        return super.render();
     }
 }

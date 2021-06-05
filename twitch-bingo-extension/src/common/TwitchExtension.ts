@@ -63,6 +63,20 @@ export interface TwitchExtensionConfigurationHelper {
     set: (segment: string, version: string, content: string) => void;
 }
 
+export interface SubscriptionStatus {
+    tier: string;
+}
+
+export interface TwitchExtensionViewerHelper {
+    opaqueId: string;
+    id: string;
+    role: string;
+    isLinked: boolean;
+    sessionToken: string;
+    subscriptionStatus: SubscriptionStatus;
+    onChange: (callback: () => void) => void;
+}
+
 export interface TwitchExtensionHelper {
     onAuthorized: (authCallback: (context: TwitchAuthCallbackContext) => void) => void;
     onContext: (contextCallback: (context: TwitchContext, changedProperties: string[]) => void) => void;
@@ -74,6 +88,7 @@ export interface TwitchExtensionHelper {
     listen: (target: string, callback: (target: string, contentType: string, message: string) => void) => void;
     unlisten: (target: string, callback: (target: string, contentType: string, message: string) => void) => void;
     configuration: TwitchExtensionConfigurationHelper;
+    viewer: TwitchExtensionViewerHelper;
 }
 
 export const TwitchExtHelper: TwitchExtensionHelper = (<any>window).Twitch.ext;

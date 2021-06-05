@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, Paper, Slider, Typography } from '@material-ui/core'
 import EditableBingoEntry from './EditableBingoEntry';
-import { AddCircleOutline } from '@material-ui/icons';
+import { AddCircleOutline, CloudDownloadOutlined, CloudUploadOutlined } from '@material-ui/icons';
 import { BingoEntry } from '../../model/BingoEntry';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
 
@@ -10,6 +10,7 @@ type ConfigState = {
     entries: BingoEntry[],
     rows: number,
     columns: number,
+    fileDownloadUrl: string,
 }
 
 export default class Config extends React.Component<any, ConfigState> {
@@ -18,12 +19,22 @@ export default class Config extends React.Component<any, ConfigState> {
         entries: new Array(0),
         rows: 3,
         columns: 3,
+        fileDownloadUrl: null,
     }
 
     constructor(props: any){
         super(props)
         this.onSave = this.onSave.bind(this);
     }
+
+    textInput: HTMLInputElement = null;
+    setTextInputRef = (element: HTMLInputElement) => {
+        this.textInput = element;
+    };
+    downloadFileRef: HTMLAnchorElement = null;
+    setDownloadFileRef = (element: HTMLAnchorElement) => {
+        this.downloadFileRef = element;
+    };
 
     componentDidMount = () => {
         TwitchExtHelper.configuration.onChanged(this.loadConfig);
@@ -113,6 +124,46 @@ export default class Config extends React.Component<any, ConfigState> {
         });
     }
 
+    onEntriesUpload = (evt: React.ChangeEvent<HTMLInputElement>): void => {
+        var file = evt.target.files[0];
+        var reader = new FileReader();
+        reader.onload = (ev: ProgressEvent<FileReader>) => {
+            var content = ev.target.result as string;
+            console.log(content);
+
+            var entries:BingoEntry[] = new Array(0);
+            var nextKey = this.state.nextKey;
+
+            content.split('\n').forEach(line => {
+                var newEntry = new BingoEntry();
+                newEntry.text = line;
+                newEntry.isNew = false;
+                newEntry.key = nextKey++;
+                entries.push(newEntry);
+            });
+            this.setState({
+                nextKey: nextKey,
+                entries: entries,
+            });
+        };
+        reader.readAsText(file);
+    }
+
+    onEntriesDownload = (_evt: React.MouseEvent<HTMLButtonElement>): void => {
+        const content = this.state.entries.join('\n');
+        const blob = new Blob([content]);
+        const fileDownloadUrl = URL.createObjectURL(blob);
+        this.setState({
+            fileDownloadUrl: fileDownloadUrl
+        }, () => {
+            this.downloadFileRef.click();
+            URL.revokeObjectURL(fileDownloadUrl);
+            this.setState({
+                fileDownloadUrl: null
+            });
+        });
+    }
+
     render(){
         var rows = this.state.rows;
         var columns = this.state.columns;
@@ -145,6 +196,22 @@ export default class Config extends React.Component<any, ConfigState> {
                     { jsxElement }
                 </CardContent>
                 <CardActions>
+                    <input
+                        ref={this.setTextInputRef}
+                        type="file"
+                        style={{display: 'none'}}
+                        onChange={this.onEntriesUpload} />
+                    <IconButton onClick={(_) => this.textInput.click()}>
+                        <Icon>
+                            <CloudUploadOutlined />
+                        </Icon>
+                    </IconButton>
+                    <a style={{display: 'none'}} href={this.state.fileDownloadUrl} ref={this.setDownloadFileRef} download="text" />
+                    <IconButton onClick={this.onEntriesDownload}>
+                        <Icon>
+                            <CloudDownloadOutlined />
+                        </Icon>
+                    </IconButton>
                     <IconButton onClick={this.onAdd}>
                         <Icon>
                             <AddCircleOutline />
