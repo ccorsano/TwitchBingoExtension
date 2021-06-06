@@ -2,7 +2,7 @@ import { Box, Grid, Paper, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from './TwitchExtension';
 import { BingoEntry } from '../model/BingoEntry';
-import BingoViewerEntryF from './BingoViewerEntry';
+import BingoViewerEntry from './BingoViewerEntry';
 
 export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
@@ -99,12 +99,20 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                 let entry = this.getEntry(row, col);
                                 if (! entry)
                                 {
-                                    return null;
+                                    return <Grid item xs key={this.state.nextKey + col + (row * this.state.columns)}>
+                                        <BingoViewerEntry
+                                            config={new BingoEntry()}
+                                            canInteract={false}
+                                            canConfirm={false}
+                                            onTentative={this.onTentative}
+                                            onConfirm={this.onConfirm}
+                                        />
+                                    </Grid>
                                 }
                                 else
                                 {
                                     return <Grid item xs key={entry.key}>
-                                        <BingoViewerEntryF
+                                        <BingoViewerEntry
                                             config={entry}
                                             canInteract={this.state.canVote}
                                             canConfirm={this.state.canModerate}
