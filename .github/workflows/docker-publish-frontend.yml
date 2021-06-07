@@ -1,12 +1,11 @@
 name: Publish Frontend Docker Image
 
 on:
-  workflow_run:
-    workflows: [ ".NET" ]
-    branches:
-      - main
-    types: 
-      - completed
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 env:
   IMAGE_NAME: twitch-bingo-ebs
 
