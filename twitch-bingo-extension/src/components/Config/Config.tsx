@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, Paper, Slider, Typography } from '@material-ui/core'
 import EditableBingoEntry from './EditableBingoEntry';
-import { AddCircleOutline, CloudDownloadOutlined, CloudUploadOutlined } from '@material-ui/icons';
+import { AddCircleOutline, AssignmentReturned, CloudUploadOutlined } from '@material-ui/icons';
 import { BingoEntry } from '../../model/BingoEntry';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
+import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
+import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
+// import { Twitch } from '../../services/TwitchService';
 
 type ConfigState = {
     nextKey: number,
@@ -11,6 +14,7 @@ type ConfigState = {
     rows: number,
     columns: number,
     fileDownloadUrl: string,
+    gameId?: string,
 }
 
 export default class Config extends React.Component<any, ConfigState> {
@@ -31,6 +35,10 @@ export default class Config extends React.Component<any, ConfigState> {
     setTextInputRef = (element: HTMLInputElement) => {
         this.textInput = element;
     };
+    textArea: HTMLTextAreaElement = null;
+    setTextAreaRef = (element: HTMLTextAreaElement) => {
+        this.textArea = element;
+    };
     downloadFileRef: HTMLAnchorElement = null;
     setDownloadFileRef = (element: HTMLAnchorElement) => {
         this.downloadFileRef = element;
@@ -38,17 +46,15 @@ export default class Config extends React.Component<any, ConfigState> {
 
     componentDidMount = () => {
         TwitchExtHelper.configuration.onChanged(this.loadConfig);
+        console.log((window as any).Twitch.ext.configuration.broadcaster);
     }
 
     loadConfig = (broadcasterConfig: TwitchExtensionConfiguration) => {
-        var extensionConfig = TwitchExtHelper.configuration.broadcaster;
-        console.log(broadcasterConfig);
-        console.log(extensionConfig);
-        if (! extensionConfig)
+        if (! broadcasterConfig)
         {
             return;
         }
-        var configContent = JSON.parse(extensionConfig.content);
+        var configContent = JSON.parse(broadcasterConfig.content);
         this.setState({
             nextKey: configContent?.nextKey ?? 0,
             entries: configContent?.entries ?? new Array(0),
@@ -82,6 +88,37 @@ export default class Config extends React.Component<any, ConfigState> {
                 rows: this.state.rows,
                 columns: this.state.columns,
             }
+        });
+    }
+
+    onStart = (): void => {
+        BingoEBS.createGame({
+            rows: this.state.rows,
+            columns: this.state.columns,
+            entries: this.state.entries.map<EBSBingo.BingoEntry>((entry: BingoEntry) => {
+                return {
+                    key: entry.key,
+                    text: entry.text,
+                };
+            })
+        }).then((game)=> {
+            console.log("Started game " + game.gameId);
+
+            this.setState({
+                gameId: game.gameId,
+            });
+            
+            TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
+                nextKey: this.state.nextKey,
+                entries: this.state.entries,
+                rows: this.state.rows,
+                columns: this.state.columns,
+                activeGame: game,
+            }));
+            TwitchExtHelper.send('broadcast','application/json', {
+                type: "start",
+                payload: game
+            });
         });
     }
 
@@ -149,18 +186,16 @@ export default class Config extends React.Component<any, ConfigState> {
         reader.readAsText(file);
     }
 
-    onEntriesDownload = (_evt: React.MouseEvent<HTMLButtonElement>): void => {
-        const content = this.state.entries.join('\n');
-        const blob = new Blob([content]);
-        const fileDownloadUrl = URL.createObjectURL(blob);
-        this.setState({
-            fileDownloadUrl: fileDownloadUrl
-        }, () => {
-            this.downloadFileRef.click();
-            URL.revokeObjectURL(fileDownloadUrl);
-            this.setState({
-                fileDownloadUrl: null
-            });
+    onEntriesCopy = (_evt: React.MouseEvent<HTMLButtonElement>): void => {
+        if (! navigator.clipboard){
+            console.error("Copy to clipboard not supported on this browser");
+            return;
+        }
+        const content = this.state.entries.map(e => e.text).join('\n');
+        navigator.clipboard.writeText(content).then(() => {
+            console.log("Text copied to clipboard")
+        }, (error: string) => {
+            console.error("Could not copy text to clipboard", error);
         });
     }
 
@@ -204,12 +239,12 @@ export default class Config extends React.Component<any, ConfigState> {
                     <IconButton onClick={(_) => this.textInput.click()}>
                         <Icon>
                             <CloudUploadOutlined />
-                        </Icon>
+                        </Icon> 
                     </IconButton>
-                    <a style={{display: 'none'}} href={this.state.fileDownloadUrl} ref={this.setDownloadFileRef} download="text" />
-                    <IconButton onClick={this.onEntriesDownload}>
+                    <textarea ref={this.setTextAreaRef} style={{display: 'none'}}/>
+                    <IconButton onClick={this.onEntriesCopy}>
                         <Icon>
-                            <CloudDownloadOutlined />
+                            <AssignmentReturned />
                         </Icon>
                     </IconButton>
                     <IconButton onClick={this.onAdd}>
@@ -273,6 +308,9 @@ export default class Config extends React.Component<any, ConfigState> {
                 <CardActions>
                     <Button variant="contained" color="primary" onClick={this.onSave}>
                         Save
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={this.onStart}>
+                        Start
                     </Button>
                 </CardActions>
             </Card>

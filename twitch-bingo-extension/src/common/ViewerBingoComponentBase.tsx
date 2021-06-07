@@ -1,8 +1,10 @@
 import { Box, Grid, Paper, Typography } from '@material-ui/core';
 import * as React from 'react';
-import { TwitchExtensionConfiguration, TwitchExtHelper } from './TwitchExtension';
+import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntry } from '../model/BingoEntry';
 import BingoViewerEntry from './BingoViewerEntry';
+import { BingoEBS } from '../EBS/BingoService/EBSBingoService';
+import { Twitch } from '../services/TwitchService';
 
 export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
@@ -10,6 +12,7 @@ export type ViewerBingoComponentBaseState = {
     columns: number,
     canModerate: boolean,
     canVote: boolean,
+    gameId?: string,
 }
 
 export type ViewerBingoComponentBaseProps = {
@@ -29,7 +32,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
     }
 
     componentDidMount() {
-        TwitchExtHelper.configuration.onChanged(this.loadConfig);
+        Twitch.onConfiguration.push(this.loadConfig);
         TwitchExtHelper.listen('broadcast', (_target, _contentType, messageStr) => {
             let message = JSON.parse(messageStr);
             switch (message.type) {
@@ -40,12 +43,17 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                         columns: message.payload.columns,
                     });
                     break;
-            
+                case 'start':
+                    console.log("Received start for game:" + message.payload.gameId);
+                    this.setState({
+                        gameId: message.payload.gameId,
+                    });
+                    break;
                 default:
                     break;
             }
         });
-        TwitchExtHelper.onAuthorized(_context => {
+        Twitch.onAuthorized.push(_context => {
             this.setState({
                 canModerate: TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator',
                 canVote: TwitchExtHelper.viewer.role != 'external',
@@ -53,8 +61,10 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         });
     };
 
-    loadConfig = (broadcasterConfig: TwitchExtensionConfiguration) => {
-        var extensionConfig = TwitchExtHelper.configuration.broadcaster;
+    loadConfig = (broadcasterConfig: any) => {
+        console.log((window as any).Twitch.ext.configuration.broadcaster);
+        console.log(TwitchExtHelper.configuration.broadcaster);
+        var extensionConfig = Twitch.configuration;
         console.log(broadcasterConfig);
         console.log(extensionConfig);
         if (! extensionConfig)
@@ -66,6 +76,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             entries: configContent?.entries ?? new Array(0),
             rows: configContent?.rows ?? 3,
             columns: configContent?.columns ?? 3,
+            gameId: configContent?.activeGame?.GameId
         });
     };
 
@@ -75,13 +86,19 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         {
             return this.state.entries[index];
         }
-        return null;
+        return {
+            key: -(col + (row * this.state.columns)) - 1,
+            text: "",
+            isNew: false,
+        };
     };
 
-    onTentative = (_entry: BingoEntry) => {  
+    onTentative = (entry: BingoEntry) => {  
+        BingoEBS.tentative(this.state.gameId, entry.key.toString());
     };
 
-    onConfirm = (_entry: BingoEntry) => {
+    onConfirm = (entry: BingoEntry) => {
+        BingoEBS.confirm(this.state.gameId, entry.key.toString());
     };
 
     render(){

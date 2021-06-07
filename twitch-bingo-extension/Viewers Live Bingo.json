@@ -1,7 +1,7 @@
 {
   "allowHttpBackend": false,
-  "backendCommand": "",
-  "backendFolderName": "",
+  "backendCommand": "dotnet watch run",
+  "backendFolderName": "../TwitchBingoService",
   "certificateExceptions": [
     {
       "isAllowed": true,
@@ -24,7 +24,7 @@
   ],
   "extensionViews": [
     {
-      "channelId": "265737932",
+      "channelId": "158511925",
       "configurationAnchor": "video_overlay",
       "displayChannelName": "miekyld",
       "features": {
@@ -46,7 +46,7 @@
       "viewerType": "Broadcaster"
     },
     {
-      "channelId": "265737932",
+      "channelId": "158511925",
       "configurationAnchor": "video_overlay",
       "displayChannelName": "miekyld",
       "features": {
@@ -68,7 +68,7 @@
       "viewerType": "Broadcaster"
     },
     {
-      "channelId": "265737932",
+      "channelId": "158511925",
       "configurationAnchor": "video_overlay",
       "displayChannelName": "miekyld",
       "features": {
@@ -90,7 +90,7 @@
       "viewerType": "Broadcaster"
     },
     {
-      "channelId": "265737932",
+      "channelId": "158511925",
       "configurationAnchor": "video_overlay",
       "displayChannelName": "miekyld",
       "features": {

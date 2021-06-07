@@ -39,10 +39,10 @@ export default class TwitchService {
         });
     }
 
-    _onConfiguration = (config: TwitchExtensionConfiguration) => {
-        this.configuration = config;
+    _onConfiguration = () => {
+        this.configuration = TwitchExtHelper.configuration.broadcaster;
         this.onConfiguration.forEach(handler => {
-            handler(config);
+            handler(TwitchExtHelper.configuration.broadcaster);
         })
     }
 }
