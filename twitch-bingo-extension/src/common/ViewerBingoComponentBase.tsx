@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography } from '@material-ui/core';
+import { Box, Grid, LinearProgress, Paper, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntry } from '../model/BingoEntry';
@@ -10,6 +10,7 @@ export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
     rows: number,
     columns: number,
+    isStarted: boolean,
     canModerate: boolean,
     canVote: boolean,
     gameId?: string,
@@ -23,6 +24,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         entries: new Array(0),
         rows: 0,
         columns: 0,
+        isStarted: false,
         canModerate: false,
         canVote: false,
     };
@@ -47,6 +49,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                     console.log("Received start for game:" + message.payload.gameId);
                     this.setState({
                         gameId: message.payload.gameId,
+                        isStarted: true,
                     });
                     break;
                 default:
@@ -101,49 +104,56 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         BingoEBS.confirm(this.state.gameId, entry.key.toString());
     };
 
+    renderGrid(){
+        return (
+            <Grid container>
+                {
+                    [...Array(this.state.rows).keys()].map(row => {
+                        return <Grid container item xs={12} spacing={1} key={row}>
+                            {
+                                [...Array(this.state.columns).keys()].map(col => {
+                                    let entry = this.getEntry(row, col);
+                                    if (! entry)
+                                    {
+                                        return <Grid item xs key={this.state.nextKey + col + (row * this.state.columns)}>
+                                            <BingoViewerEntry
+                                                config={new BingoEntry()}
+                                                canInteract={false}
+                                                canConfirm={false}
+                                                onTentative={this.onTentative}
+                                                onConfirm={this.onConfirm}
+                                            />
+                                        </Grid>
+                                    }
+                                    else
+                                    {
+                                        return <Grid item xs key={entry.key}>
+                                            <BingoViewerEntry
+                                                config={entry}
+                                                canInteract={this.state.canVote}
+                                                canConfirm={this.state.canModerate}
+                                                onTentative={this.onTentative}
+                                                onConfirm={this.onConfirm}
+                                            />
+                                        </Grid>
+                                    }
+                                })
+                            }
+                        </Grid>
+                    })
+                }
+            </Grid>);
+    }
+
     render(){
         return [
             <Paper>
                 <Typography>{this.state.canModerate ? "Moderator" : (this.state.canVote ? "Player" : "Lurker")}</Typography>
             </Paper>,
             <Box my={12} mx={2}>
-            <Grid container>
             {
-                [...Array(this.state.rows).keys()].map(row => {
-                    return <Grid container item xs={12} spacing={1} key={row}>
-                        {
-                            [...Array(this.state.columns).keys()].map(col => {
-                                let entry = this.getEntry(row, col);
-                                if (! entry)
-                                {
-                                    return <Grid item xs key={this.state.nextKey + col + (row * this.state.columns)}>
-                                        <BingoViewerEntry
-                                            config={new BingoEntry()}
-                                            canInteract={false}
-                                            canConfirm={false}
-                                            onTentative={this.onTentative}
-                                            onConfirm={this.onConfirm}
-                                        />
-                                    </Grid>
-                                }
-                                else
-                                {
-                                    return <Grid item xs key={entry.key}>
-                                        <BingoViewerEntry
-                                            config={entry}
-                                            canInteract={this.state.canVote}
-                                            canConfirm={this.state.canModerate}
-                                            onTentative={this.onTentative}
-                                            onConfirm={this.onConfirm}
-                                        />
-                                    </Grid>
-                                }
-                            })
-                        }
-                    </Grid>
-                })
+                this.state.isStarted ? this.renderGrid() : <Paper><LinearProgress /></Paper>
             }
-            </Grid>
             </Box>
         ]
     }

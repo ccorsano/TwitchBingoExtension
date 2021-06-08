@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
 using TwitchBingoService.Services;
+using TwitchBingoService.Storage;
 
 namespace TwitchBingoService
 {
@@ -40,6 +41,7 @@ namespace TwitchBingoService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TwitchBingoService", Version = "v1" });
             });
+            services.AddApplicationInsightsTelemetry();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -84,6 +86,16 @@ namespace TwitchBingoService
                         }
                     };
                 });
+            var redisUrl = Configuration.GetValue<string>("REDIS_URL");
+            if (string.IsNullOrEmpty(redisUrl))
+            {
+                services.AddSingleton<IGameStorage, InMemoryGameStore>();
+            }
+            else
+            {
+                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(services => StackExchange.Redis.ConnectionMultiplexer.Connect(redisUrl));
+                services.AddSingleton<IGameStorage, RedisGameStore>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
