@@ -46,11 +46,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                     });
                     break;
                 case 'start':
-                    console.log("Received start for game:" + message.payload.gameId);
-                    this.setState({
-                        gameId: message.payload.gameId,
-                        isStarted: true,
-                    });
+                    this.onStart(message.payload);
                     break;
                 default:
                     break;
@@ -61,6 +57,14 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 canModerate: TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator',
                 canVote: TwitchExtHelper.viewer.role != 'external',
             });
+        });
+    };
+
+    onStart = (payload: any) => {
+        console.log("Received start for game:" + payload.gameId);
+        this.setState({
+            gameId: payload.gameId,
+            isStarted: true,
         });
     };
 
@@ -78,9 +82,12 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         this.setState({
             entries: configContent?.entries ?? new Array(0),
             rows: configContent?.rows ?? 3,
-            columns: configContent?.columns ?? 3,
-            gameId: configContent?.activeGame?.GameId
+            columns: configContent?.columns ?? 3
         });
+        if (configContent?.activeGame)
+        {
+            this.onStart(configContent.activeGame);
+        }
     };
 
     getEntry = (row: number, col: number) => {

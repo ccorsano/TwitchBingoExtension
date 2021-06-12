@@ -77,19 +77,16 @@ namespace TwitchBingoService.Controllers
             var game = await _storage.ReadGame(gameId);
             var entry = game.entries.First(e => e.key == key);
 
-            var tentatives = await _storage.ReadTentatives(gameId, User.Identity.Name);
-            tentatives = tentatives.Concat(new BingoTentative[]
+            var tentative = new BingoTentative
             {
-                new BingoTentative
-                {
-                    confirmed = false,
-                    entryKey = key,
-                    tentativeTime = DateTimeOffset.UtcNow,
-                }
-            }).ToArray();
-            await _storage.WriteTentatives(gameId, User.Identity.Name, tentatives);
+                playerId = User.Identity.Name,
+                confirmed = false,
+                entryKey = key,
+                tentativeTime = DateTime.UtcNow,
+            };
+            await _storage.WriteTentative(gameId, tentative);
 
-            return tentatives.Last();
+            return tentative;
         }
 
         [HttpPost("{gameId}/{key}/confirm")]
@@ -97,9 +94,24 @@ namespace TwitchBingoService.Controllers
         public async Task<BingoEntry> PostConfirmationAsync(Guid gameId, ushort key)
         {
             var game = await _storage.ReadGame(gameId);
-            var entry = game.entries.First(e => e.key == key);
+            if (game == null)
+            {
+                throw new ArgumentOutOfRangeException("gameId");
+            }
 
-            throw new NotImplementedException();
+            var entry = game.entries.First(e => e.key == key);
+            if (entry.confirmedAt != null)
+            {
+                // Signal conflict
+                HttpContext.Response.StatusCode = 409;
+                throw new InvalidOperationException("Entry already confirmed");
+            }
+            entry.confirmedAt = DateTime.UtcNow;
+            entry.confirmedBy = User.Identity.Name;
+
+            await _storage.WriteGame(game);
+
+            return entry;
         }
     }
 }

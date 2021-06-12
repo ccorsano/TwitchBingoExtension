@@ -10,7 +10,8 @@ namespace TwitchBingoService.Storage
     {
         public Task WriteGame(BingoGame bingoGame);
         public Task<BingoGame> ReadGame(Guid gameId);
-        public Task WriteTentatives(Guid gameId, string playerId, BingoTentative[] tentatives);
+        public Task WriteTentative(Guid gameId, BingoTentative tentatives);
+        public Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime cutoff);
         public Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId);
     }
 }

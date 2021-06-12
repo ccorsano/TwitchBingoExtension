@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace TwitchBingoService.Model
 {
     [ProtoContract]
-    public class BingoEntry
+    public class BingoPendingConfirmation
     {
         [ProtoMember(1)]
-        public UInt16 key { get; set; }
+        public Guid gameId { get; set; }
 
         [ProtoMember(2)]
-        public string text { get; set; }
+        public ushort entryKey { get; set; }
 
         [ProtoMember(3)]
-        public DateTime? confirmedAt { get; set; }
+        public DateTime confirmationCutoff { get; set; }
 
         [ProtoMember(4)]
         public string confirmedBy { get; set; }

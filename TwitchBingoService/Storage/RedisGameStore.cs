@@ -2,7 +2,9 @@
 using StackExchange.Redis;
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using TwitchBingoService.Model;
 
@@ -20,7 +22,8 @@ namespace TwitchBingoService.Storage
         }
 
         private string GetGameKey(Guid gameId) => $"game:{gameId}";
-        private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:{playerId}";
+        private string GetPendingTentativeKey(Guid gameId) => $"game:{gameId}:tentatives:pending";
+        private string GetTentativeKey(Guid gameId) => $"game:{gameId}:tentatives";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -51,18 +54,49 @@ namespace TwitchBingoService.Storage
             }
         }
 
-        public async Task WriteTentatives(Guid gameId, string playerId, BingoTentative[] tentatives)
+        public async Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            _logger.LogInformation("Save bingo game {gameId} tentatives for player.", gameId, playerId);
+            _logger.LogInformation("Save bingo game {gameId} tentatives for player.", gameId, tentative?.playerId);
 
             var db = _connection.GetDatabase();
             var buffer = ArrayPool<byte>.Shared.Rent(512);
             using (var stream = new MemoryStream(buffer))
             {
-                ProtoBuf.Serializer.Serialize(stream, tentatives);
+                ProtoBuf.Serializer.Serialize(stream, tentative);
                 stream.Flush();
-                await db.StringSetAsync(GetTentativeKey(gameId, playerId), new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position));
+                await db.ListRightPushAsync(GetPendingTentativeKey(gameId), new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position));
             }
+        }
+
+        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime cutoff)
+        {
+            _logger.LogInformation("Read bingo game {gameId} tentatives for all players", gameId);
+
+            var db = _connection.GetDatabase();
+            var listKey = GetPendingTentativeKey(gameId);
+
+            RedisValue value = await db.ListLeftPopAsync(listKey);
+            var requeue = new List<RedisValue>();
+            var tentatives = new List<BingoTentative>();
+
+            while(value.HasValue)
+            {
+                var tentative = ProtoBuf.Serializer.Deserialize<BingoTentative>(value);
+                if (tentative.tentativeTime < cutoff && tentative.entryKey != key)
+                {
+                    requeue.Add(value);
+                }
+                else
+                {
+                    tentatives.Add(tentative);
+                }
+
+                value = await db.ListLeftPopAsync(GetPendingTentativeKey(gameId));
+            }
+
+            await db.ListRightPushAsync(listKey, requeue.ToArray());
+
+            return tentatives.ToArray();
         }
 
         public async Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId)
@@ -70,11 +104,11 @@ namespace TwitchBingoService.Storage
             _logger.LogInformation("Read bingo game {gameId} tentatives for player {playerId}", gameId, playerId);
 
             var db = _connection.GetDatabase();
-            var result = await db.StringGetAsync(GetGameKey(gameId));
+            var result = await db.HashGetAsync(GetTentativeKey(gameId), playerId);
             if (!result.HasValue)
             {
                 _logger.LogError("Bingo game {gameId} tentatives not found for player {playerId}", gameId, playerId);
-                return null;
+                return new BingoTentative[0];
             }
             var data = (ReadOnlyMemory<byte>)result;
             return ProtoBuf.Serializer.Deserialize<BingoTentative[]>(data);

@@ -19,6 +19,6 @@ namespace TwitchBingoService.Model
         public bool confirmed { get; set; }
 
         [ProtoMember(4)]
-        public DateTimeOffset tentativeTime { get; set; }
+        public DateTime tentativeTime { get; set; }
     }
 }

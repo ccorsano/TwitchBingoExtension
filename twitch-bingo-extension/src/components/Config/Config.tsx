@@ -6,6 +6,7 @@ import { BingoEntry } from '../../model/BingoEntry';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
+import { Twitch } from '../../services/TwitchService';
 // import { Twitch } from '../../services/TwitchService';
 
 type ConfigState = {
@@ -45,8 +46,7 @@ export default class Config extends React.Component<any, ConfigState> {
     };
 
     componentDidMount = () => {
-        TwitchExtHelper.configuration.onChanged(this.loadConfig);
-        console.log((window as any).Twitch.ext.configuration.broadcaster);
+        Twitch.onConfiguration.push(this.loadConfig);
     }
 
     loadConfig = (broadcasterConfig: TwitchExtensionConfiguration) => {
@@ -54,6 +54,7 @@ export default class Config extends React.Component<any, ConfigState> {
         {
             return;
         }
+        (window as any).Twitch.ext.rig.log(broadcasterConfig.content);
         var configContent = JSON.parse(broadcasterConfig.content);
         this.setState({
             nextKey: configContent?.nextKey ?? 0,
