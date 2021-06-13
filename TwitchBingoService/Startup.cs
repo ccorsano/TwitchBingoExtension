@@ -117,7 +117,15 @@ namespace TwitchBingoService
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TwitchBingoService v1"));
             }
 
-            app.UseHttpsRedirection();
+            var basePath = Configuration.GetValue<string>("HostBasePath");
+
+            if (!string.IsNullOrEmpty(basePath))
+            {
+                app.UsePathBase(basePath);
+            }
+
+            // Note: I am deploying this behind an HTTPS reverse proxy, so the HTTPs redirection is handled there.
+            //app.UseHttpsRedirection();
 
             app.UseCors(config =>
             {
@@ -128,8 +136,6 @@ namespace TwitchBingoService
                 else
                 {
                     config.WithOrigins("https://*.ext-twitch.tv")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
                         .SetIsOriginAllowedToAllowWildcardSubdomains();
                 }
                 config.WithHeaders("Authorization", "X-Config-Token", "X-Config-Version", "Content-Type");
