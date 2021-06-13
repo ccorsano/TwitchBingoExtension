@@ -132,7 +132,7 @@
     "name": "ViewersLiveBingo",
     "panelHeight": 0,
     "privacyPolicyUrl": "",
-    "requestIdentityLink": false,
+    "requestIdentityLink": true,
     "requiredBroadcasterAbilities": [],
     "screenshotUrls": [],
     "sku": "",
@@ -158,15 +158,19 @@
       },
       "config": {
         "viewerUrl": "https://localhost:8180/config.html",
-        "canLinkExternalContent": false
+        "canLinkExternalContent": true
       },
       "liveConfig": {
         "viewerUrl": "https://localhost:8180/live_config.html",
-        "canLinkExternalContent": false
+        "canLinkExternalContent": true
       }
     },
-    "whitelistedConfigUrls": [],
-    "whitelistedPanelUrls": []
+    "whitelistedConfigUrls": [
+      ""
+    ],
+    "whitelistedPanelUrls": [
+      ""
+    ]
   },
   "frontendCommand": "yarn start",
   "frontendFolderName": "",
