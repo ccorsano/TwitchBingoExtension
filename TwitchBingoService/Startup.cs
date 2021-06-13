@@ -73,6 +73,12 @@ namespace TwitchBingoService
                             validationContext.Principal.AddIdentity(identity);
 
                             return Task.CompletedTask;
+                        },
+                        OnAuthenticationFailed = (context) =>
+                        {
+                            var logger = context.HttpContext.RequestServices.GetService<ILogger>();
+                            logger.LogWarning("Rejected request");
+                            return Task.CompletedTask;
                         }
                     };
 
