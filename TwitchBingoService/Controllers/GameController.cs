@@ -53,7 +53,7 @@ namespace TwitchBingoService.Controllers
             {
                 return _gameService.Confirm(gameId, key, User.Identity.Name);
             }
-            catch(InvalidOperationException _)
+            catch(InvalidOperationException)
             {
                 Response.StatusCode = 409;
                 throw;

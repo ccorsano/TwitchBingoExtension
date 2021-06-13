@@ -1,5 +1,4 @@
 import { Twitch } from '../services/TwitchService';
-import * as ServerConfig from './EBSConfig';
 import { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
 require('../common/TwitchExtension')
 
@@ -63,7 +62,7 @@ export class EBSBase {
     }
 
     // Generic method to call EBS REST APIs
-    serviceFetch = async <T>(path: string, init: RequestInit = null, configTokenOverride: string = null, versionOverride: string = null): Promise<T> => {
+    serviceFetch = async <T>(path: string, init: RequestInit = null): Promise<T> => {
         let [] = await this.configuredPromise;
 
         const opts: RequestInit = {
@@ -71,8 +70,6 @@ export class EBSBase {
             headers: new Headers({
                 'Authorization': 'Bearer ' + this.context.token,
                 'Content-Type': 'application/json',
-                'X-Config-Token': configTokenOverride ?? this.configuration?.content ?? '',
-                'X-Config-Version': versionOverride ?? this.configuration?.version ?? ServerConfig.EBSVersion,
             }),
             body: init?.body,
         };
@@ -86,7 +83,7 @@ export class EBSBase {
         return response.json();
     }
 
-    servicePost = async <T>(path: string, bodyObject: any, init: RequestInit = null, configTokenOverride: string = null, versionOverride: string = null ): Promise<T> => {
+    servicePost = async <T>(path: string, bodyObject: any, init: RequestInit = null): Promise<T> => {
         if (! init)
         {
             init = {
@@ -100,7 +97,7 @@ export class EBSBase {
             init.body = JSON.stringify(bodyObject);
         }
         console.log(path);
-        return this.serviceFetch<T>(path, init, configTokenOverride, versionOverride);
+        return this.serviceFetch<T>(path, init);
         
     }
 

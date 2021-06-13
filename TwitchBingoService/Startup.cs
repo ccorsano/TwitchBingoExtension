@@ -138,7 +138,7 @@ namespace TwitchBingoService
                     config.WithOrigins("https://*.ext-twitch.tv")
                         .SetIsOriginAllowedToAllowWildcardSubdomains();
                 }
-                config.WithHeaders("Authorization", "X-Config-Token", "X-Config-Version", "Content-Type");
+                config.WithHeaders("Authorization", "Content-Type");
             });
 
             app.UseRouting();
