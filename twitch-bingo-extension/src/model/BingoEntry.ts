@@ -5,8 +5,9 @@ export class BingoEntry {
 }
 
 export enum BingoEntryState {
-    Idle,
-    Pending,
-    Confirmed,
-    Missed,
+    Idle = 0,
+    Pending = 1,
+    Confirmed = 2,
+    Missed = 3,
+    Rejected = 4,
 }

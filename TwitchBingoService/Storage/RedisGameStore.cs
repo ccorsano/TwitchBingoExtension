@@ -23,7 +23,7 @@ namespace TwitchBingoService.Storage
 
         private string GetGameKey(Guid gameId) => $"game:{gameId}";
         private string GetPendingTentativeKey(Guid gameId) => $"game:{gameId}:tentatives:pending";
-        private string GetTentativeKey(Guid gameId) => $"game:{gameId}:tentatives";
+        private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:tentatives:{playerId}";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -64,7 +64,9 @@ namespace TwitchBingoService.Storage
             {
                 ProtoBuf.Serializer.Serialize(stream, tentative);
                 stream.Flush();
-                await db.ListRightPushAsync(GetPendingTentativeKey(gameId), new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position));
+                var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
+                await db.ListRightPushAsync(GetPendingTentativeKey(gameId), serializedTentative);
+                await db.HashSetAsync(GetTentativeKey(gameId, tentative.playerId), (int) tentative.entryKey, serializedTentative);
             }
         }
 
@@ -104,14 +106,20 @@ namespace TwitchBingoService.Storage
             _logger.LogInformation("Read bingo game {gameId} tentatives for player {playerId}", gameId, playerId);
 
             var db = _connection.GetDatabase();
-            var result = await db.HashGetAsync(GetTentativeKey(gameId), playerId);
-            if (!result.HasValue)
+            var result = await db.HashGetAllAsync(GetTentativeKey(gameId, playerId));
+
+            var tentatives = new List<BingoTentative>();
+
+            foreach(var entry in result)
             {
-                _logger.LogError("Bingo game {gameId} tentatives not found for player {playerId}", gameId, playerId);
-                return new BingoTentative[0];
+                if (!entry.Value.HasValue)
+                {
+                    continue;
+                }
+                var data = (ReadOnlyMemory<byte>)entry.Value;
+                tentatives.Add(ProtoBuf.Serializer.Deserialize<BingoTentative>(data));
             }
-            var data = (ReadOnlyMemory<byte>)result;
-            return ProtoBuf.Serializer.Deserialize<BingoTentative[]>(data);
+            return tentatives.ToArray();
         }
     }
 }

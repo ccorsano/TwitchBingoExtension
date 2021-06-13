@@ -7,6 +7,10 @@ namespace TwitchBingoService.Model
 {
     public class BingoGrid
     {
+        public Guid gameId { get; set; }
+        public string playerId { get; set; }
+        public ushort rows { get; set; }
+        public ushort cols { get; set; }
         public BingoGridCell[] cells { get; set; }
     }
 }

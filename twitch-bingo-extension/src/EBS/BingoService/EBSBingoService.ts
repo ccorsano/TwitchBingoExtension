@@ -1,6 +1,6 @@
 import { EBSBase } from "../EBSBase";
 import * as EBSConfig from "../EBSConfig";
-import { BingoGame, BingoGameCreationParams, BingoTentative } from "./EBSBingoTypes";
+import { BingoGame, BingoGameCreationParams, BingoGrid, BingoTentative } from "./EBSBingoTypes";
 
 export class EBSBingoService extends EBSBase {
     constructor(){
@@ -17,6 +17,10 @@ export class EBSBingoService extends EBSBase {
     
     confirm = (gameId: string, entryKey: string): Promise<BingoTentative> => {
         return this.servicePost("/game/" + gameId + "/" + entryKey + "/confirm", {});
+    }
+
+    getGrid = (gameId: string): Promise<BingoGrid> => {
+        return this.serviceFetch("/game/" + gameId + "/grid", {});
     }
 }
 

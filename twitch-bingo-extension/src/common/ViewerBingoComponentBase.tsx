@@ -1,10 +1,11 @@
 import { Box, Grid, LinearProgress, Paper, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
-import { BingoEntry } from '../model/BingoEntry';
+import { BingoEntry, BingoEntryState } from '../model/BingoEntry';
 import BingoViewerEntry from './BingoViewerEntry';
 import { BingoEBS } from '../EBS/BingoService/EBSBingoService';
 import { Twitch } from '../services/TwitchService';
+import { BingoGrid } from '../EBS/BingoService/EBSBingoTypes';
 
 export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
@@ -14,6 +15,7 @@ export type ViewerBingoComponentBaseState = {
     canModerate: boolean,
     canVote: boolean,
     gameId?: string,
+    grid?: BingoGrid,
 }
 
 export type ViewerBingoComponentBaseProps = {
@@ -62,9 +64,16 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
 
     onStart = (payload: any) => {
         console.log("Received start for game:" + payload.gameId);
-        this.setState({
-            gameId: payload.gameId,
-            isStarted: true,
+
+        BingoEBS.getGrid(payload.gameId).then(grid => {
+            
+            this.setState({
+                gameId: payload.gameId,
+                grid: grid,
+                isStarted: true,
+            });
+        }).catch(error => {
+            console.error("Error loading grid from EBS: " + error);
         });
     };
 
@@ -90,17 +99,33 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         }
     };
 
-    getEntry = (row: number, col: number) => {
-        var index = col + row * this.state.columns;
-        if (this.state.entries.length > index)
+    getCell = (row: number, col: number): [BingoEntry, BingoEntryState] => {
+        var cellResult = this.state.grid.cells.filter(c => c.row == row && c.col == col);
+        if (cellResult.length == 1)
         {
-            return this.state.entries[index];
+            var cell = cellResult[0];
+            var entryResult = this.state.entries.filter(e => e.key == cell.key);
+            if (entryResult.length == 1)
+            {
+                var entry = entryResult[0];
+                return [
+                    {
+                        key: entry.key,
+                        text: entry.text,
+                        isNew: false,
+                    },
+                    cell.state
+                ];
+            }
         }
-        return {
-            key: -(col + (row * this.state.columns)) - 1,
-            text: "",
-            isNew: false,
-        };
+        return [
+            {
+                key: -(col + (row * this.state.columns)) - 1,
+                text: "",
+                isNew: false,
+            },
+            BingoEntryState.Idle
+        ];
     };
 
     onTentative = (entry: BingoEntry) => {  
@@ -119,12 +144,13 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                         return <Grid container item xs={12} spacing={1} key={row}>
                             {
                                 [...Array(this.state.columns).keys()].map(col => {
-                                    let entry = this.getEntry(row, col);
-                                    if (! entry)
+                                    let [cellEntry, cellState] = this.getCell(row, col);
+                                    if (! cellEntry)
                                     {
                                         return <Grid item xs key={this.state.nextKey + col + (row * this.state.columns)}>
                                             <BingoViewerEntry
                                                 config={new BingoEntry()}
+                                                state={BingoEntryState.Idle}
                                                 canInteract={false}
                                                 canConfirm={false}
                                                 onTentative={this.onTentative}
@@ -134,9 +160,10 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                     }
                                     else
                                     {
-                                        return <Grid item xs key={entry.key}>
+                                        return <Grid item xs key={cellEntry.key}>
                                             <BingoViewerEntry
-                                                config={entry}
+                                                config={cellEntry}
+                                                state={cellState}
                                                 canInteract={this.state.canVote}
                                                 canConfirm={this.state.canModerate}
                                                 onTentative={this.onTentative}

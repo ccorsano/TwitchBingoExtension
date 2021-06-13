@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TwitchBingoService.Model;
+using TwitchBingoService.Services;
 using TwitchBingoService.Storage;
 
 namespace TwitchBingoService.Controllers
@@ -15,103 +16,48 @@ namespace TwitchBingoService.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GameController : Controller
     {
-        private readonly IGameStorage _storage;
+        private readonly BingoService _gameService;
         private readonly ILogger _logger;
 
-        public GameController(IGameStorage storage, ILogger<GameController> logger)
+        public GameController(BingoService gameService, ILogger<GameController> logger)
         {
-            _storage = storage;
+            _gameService = gameService;
             _logger = logger;
         }
 
         [HttpPost("")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
-        public async Task<BingoGame> PostGame([FromBody] BingoGameCreationParams gameParams)
+        public Task<BingoGame> PostGame([FromBody] BingoGameCreationParams gameParams)
         {
-            var game = new BingoGame
-            {
-                gameId = Guid.NewGuid(),
-                entries = gameParams.entries,
-                rows = gameParams.rows,
-                columns = gameParams.columns,
-            };
-
-            await _storage.WriteGame(game);
-
-            return game;
+            return _gameService.CreateGame(gameParams);
         }
 
 
         [HttpGet("{gameId}/grid")]
-        public async Task<BingoGrid> GetGrid(Guid gameId)
+        public Task<BingoGrid> GetGrid(Guid gameId)
         {
-            var game = await _storage.ReadGame(gameId);
-            var seed = User.Identity.Name.GetHashCode() ^ gameId.GetHashCode();
-            var random = new Random(seed);
-
-            var cells = new List<BingoGridCell>();
-            var drawSet = game.entries.ToList();
-            for(ushort x = 0; x < game.columns; ++x)
-            {
-                for (ushort y = 0; y < game.rows; ++y)
-                {
-                    var index = random.Next(0, drawSet.Count);
-                    var entry = new BingoGridCell
-                    {
-                        row = y,
-                        col = x,
-                        key = drawSet[index].key
-                    };
-                }
-            }
-
-            return new BingoGrid
-            {
-                cells = cells.ToArray()
-            };
+            return _gameService.GetGrid(gameId, User.Identity.Name);
         }
 
         [HttpPost("{gameId}/{key}/tentative")]
-        public async Task<BingoTentative> PostTentativeAsync(Guid gameId, ushort key)
+        public Task<BingoTentative> PostTentative(Guid gameId, ushort key)
         {
-            var game = await _storage.ReadGame(gameId);
-            var entry = game.entries.First(e => e.key == key);
-
-            var tentative = new BingoTentative
-            {
-                playerId = User.Identity.Name,
-                confirmed = false,
-                entryKey = key,
-                tentativeTime = DateTime.UtcNow,
-            };
-            await _storage.WriteTentative(gameId, tentative);
-
-            return tentative;
+            return _gameService.AddTentative(gameId, key, User.Identity.Name);
         }
 
         [HttpPost("{gameId}/{key}/confirm")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
-        public async Task<BingoEntry> PostConfirmationAsync(Guid gameId, ushort key)
+        public Task<BingoEntry> PostConfirmation(Guid gameId, ushort key)
         {
-            var game = await _storage.ReadGame(gameId);
-            if (game == null)
+            try
             {
-                throw new ArgumentOutOfRangeException("gameId");
+                return _gameService.Confirm(gameId, key, User.Identity.Name);
             }
-
-            var entry = game.entries.First(e => e.key == key);
-            if (entry.confirmedAt != null)
+            catch(InvalidOperationException _)
             {
-                // Signal conflict
-                HttpContext.Response.StatusCode = 409;
-                throw new InvalidOperationException("Entry already confirmed");
+                Response.StatusCode = 409;
+                throw;
             }
-            entry.confirmedAt = DateTime.UtcNow;
-            entry.confirmedBy = User.Identity.Name;
-
-            await _storage.WriteGame(game);
-
-            return entry;
         }
     }
 }

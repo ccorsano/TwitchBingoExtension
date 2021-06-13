@@ -1,3 +1,5 @@
+import { BingoEntryState } from "../../model/BingoEntry";
+
 export interface BingoEntry {
     key: number;
     text: string;
@@ -23,4 +25,19 @@ export interface BingoTentative {
     entryKey: string;
     confirmed: boolean;
     tentativeTime: Date;
+}
+
+export interface BingoGridCell {
+    row: number;
+    col: number;
+    key: number;
+    state: BingoEntryState;
+}
+
+export interface BingoGrid {
+    gameId: string;
+    playerId: string;
+    cols: number;
+    rows: number;
+    cells: BingoGridCell[];
 }

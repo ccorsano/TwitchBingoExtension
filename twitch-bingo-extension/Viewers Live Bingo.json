@@ -104,9 +104,10 @@
       },
       "id": "4",
       "isPopout": false,
-      "label": "Viewer",
+      "label": "Player",
       "linked": false,
       "linkedUserId": "",
+      "opaqueId": "TestPlayerOID",
       "orientation": "Portrait",
       "type": "video_overlay",
       "viewerType": "Logged-In Viewer"

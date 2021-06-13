@@ -18,12 +18,16 @@ const useStyles = makeStyles({
         background: 'linear-gradient(45deg, rgba(223,255,50,0.8) 33%, rgba(151,255,124,0.8) 90%);',
     },
     missed: {
-        background: 'radial-gradient(45deg, rgba(195,195,195,0.80) 30%, rgba(205,205,205,0.90) 90%);',
+        background: 'linear-gradient(90deg, rgba(180,180,180,0.8) 30%, rgba(128,128,128,0.8) 90%);',
+    },
+    rejected: {
+        background: 'linear-gradient(90deg, rgba(224,129,129,0.8) 30%, rgba(227,79,79,0.8) 90%);',
     },
   });
 
 type BingoViewerEntryProps = {
     config: BingoEntry,
+    state: BingoEntryState,
     canInteract: boolean,
     canConfirm: boolean,
     onTentative: (entry: BingoEntry) => void,
@@ -32,19 +36,16 @@ type BingoViewerEntryProps = {
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     const classes = useStyles();
-    const [state, setState] = React.useState<BingoEntryState>(BingoEntryState.Idle);
 
     const handleTentative = (_event: React.MouseEvent<HTMLButtonElement>) => {
-        setState(BingoEntryState.Pending);
         props.onTentative(props.config);
     };
     const handleConfirm = (_event: React.MouseEvent<HTMLButtonElement>) => {
-        setState(BingoEntryState.Confirmed);
         props.onConfirm(props.config);
     };
 
     let stateClass = classes.idle;
-    switch(state)
+    switch(props.state)
     {
         case BingoEntryState.Confirmed:
             stateClass = classes.confirmed;
@@ -54,6 +55,9 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
             break;
         case BingoEntryState.Pending:
             stateClass = classes.pending;
+            break;
+        case BingoEntryState.Rejected:
+            stateClass = classes.rejected;
             break;
         default:
             break;

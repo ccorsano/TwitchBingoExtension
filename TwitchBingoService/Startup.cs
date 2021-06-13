@@ -16,6 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
+using TwitchBingoService.Configuration;
 using TwitchBingoService.Services;
 using TwitchBingoService.Storage;
 
@@ -35,6 +36,8 @@ namespace TwitchBingoService
         {
             services.AddHttpClient();
             services.AddSingleton<TwitchEBSService>();
+            services.AddSingleton<BingoService>();
+            services.AddOptions<BingoServiceOptions>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

@@ -23,5 +23,8 @@ namespace TwitchBingoService.Model
 
         [ProtoMember(5)]
         public Byte columns { get; set; }
+
+        [ProtoMember(6)]
+        public TimeSpan confirmationThreshold { get; set; }
     }
 }
