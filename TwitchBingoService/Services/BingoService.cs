@@ -13,12 +13,14 @@ namespace TwitchBingoService.Services
     public class BingoService
     {
         private readonly IGameStorage _storage;
+        private readonly TwitchEBSService _ebsService;
         private readonly BingoServiceOptions _options;
         private readonly ILogger _logger;
 
-        public BingoService(IGameStorage gameStorage, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
+        public BingoService(IGameStorage gameStorage, TwitchEBSService ebsService, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
         {
             _storage = gameStorage;
+            _ebsService = ebsService;
             _options = options.Value;
             _logger = logger;
         }
@@ -136,6 +138,7 @@ namespace TwitchBingoService.Services
                 tentativeTime = DateTime.UtcNow,
             };
             await _storage.WriteTentative(gameId, tentative);
+            await ProcessTentative(game, tentative, entry);
 
             return tentative;
         }
@@ -159,24 +162,54 @@ namespace TwitchBingoService.Services
 
             await _storage.WriteGame(game);
 
+            await ProcessTentatives(game, key);
+
             return entry;
         }
 
-        public async Task ProcessTentatives(Guid gameId, ushort key)
+        private async Task ProcessTentatives(BingoGame game, ushort key)
         {
-            var game = await _storage.ReadGame(gameId);
-            if (game == null)
-            {
-                throw new ArgumentOutOfRangeException("gameId");
-            }
             var entry = game.entries.FirstOrDefault(e => e.key == key);
             if (entry == null)
             {
                 throw new ArgumentOutOfRangeException("key");
             }
             var cutoff = entry.confirmedAt?.Add(game.confirmationThreshold) ?? DateTime.MaxValue;
-            var tentatives = _storage.ReadPendingTentatives(game.gameId, key, cutoff);
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, cutoff);
 
+            foreach (var tentative in tentatives)
+            {
+                await ProcessTentative(game, tentative, entry);
+            }
+        }
+
+        private async Task ProcessTentative(BingoGame game, BingoTentative tentative, BingoEntry entry)
+        {
+            var grid = await GetGrid(game.gameId, tentative.playerId);
+
+            var state = GetCellState(entry, tentative, game.confirmationThreshold);
+            if (state != BingoCellState.Confirmed)
+            {
+                return;
+            }
+
+            var cell = grid.cells.First(c => c.key == tentative.entryKey);
+            var isRowConfirmed = grid.cells.Where(c => c.row == cell.row).All(c => GetCellState(entry, tentative, game.confirmationThreshold) == BingoCellState.Confirmed);
+            var isColConfirmed = grid.cells.Where(c => c.col == cell.col).All(c => GetCellState(entry, tentative, game.confirmationThreshold) == BingoCellState.Confirmed);
+            var isGridConfirmed = isRowConfirmed && isColConfirmed && grid.cells.All(c => GetCellState(entry, tentative, game.confirmationThreshold) == BingoCellState.Confirmed);
+
+            if (isGridConfirmed || isRowConfirmed || isColConfirmed)
+            {
+                await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new {
+                    type = "bingo",
+                    payload = new
+                    {
+                        playerId = tentative.playerId,
+                        completion = isGridConfirmed ? "grid" : isRowConfirmed ? "row" : "col",
+                    }
+                }));
+                return;
+            }
         }
 
     }
