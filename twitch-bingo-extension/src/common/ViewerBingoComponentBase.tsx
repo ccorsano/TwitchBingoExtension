@@ -50,6 +50,9 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 case 'start':
                     this.onStart(message.payload);
                     break;
+                case 'bingo':
+                    console.log(messageStr);
+                    break;
                 default:
                     break;
             }
@@ -63,12 +66,12 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
     };
 
     onStart = (payload: any) => {
-        console.log("Received start for game:" + payload.gameId);
+        console.log("Received start for game:" + payload.activeGame.gameId);
 
-        BingoEBS.getGrid(payload.gameId).then(grid => {
+        BingoEBS.getGrid(payload.activeGame.gameId).then(grid => {
             
             this.setState({
-                gameId: payload.gameId,
+                gameId: payload.activeGame.gameId,
                 grid: grid,
                 isStarted: true,
             });
