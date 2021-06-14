@@ -9,15 +9,19 @@ WIP : Twitch Live Bingo
 ## Prerequisite
 - node 14.x (or 15.x)
 - yarn
-- .net 5 for the backend (unused at this point)
+- .net 5 for the backend
 
 ## Using Twitch developer rig
 - Install Twitch developer rig
 - Open the "Viewer Live Bingo.json" extension manifest
 - Run the frontend
+- Run the backend
 
 ## Altenatively
 ```
+cd TwitchBingoService
+dotnet watch run
+
 cd twitch-bingo-extension
 yarn start
 ```
