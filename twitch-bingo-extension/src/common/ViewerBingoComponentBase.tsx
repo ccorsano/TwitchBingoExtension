@@ -98,7 +98,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         });
         if (configContent?.activeGame)
         {
-            this.onStart(configContent.activeGame);
+            this.onStart(configContent);
         }
     };
 
