@@ -7,7 +7,6 @@ import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/Twit
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
 import { Twitch } from '../../services/TwitchService';
-// import { Twitch } from '../../services/TwitchService';
 
 type ConfigState = {
     nextKey: number,

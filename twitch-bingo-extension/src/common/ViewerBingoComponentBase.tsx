@@ -66,12 +66,13 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
     };
 
     onStart = (payload: any) => {
-        console.log("Received start for game:" + payload.activeGame.gameId);
+        console.log("Received start for game:" + payload.gameId);
 
-        BingoEBS.getGrid(payload.activeGame.gameId).then(grid => {
+        BingoEBS.getGrid(payload.gameId).then(grid => {
             
             this.setState({
-                gameId: payload.activeGame.gameId,
+                gameId: payload.gameId,
+                entries: payload.entries,
                 grid: grid,
                 isStarted: true,
             });
@@ -98,7 +99,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         });
         if (configContent?.activeGame)
         {
-            this.onStart(configContent);
+            this.onStart(configContent.activeGame);
         }
     };
 
