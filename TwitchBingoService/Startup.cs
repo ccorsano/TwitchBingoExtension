@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
 using TwitchBingoService.Configuration;
@@ -39,6 +40,11 @@ namespace TwitchBingoService
             services.AddSingleton<BingoService>();
             services.AddOptions<BingoServiceOptions>();
             services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
+
+            services.Configure<JsonSerializerOptions>(options =>
+            {
+                options.Converters.Add(new TimeSpanConverter());
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

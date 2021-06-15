@@ -46,17 +46,21 @@ namespace TwitchBingoService.Controllers
         }
 
         [HttpPost("{gameId}/{key}/confirm")]
+        [ProducesDefaultResponseType(typeof(BingoGame))]
+        [ProducesErrorResponseType(typeof(APIError))]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
-        public Task<BingoEntry> PostConfirmation(Guid gameId, ushort key)
+        public async Task<IActionResult> PostConfirmation(Guid gameId, ushort key)
         {
             try
             {
-                return _gameService.Confirm(gameId, key, User.Identity.Name);
+                return new ObjectResult(await _gameService.Confirm(gameId, key, User.Identity.Name));
             }
-            catch(InvalidOperationException)
+            catch(InvalidOperationException ex)
             {
-                Response.StatusCode = 409;
-                throw;
+                return new ConflictObjectResult(new APIError
+                {
+                    Error = ex.Message
+                });
             }
         }
     }
