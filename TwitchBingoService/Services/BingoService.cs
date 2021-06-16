@@ -25,11 +25,12 @@ namespace TwitchBingoService.Services
             _logger = logger;
         }
 
-        public async Task<BingoGame> CreateGame(BingoGameCreationParams gameParams)
+        public async Task<BingoGame> CreateGame(string channelId, BingoGameCreationParams gameParams)
         {
             var game = new BingoGame
             {
                 gameId = Guid.NewGuid(),
+                channelId = channelId,
                 entries = gameParams.entries,
                 rows = gameParams.rows,
                 columns = gameParams.columns,

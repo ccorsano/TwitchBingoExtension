@@ -29,7 +29,8 @@ namespace TwitchBingoService.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
         public Task<BingoGame> PostGame([FromBody] BingoGameCreationParams gameParams)
         {
-            return _gameService.CreateGame(gameParams);
+            var channelClaim = User.Claims.First(c => c.Type == "channel_id");
+            return _gameService.CreateGame(channelClaim.Value, gameParams);
         }
 
 
