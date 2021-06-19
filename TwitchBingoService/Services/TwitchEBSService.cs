@@ -19,18 +19,27 @@ namespace TwitchBingoService.Services
     {
         static readonly DateTimeOffset EPOCH = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
         private readonly TwitchOptions _options;
+        private readonly ILogger _logger;
         private HttpClient _twitchExtensionClient;
         private SigningCredentials _jwtSigningCredentials;
 
         public TwitchEBSService(IHttpClientFactory httpClientFactory, IOptions<TwitchOptions> options, ILogger<TwitchEBSService> logger)
         {
             _options = options.Value;
+            _logger = logger;
             _twitchExtensionClient = httpClientFactory.CreateClient("twitchExt");
             _twitchExtensionClient.BaseAddress = new Uri("https://api.twitch.tv/extensions/");
             _twitchExtensionClient.DefaultRequestHeaders.Add("Client-Id", _options.ClientId);
 
             var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_options.ExtensionSecret));
             _jwtSigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        }
+
+        public class TwitchExtError
+        {
+            public string error { get; set; }
+            public int status { get; set; }
+            public string message { get; set; }
         }
 
         public string GetUserJWTToken(string userId, string channelId, string role)
@@ -80,6 +89,11 @@ namespace TwitchBingoService.Services
             message.Content = content;
             message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
             var response = await _twitchExtensionClient.SendAsync(message);
+            if (! response.IsSuccessStatusCode)
+            {
+                var error  = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
+                _logger.LogError($"Could not broadcast message: {error.error} - {error.message} ({error.status})");
+            }
             response.EnsureSuccessStatusCode();
         }
 
