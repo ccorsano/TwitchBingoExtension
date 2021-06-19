@@ -29,7 +29,7 @@ namespace TwitchBingoService.Services
             _logger = logger;
             _twitchExtensionClient = httpClientFactory.CreateClient("twitchExt");
             _twitchExtensionClient.BaseAddress = new Uri("https://api.twitch.tv/extensions/");
-            _twitchExtensionClient.DefaultRequestHeaders.Add("Client-Id", _options.ClientId);
+            _twitchExtensionClient.DefaultRequestHeaders.Add("client-id", _options.ClientId);
 
             var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_options.ExtensionSecret));
             _jwtSigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -87,7 +87,7 @@ namespace TwitchBingoService.Services
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
             var message = new HttpRequestMessage(HttpMethod.Post, $"message/{channelId}");
             message.Content = content;
-            message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+            message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var response = await _twitchExtensionClient.SendAsync(message);
             if (! response.IsSuccessStatusCode)
             {
