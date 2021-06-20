@@ -92,7 +92,7 @@ namespace TwitchBingoService.Services
             if (! response.IsSuccessStatusCode)
             {
                 var error  = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
-                _logger.LogError($"Could not broadcast message: {error.error} - {error.message} ({error.status}) - {token}");
+                _logger.LogError($"Could not broadcast message: {error.error} - {error.message} ({error.status})");
             }
             response.EnsureSuccessStatusCode();
         }

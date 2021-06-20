@@ -12,5 +12,8 @@ namespace TwitchBingoService.Model
         public ushort rows { get; set; }
         public ushort cols { get; set; }
         public BingoGridCell[] cells { get; set; }
+        public bool isCompleted { get; set; }
+        public ushort[] completedRows { get; set; }
+        public ushort[] completedCols { get; set; }
     }
 }

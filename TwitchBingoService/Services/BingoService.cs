@@ -88,6 +88,10 @@ namespace TwitchBingoService.Services
 
             var cells = new List<BingoGridCell>();
             var drawSet = game.entries.ToList();
+            bool[] isRowCompleted = Enumerable.Range(0, game.rows).Select(x => true).ToArray();
+            bool[] isColCompleted = Enumerable.Range(0, game.columns).Select(x => true).ToArray();
+            bool isGridCompleted = true;
+
             for (ushort x = 0; x < game.columns; ++x)
             {
                 for (ushort y = 0; y < game.rows; ++y)
@@ -99,7 +103,7 @@ namespace TwitchBingoService.Services
                     };
                     if (drawSet.Count == 0)
                     {
-                        cell.key = -(y * game.columns) - x - 100;
+                        cell.key = (ushort) (ushort.MaxValue - ((y * game.columns) + x + 100));
                         cell.state = BingoCellState.Idle;
                     }
                     else
@@ -111,8 +115,29 @@ namespace TwitchBingoService.Services
 
                         cell.key = entry.key;
                         cell.state = GetCellState(entry, tentative, game.confirmationThreshold);
+
+                        isRowCompleted[y] &= cell.state == BingoCellState.Confirmed;
+                        isColCompleted[x] &= cell.state == BingoCellState.Confirmed;
+                        isGridCompleted &= cell.state == BingoCellState.Confirmed;
                     }
                     cells.Add(cell);
+                }
+            }
+
+            var completedRows = new List<ushort>();
+            for(ushort idx = 0; idx < game.rows; ++idx)
+            {
+                if (isRowCompleted[idx])
+                {
+                    completedRows.Add(idx);
+                }
+            }
+            var completedCols = new List<ushort>();
+            for (ushort idx = 0; idx < game.columns; ++idx)
+            {
+                if (isColCompleted[idx])
+                {
+                    completedCols.Add(idx);
                 }
             }
 
@@ -122,7 +147,10 @@ namespace TwitchBingoService.Services
                 playerId = playerId,
                 rows = game.rows,
                 cols = game.columns,
-                cells = cells.ToArray()
+                cells = cells.ToArray(),
+                completedCols = completedCols.ToArray(),
+                completedRows = completedRows.ToArray(),
+                isCompleted = isGridCompleted,
             };
         }
 
@@ -195,18 +223,17 @@ namespace TwitchBingoService.Services
             }
 
             var cell = grid.cells.First(c => c.key == tentative.entryKey);
-            var isRowConfirmed = grid.cells.Where(c => c.row == cell.row).All(c => GetCellState(entry, tentative, game.confirmationThreshold) == BingoCellState.Confirmed);
-            var isColConfirmed = grid.cells.Where(c => c.col == cell.col).All(c => GetCellState(entry, tentative, game.confirmationThreshold) == BingoCellState.Confirmed);
-            var isGridConfirmed = isRowConfirmed && isColConfirmed && grid.cells.All(c => GetCellState(entry, tentative, game.confirmationThreshold) == BingoCellState.Confirmed);
+            var isRowConfirmed = grid.completedRows.Contains(cell.row);
+            var isColConfirmed = grid.completedCols.Contains(cell.col);
 
-            if (isGridConfirmed || isRowConfirmed || isColConfirmed)
+            if (grid.isCompleted || isRowConfirmed || isColConfirmed)
             {
                 await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new {
                     type = "bingo",
                     payload = new
                     {
                         playerId = tentative.playerId,
-                        completion = isGridConfirmed ? "grid" : isRowConfirmed ? "row" : "col",
+                        completion = grid.isCompleted ? "grid" : isRowConfirmed ? "row" : "col",
                     }
                 }));
                 return;

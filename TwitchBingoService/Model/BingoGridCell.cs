@@ -18,7 +18,7 @@ namespace TwitchBingoService.Model
     {
         public UInt16 row { get; set; }
         public UInt16 col { get; set; }
-        public int key { get; set; }
+        public ushort key { get; set; }
         public BingoCellState state { get; set; }
     }
 }

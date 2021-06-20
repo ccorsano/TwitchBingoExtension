@@ -36,7 +36,7 @@ namespace TwitchBingoService.Storage
 
         public Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId)
         {
-            if (Tentatives.TryGetValue(playerId, out BingoTentative[] tentatives))
+            if (Tentatives.TryGetValue(GetTentativeKey(gameId, playerId), out BingoTentative[] tentatives))
             {
                 return Task.FromResult(tentatives);
             }
@@ -68,6 +68,9 @@ namespace TwitchBingoService.Storage
         public Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
             PendingTentatives.AddOrUpdate(gameId, new BingoTentative[] { tentative }, (key, existing) =>
+                existing.Where(e => tentative.entryKey != e.entryKey).Concat(new BingoTentative[] { tentative }).ToArray()
+            );
+            Tentatives.AddOrUpdate(GetTentativeKey(gameId, tentative.playerId), new BingoTentative[] { tentative }, (key, existing) =>
                 existing.Where(e => tentative.entryKey != e.entryKey).Concat(new BingoTentative[] { tentative }).ToArray()
             );
 
