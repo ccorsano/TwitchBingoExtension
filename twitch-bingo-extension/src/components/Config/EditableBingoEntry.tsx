@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Icon, IconButton, ListItem, ListItemText, TextField } from '@material-ui/core'
-import { Check, Delete } from '@material-ui/icons'
+import { AddCircleOutline, Check, Delete } from '@material-ui/icons'
 import { BingoEntry } from '../../model/BingoEntry';
 
 type EditableBingoEntryState = {
@@ -11,8 +11,10 @@ type EditableBingoEntryState = {
 
 type EditableBingoEntryProps = {
     item: BingoEntry,
+    selected: boolean,
     onDelete: ((entry: BingoEntry) => void),
     onChange: ((entry: BingoEntry) => void),
+    onSelect: ((entry: BingoEntry) => void),
 }
 
 export default class EditableBingoEntry extends React.Component<EditableBingoEntryProps, EditableBingoEntryState> {
@@ -113,16 +115,24 @@ export default class EditableBingoEntry extends React.Component<EditableBingoEnt
         else
         {
             return (
-                <ListItem button onClick={this.onClick}>
-                    <IconButton onClick={this.delete}>
-                        <Icon>
-                            <Delete />
-                        </Icon>
-                    </IconButton>
+                <ListItem button>
                     <ListItemText
                         primary={this.state.value}
+                        onClick={() => this.props.onSelect(this.props.item)}
                         onDoubleClick={this.onClick}
                     />
+                    {
+                        this.props.selected ? null : 
+                            <IconButton onClick={() => {
+                                    this.props.onSelect(this.props.item);
+                                    return false;
+                                }
+                            }>
+                                <Icon>
+                                    <AddCircleOutline />
+                                </Icon>
+                            </IconButton>
+                    }
                 </ListItem>
             )
         }

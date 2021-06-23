@@ -81,12 +81,8 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         });
     };
 
-    loadConfig = (broadcasterConfig: any) => {
-        console.log((window as any).Twitch.ext.configuration.broadcaster);
-        console.log(TwitchExtHelper.configuration.broadcaster);
+    loadConfig = (_broadcasterConfig: any) => {
         var extensionConfig = Twitch.configuration;
-        console.log(broadcasterConfig);
-        console.log(extensionConfig);
         if (! extensionConfig)
         {
             return;

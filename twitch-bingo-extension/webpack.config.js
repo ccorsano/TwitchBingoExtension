@@ -129,7 +129,10 @@ module.exports = (_env, argv) => {
         config.watchOptions = {
             aggregateTimeout: 1000
         };
-        plugins.push(new webpack.HotModuleReplacementPlugin())
+        config.cache = {
+            type: 'filesystem'
+        };
+        plugins.push(new webpack.HotModuleReplacementPlugin());
     }
 
     if (mode === 'production'){

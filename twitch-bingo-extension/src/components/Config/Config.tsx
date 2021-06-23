@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, Paper, Slider, Typography } from '@material-ui/core'
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, ListItem, ListItemText, Paper, Slider, Typography } from '@material-ui/core'
 import EditableBingoEntry from './EditableBingoEntry';
-import { AddCircleOutline, AssignmentReturned, CloudUploadOutlined } from '@material-ui/icons';
+import { AddCircleOutline, AssignmentReturned, CloudUploadOutlined, RemoveCircleOutline } from '@material-ui/icons';
 import { BingoEntry } from '../../model/BingoEntry';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
@@ -11,6 +11,7 @@ import { Twitch } from '../../services/TwitchService';
 type ConfigState = {
     nextKey: number,
     entries: BingoEntry[],
+    selectedEntries: number[],
     rows: number,
     columns: number,
     fileDownloadUrl: string,
@@ -21,6 +22,7 @@ export default class Config extends React.Component<any, ConfigState> {
     state: ConfigState = {
         nextKey: 0,
         entries: new Array(0),
+        selectedEntries: new Array(0),
         rows: 3,
         columns: 3,
         fileDownloadUrl: null,
@@ -58,6 +60,7 @@ export default class Config extends React.Component<any, ConfigState> {
         this.setState({
             nextKey: configContent?.nextKey ?? 0,
             entries: configContent?.entries ?? new Array(0),
+            selectedEntries: configContent?.selectedEntries ?? new Array(0),
             rows: configContent?.rows ?? 3,
             columns: configContent?.columns ?? 3,
         });
@@ -78,24 +81,48 @@ export default class Config extends React.Component<any, ConfigState> {
         TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
             nextKey: this.state.nextKey,
             entries: this.state.entries,
+            selectedEntries: this.state.selectedEntries,
             rows: this.state.rows,
             columns: this.state.columns,
         }));
         TwitchExtHelper.send('broadcast','application/json', {
             type: "set-config",
             payload: {
-                entries: this.state.entries,
+                entries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
             }
         });
     }
 
+    onAddToSelection = (entry: BingoEntry): void => {
+        if (! this.isSelected(entry))
+        {
+            this.setState({
+                selectedEntries: this.state.selectedEntries.concat(entry.key)
+            });
+        }
+    }
+
+    onRemoveFromSelection = (entry: BingoEntry): void => {
+        if (entry && this.isSelected(entry))
+        {
+            var index = this.state.selectedEntries.indexOf(entry.key);
+            this.state.selectedEntries.splice(index, 1);
+            this.forceUpdate();
+        }
+    }
+
     onStart = (): void => {
         BingoEBS.createGame({
             rows: this.state.rows,
             columns: this.state.columns,
-            entries: this.state.entries.map<EBSBingo.BingoEntry>((entry: BingoEntry) => {
+            entries: this.state.selectedEntries.map<EBSBingo.BingoEntry>((entryKey: number) => {
+                var entry:BingoEntry = this.state.entries.find(b => b.key == entryKey);
+                if (! entry)
+                {
+                    throw "Missing entry with key " + entryKey;
+                }
                 return {
                     key: entry.key,
                     text: entry.text,
@@ -110,7 +137,7 @@ export default class Config extends React.Component<any, ConfigState> {
             
             TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
                 nextKey: this.state.nextKey,
-                entries: this.state.entries,
+                entries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
                 activeGame: game,
@@ -123,7 +150,6 @@ export default class Config extends React.Component<any, ConfigState> {
     }
 
     onChangeEntry = (key: number, entry: BingoEntry): void => {
-        console.log("Changed Key: " + key);
         var index = this.state.entries.findIndex((entry) => { return entry.key == key; });
         if (index == -1){
             console.error("Could not find changed key " + key);
@@ -136,13 +162,11 @@ export default class Config extends React.Component<any, ConfigState> {
     }
 
     onDeleteEntry = (key: number): void => {
-        console.log("Deleting key: " + key);
         var index = this.state.entries.findIndex((entry) => { return entry.key == key; });
         if (index == -1){
             console.error("Could not find key " + key + " to delete");
             return;
         }
-        console.log("Deleting index: " + index);
         this.state.entries.splice(index, 1);
         this.setState({
             entries: this.state.entries
@@ -199,37 +223,65 @@ export default class Config extends React.Component<any, ConfigState> {
         });
     }
 
+    isSelected = (entry: BingoEntry): boolean => this.state.selectedEntries.some(b => b == entry.key);
+
+    canStart = (): boolean => this.state.selectedEntries.length >= this.state.rows * this.state.columns;
+
     render(){
         var rows = this.state.rows;
         var columns = this.state.columns;
 
-        var jsxElement: JSX.Element = null;
+        var sourceListElement: JSX.Element = null;
+        var targetListElement: JSX.Element = null;
         if (this.state.entries.length == 0)
         {
-            jsxElement = <Typography><em>No items in Bingo, go add some !</em></Typography>
+            sourceListElement = <Typography><em>No items in Bingo, go add some !</em></Typography>
         }
         else
         {
-            jsxElement = <List>
+            sourceListElement = <List>
                 {
                     this.state.entries.map(value => {
                         return <EditableBingoEntry
                                     key={value.key}
                                     item={value}
+                                    selected={this.isSelected(value)}
                                     onDelete={(_changedEntry) => this.onDeleteEntry(value.key)}
                                     onChange={(changedEntry) => this.onChangeEntry(value.key, changedEntry)}
+                                    onSelect={(changedEntry) => this.onAddToSelection(changedEntry)}
                                 />
                     })
                 }
                 </List>;
         }
+        if (this.state.selectedEntries.length == 0)
+        {
+            targetListElement = <Typography><em>No items selected</em></Typography>
+        }
+        else
+        {
+            targetListElement = <List>
+                {
+                    this.state.selectedEntries.map(key => {
+                        var entry:BingoEntry = this.state.entries.find(b => b.key == key);
+                        return <ListItem button onClick={() => this.onRemoveFromSelection(entry)}>
+                            <ListItemText
+                                primary={entry.text}
+                            />
+                            <IconButton onClick={() => this.onRemoveFromSelection(entry)}>
+                                <Icon>
+                                    <RemoveCircleOutline />
+                                </Icon>
+                            </IconButton>
+                        </ListItem>
+                    })
+                }
+            </List>;
+        }
 
         return [
             <Card>
-                <CardHeader title="Configure Bingo" />
-                <CardContent>
-                    { jsxElement }
-                </CardContent>
+                <CardHeader title="Library" subheader="Load or add all your bingo entries here."/>
                 <CardActions>
                     <input
                         ref={this.setTextInputRef}
@@ -253,6 +305,15 @@ export default class Config extends React.Component<any, ConfigState> {
                         </Icon>
                     </IconButton>
                 </CardActions>
+                <CardContent>
+                    { sourceListElement }
+                </CardContent>
+            </Card>,
+            <Card>
+                <CardHeader title="Selection" subheader="These are the bingo entries currently selected for the next game."/>
+                <CardContent>
+                    { targetListElement }
+                </CardContent>
             </Card>,
             <Card>
                 <CardHeader title="Configure Grid" />
@@ -285,13 +346,13 @@ export default class Config extends React.Component<any, ConfigState> {
                     />
                     <Grid container xs={12}>
                     {
-                        [...Array(rows).keys()].map(_ => {
+                        [...Array(rows).keys()].map(r => {
                             return <Grid container item xs={12} spacing={1}>
                                 {
-                                    [...Array(columns).keys()].map(_ => {
+                                    [...Array(columns).keys()].map(c => {
                                         return <Grid item xs>
                                             <Paper className="paper" elevation={3}>
-                                                <Box py={2} my={0.5}>
+                                                <Box py={2} my={0.5} bgcolor={ (r * columns + c) < this.state.selectedEntries.length ? "primary.main" : "text.disabled" }>
                                                     <Typography>
                                                         
                                                     </Typography>
@@ -309,7 +370,7 @@ export default class Config extends React.Component<any, ConfigState> {
                     <Button variant="contained" color="primary" onClick={this.onSave}>
                         Save
                     </Button>
-                    <Button variant="contained" color="primary" onClick={this.onStart}>
+                    <Button variant="contained" color="primary" onClick={this.onStart} disabled={!this.canStart()}>
                         Start
                     </Button>
                 </CardActions>

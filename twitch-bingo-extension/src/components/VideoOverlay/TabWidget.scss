@@ -1,0 +1,15 @@
+div.tabWidget
+{
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    background-color: whitesmoke;
+    padding-left: 0.2em;
+    padding-right: 1em;
+    height: 4rem;
+    width: 3rem;
+    cursor: pointer;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
