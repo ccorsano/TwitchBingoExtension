@@ -8,6 +8,6 @@ type VideoOverlayTabWidgetProps = {
 
 export default function VideoOverlayTabWidget(props: VideoOverlayTabWidgetProps) {
     return <div className="tabWidget" onClick={props.onClick}>
-        BINGO !
+        BINGO
     </div>
 }

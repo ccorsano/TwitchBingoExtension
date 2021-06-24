@@ -7,6 +7,7 @@ import { BingoEntry, BingoEntryState } from "../model/BingoEntry";
 const useStyles = makeStyles({
     paper: {
         background: 'linear-gradient(45deg, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.8) 100%);',
+        height: '95%',
     },
     idle: {
 
@@ -23,6 +24,18 @@ const useStyles = makeStyles({
     rejected: {
         background: 'linear-gradient(90deg, rgba(224,129,129,0.8) 30%, rgba(227,79,79,0.8) 90%);',
     },
+    colConfirmed: {
+        borderLeftStyle: 'solid',
+        borderLeftColor: 'black',
+        borderRightStyle: 'solid',
+        borderRightColor: 'black',
+    },
+    rowConfirmed: {
+        borderTopStyle: 'solid',
+        borderTopColor: 'black',
+        borderBottomStyle: 'solid',
+        borderBottomColor: 'black',
+    }
   });
 
 type BingoViewerEntryProps = {
@@ -30,6 +43,8 @@ type BingoViewerEntryProps = {
     state: BingoEntryState,
     canInteract: boolean,
     canConfirm: boolean,
+    isRowCompleted: boolean,
+    isColCompleted: boolean,
     onTentative: (entry: BingoEntry) => void,
     onConfirm: (entry: BingoEntry) => void,
 }
@@ -64,7 +79,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     }
 
     return (
-        <Paper elevation={3} className={clsx(classes.paper, stateClass)}>
+        <Paper elevation={3} className={clsx(classes.paper, stateClass, props.isColCompleted ? classes.colConfirmed : '', props.isRowCompleted ? classes.rowConfirmed : '')}>
             <Box py={3} my={0.5} px={2}>
                 <Typography>
                     {props.config.text}

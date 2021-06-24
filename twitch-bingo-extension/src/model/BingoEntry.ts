@@ -4,6 +4,14 @@ export class BingoEntry {
     public isNew: boolean;
 }
 
+export class BingoGridCell {
+    public row: number;
+    public col: number;
+    public key: number;
+    public text: string;
+    public state: BingoEntryState;
+}
+
 export enum BingoEntryState {
     Idle = 0,
     Pending = 1,

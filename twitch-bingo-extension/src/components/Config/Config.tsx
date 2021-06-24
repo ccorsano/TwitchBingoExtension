@@ -63,6 +63,7 @@ export default class Config extends React.Component<any, ConfigState> {
             selectedEntries: configContent?.selectedEntries ?? new Array(0),
             rows: configContent?.rows ?? 3,
             columns: configContent?.columns ?? 3,
+            gameId: configContent?.activeGame?.gameId,
         });
     }
 
@@ -88,7 +89,8 @@ export default class Config extends React.Component<any, ConfigState> {
         TwitchExtHelper.send('broadcast','application/json', {
             type: "set-config",
             payload: {
-                entries: this.state.selectedEntries,
+                entries: this.state.entries,
+                selectedEntries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
             }
@@ -137,7 +139,8 @@ export default class Config extends React.Component<any, ConfigState> {
             
             TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
                 nextKey: this.state.nextKey,
-                entries: this.state.selectedEntries,
+                entries: this.state.entries,
+                selectedEntries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
                 activeGame: game,
@@ -280,6 +283,21 @@ export default class Config extends React.Component<any, ConfigState> {
         }
 
         return [
+            <Card>
+                <CardHeader title="Status" />
+                <CardContent>
+                    {
+                        this.state.gameId != null ?
+                        <Typography>Active</Typography> :
+                        <Typography>Inactive</Typography>
+                    }
+                </CardContent>
+                <CardActions>
+                    {
+                        this.state.gameId ? <Button>Stop game</Button> : null
+                    }
+                </CardActions>
+            </Card>,
             <Card>
                 <CardHeader title="Library" subheader="Load or add all your bingo entries here."/>
                 <CardActions>
