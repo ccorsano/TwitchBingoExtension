@@ -130,5 +130,53 @@ namespace TwitchBingoServiceTests
 
             Assert.Equal(BingoCellState.Confirmed, cell_0_1_3.state);
         }
+
+        [Fact]
+        public async Task ConfirmRow()
+        {
+            var storage = new InMemoryGameStore();
+            var mockEBS = GetEBSService();
+            var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions());
+            var loggerFactory = new LoggerFactory();
+            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
+
+            var channelId = "123456";
+            var paramObject = GetParams(2, 3);
+
+            // Create game & get initial grid for player
+            var game = await gameService.CreateGame(channelId, paramObject);
+            var grid01 = await gameService.GetGrid(game.gameId, "Player01");
+            var cell_0_0 = grid01.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
+            var cell_0_1 = grid01.cells.FirstOrDefault(c => c.col == 1 && c.row == 0);
+            var cell_0_2 = grid01.cells.FirstOrDefault(c => c.col == 2 && c.row == 0);
+            // Add a tentative from player on cell 0,0
+            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
+            var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
+            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
+            Assert.False(tentative01.confirmed);
+            Assert.False(tentative02.confirmed);
+            Assert.False(tentative03.confirmed);
+
+            // Confirm entry from moderator
+            var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
+            var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
+            var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
+
+            // Get updated grid for player
+            var grid01_2 = await gameService.GetGrid(game.gameId, "Player01");
+            var cell_0_0_2 = grid01_2.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
+            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2.state);
+            Assert.All(grid01_2.cells.Where(c => c.row == 0), c =>
+            {
+                Assert.Equal(BingoCellState.Confirmed, c.state);
+            });
+            Assert.Contains<ushort>(0, grid01_2.completedRows);
+            Assert.DoesNotContain<ushort>(1, grid01_2.completedRows);
+            Assert.DoesNotContain<ushort>(0, grid01_2.completedCols);
+            Assert.DoesNotContain<ushort>(1, grid01_2.completedCols);
+            Assert.DoesNotContain<ushort>(2, grid01_2.completedCols);
+
+            Assert.False(grid01_2.isCompleted);
+        }
     }
 }

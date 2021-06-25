@@ -12,8 +12,10 @@ namespace TwitchBingoService.Storage
         private ConcurrentDictionary<Guid, BingoGame> Store = new ConcurrentDictionary<Guid, BingoGame>();
         private ConcurrentDictionary<Guid, BingoTentative[]> PendingTentatives = new ConcurrentDictionary<Guid, BingoTentative[]>();
         private ConcurrentDictionary<string, BingoTentative[]> Tentatives = new ConcurrentDictionary<string, BingoTentative[]>();
+        private ConcurrentDictionary<string, ConcurrentQueue<BingoNotification>> Notifications = new ConcurrentDictionary<string, ConcurrentQueue<BingoNotification>>();
 
         public string GetTentativeKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";
+        public string GetNotificationKey(Guid gameId, ushort key) => $"{gameId}:{key}";
 
         public Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -75,6 +77,28 @@ namespace TwitchBingoService.Storage
             );
 
             return Task.CompletedTask;
+        }
+
+        public Task QueueNotification(Guid gameId, ushort key, BingoNotification notification)
+        {
+            var queue = Notifications.GetOrAdd(GetNotificationKey(gameId, key), key => new ConcurrentQueue<BingoNotification>());
+            queue.Enqueue(notification);
+            return Task.CompletedTask;
+        }
+
+        public Task<BingoNotification[]> UnqueueNotifications(Guid gameId, ushort key)
+        {
+            if (!Notifications.Remove(GetNotificationKey(gameId, key), out ConcurrentQueue<BingoNotification> queue))
+            {
+                return Task.FromResult(new BingoNotification[0]);
+            }
+
+            var notifs = new List<BingoNotification>();
+            while(queue.TryDequeue(out BingoNotification notif))
+            {
+                notifs.Add(notif);
+            }
+            return Task.FromResult(notifs.ToArray());
         }
     }
 }

@@ -102,5 +102,26 @@ namespace TwitchBingoService.Services
             var contentStr = JsonSerializer.Serialize(payload);
             await BroadcastJson(channelId, contentStr);
         }
+
+        public async Task SendChatMessage(string channelId, string message, string version)
+        {
+            if (message.Length > 280)
+            {
+                throw new ArgumentOutOfRangeException("message", "Chat message must be 280 characters max");
+            }
+            var token = GetJWTToken(channelId);
+            var content = new StringContent(JsonSerializer.Serialize(new { text = message }), Encoding.UTF8, "application/json");
+            var httpMessage = new HttpRequestMessage(HttpMethod.Post, $"{_options.ClientId}/{version}/channels/{channelId}/chat");
+
+            httpMessage.Content = content;
+            httpMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var response = await _twitchExtensionClient.SendAsync(httpMessage);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
+                _logger.LogError($"Could not send chat message: {error.error} - {error.message} ({error.status})");
+            }
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

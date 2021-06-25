@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TwitchBingoService.Configuration;
 using TwitchBingoService.Model;
@@ -193,6 +194,11 @@ namespace TwitchBingoService.Services
 
             await ProcessTentatives(game, key);
 
+            var notification = Task.Delay(game.confirmationThreshold).ContinueWith(async t =>
+            {
+                await HandleNotifications(gameId, key);
+            });
+
             return entry;
         }
 
@@ -228,16 +234,96 @@ namespace TwitchBingoService.Services
 
             if (grid.isCompleted || isRowConfirmed || isColConfirmed)
             {
-                await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new {
-                    type = "bingo",
-                    payload = new
-                    {
-                        playerId = tentative.playerId,
-                        completion = grid.isCompleted ? "grid" : isRowConfirmed ? "row" : "col",
-                    }
-                }));
+                var notification = new BingoNotification
+                {
+                    key = cell.key,
+                    type = grid.isCompleted ? NotificationType.CompletedGrid : isRowConfirmed ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
+                    playerId = tentative.playerId,
+                };
+                await _storage.QueueNotification(game.gameId, tentative.entryKey, notification);
                 return;
             }
+        }
+
+        private async Task HandleNotifications(Guid gameId, ushort key)
+        {
+            _logger.LogInformation("Pushing notification for {gameId}, entry {key}", gameId, key);
+            var game = await _storage.ReadGame(gameId);
+            if (game == null)
+            {
+                throw new ArgumentOutOfRangeException("gameId");
+            }
+            var notifications = await _storage.UnqueueNotifications(gameId, key);
+
+            var colComplete = notifications.Where(n => n.type == NotificationType.CompletedColumn).Select(n => n.playerId).ToArray();
+            var rowComplete = notifications.Where(n => n.type == NotificationType.CompletedRow).Select(n => n.playerId).ToArray();
+            var gridComplete = notifications.Where(n => n.type == NotificationType.CompletedGrid).Select(n => n.playerId).ToArray();
+
+            await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+            {
+                type = "bingo",
+                payload = new
+                {
+                    gameId = gameId,
+                    key = key,
+                    colComplete = colComplete,
+                    rowComplete = rowComplete,
+                    gridComplete = gridComplete,
+                }
+            }));
+
+            var messageBuilder = new StringBuilder(140, 280);
+            messageBuilder.Append($"{game.entries.First(e => e.key == key).text} confirmed !");
+            if (gridComplete.Length > 0 && messageBuilder.Length < 200)
+            {
+                var playerIds = string.Join(",", gridComplete);
+                var bingoStr = " have a bingo !";
+                if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
+                {
+                    messageBuilder.Append(playerIds);
+                }
+                else
+                {
+                    messageBuilder.Append(gridComplete.Length);
+                    messageBuilder.Append(" players");
+                    messageBuilder.Append(bingoStr);
+                }
+                messageBuilder.Append(bingoStr);
+            }
+            if (rowComplete.Length > 0 && messageBuilder.Length < 200)
+            {
+                var playerIds = string.Join(",", rowComplete);
+                var bingoStr = " completed a row !";
+                if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
+                {
+                    messageBuilder.Append(playerIds);
+                }
+                else
+                {
+                    messageBuilder.Append(rowComplete.Length);
+                    messageBuilder.Append(" players");
+                    messageBuilder.Append(bingoStr);
+                }
+                messageBuilder.Append(bingoStr);
+            }
+            if (colComplete.Length > 0 && messageBuilder.Length < 200)
+            {
+                var playerIds = string.Join(",", colComplete);
+                var bingoStr = " completed a row !";
+                if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
+                {
+                    messageBuilder.Append(playerIds);
+                }
+                else
+                {
+                    messageBuilder.Append(colComplete.Length);
+                    messageBuilder.Append(" players");
+                    messageBuilder.Append(bingoStr);
+                }
+                messageBuilder.Append(bingoStr);
+            }
+
+            await _ebsService.SendChatMessage(game.channelId, messageBuilder.ToString(), _options.Version);
         }
 
     }

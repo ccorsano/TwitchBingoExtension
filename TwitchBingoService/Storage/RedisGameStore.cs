@@ -24,6 +24,7 @@ namespace TwitchBingoService.Storage
         private string GetGameKey(Guid gameId) => $"game:{gameId}";
         private string GetPendingTentativeKey(Guid gameId) => $"game:{gameId}:tentatives:pending";
         private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:tentatives:{playerId}";
+        private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{key}";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -120,6 +121,36 @@ namespace TwitchBingoService.Storage
                 tentatives.Add(ProtoBuf.Serializer.Deserialize<BingoTentative>(data));
             }
             return tentatives.ToArray();
+        }
+
+        public async Task QueueNotification(Guid gameId, ushort key, BingoNotification notification)
+        {
+            var db = _connection.GetDatabase();
+
+            var buffer = ArrayPool<byte>.Shared.Rent(256);
+            using (var stream = new MemoryStream(buffer))
+            {
+                ProtoBuf.Serializer.Serialize(stream, notification);
+                stream.Flush();
+                var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
+                await db.ListRightPushAsync(GetNotificationsKey(gameId, key), serializedTentative);
+            }
+        }
+
+        public async Task<BingoNotification[]> UnqueueNotifications(Guid gameId, ushort key)
+        {
+            var db = _connection.GetDatabase();
+            var notifications = new List<BingoNotification>();
+            RedisValue notifRedisValue = default;
+            do
+            {
+                notifRedisValue = await db.ListLeftPopAsync(GetNotificationsKey(gameId, key));
+                var data = (ReadOnlyMemory<byte>)notifRedisValue;
+                notifications.Add(ProtoBuf.Serializer.Deserialize<BingoNotification>(data));
+            }
+            while (notifRedisValue.HasValue);
+
+            return notifications.ToArray();
         }
     }
 }
