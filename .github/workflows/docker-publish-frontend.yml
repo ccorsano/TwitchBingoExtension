@@ -21,7 +21,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ./TwitchBingo.sln
       - name: Build
-        run: dotnet build --no-restore ./BlipBloopBot.sln
+        run: dotnet build --no-restore ./TwitchBingo.sln
       - name: Test
         run: dotnet test --no-build --verbosity normal ./TwitchBingo.sln
       - name: Coverlet
