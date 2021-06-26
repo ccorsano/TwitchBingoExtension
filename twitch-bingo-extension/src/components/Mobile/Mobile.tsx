@@ -16,6 +16,7 @@ export default class Mobile extends ViewerBingoComponentBase<MobileProps, Mobile
         canModerate: false,
         canVote: false,
         isStarted: false,
+        pendingResults: new Array(0),
     }
 
     constructor(props: any){

@@ -1,8 +1,10 @@
-import { Box, Button, Paper, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, Paper, Typography } from "@material-ui/core";
 import React from "react";
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import { BingoEntry, BingoEntryState } from "../model/BingoEntry";
+import { BingoEntryState } from "../model/BingoEntry";
+import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import { BingoEntry } from "../EBS/BingoService/EBSBingoTypes";
 
 const useStyles = makeStyles({
     paper: {
@@ -47,10 +49,39 @@ type BingoViewerEntryProps = {
     isColCompleted: boolean,
     onTentative: (entry: BingoEntry) => void,
     onConfirm: (entry: BingoEntry) => void,
+    countdown?: Date,
+}
+
+const renderTime = ({remainingTime}) => {
+    return `${remainingTime}`;
 }
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     const classes = useStyles();
+    console.log("BingoViewerEntry ! countdown: " + props.countdown);
+
+    var showTimer: boolean = props.countdown != null;
+    var timerComponent: React.ReactElement = null;
+    if (showTimer)
+    {
+        var duration = props.countdown.getTime() - Date.now();
+        console.log("Updating cell with timer: " + duration)
+        if (duration > 0)
+        {
+            timerComponent = <CountdownCircleTimer
+                isPlaying
+                size={50}
+                strokeWidth={3}
+                colors="#FFFFFF"
+                duration={duration}
+                children={renderTime}
+            />
+        }
+        else
+        {
+            timerComponent = <CircularProgress/>
+        }
+    }
 
     const handleTentative = (_event: React.MouseEvent<HTMLButtonElement>) => {
         props.onTentative(props.config);
@@ -84,6 +115,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 <Typography>
                     {props.config.text}
                 </Typography>
+                { timerComponent }
                 { props.canInteract ? <Button onClick={handleTentative}>Bingo !</Button> : null}
                 { props.canConfirm ? <Button onClick={handleConfirm}>Confirm</Button> : null}
             </Box>

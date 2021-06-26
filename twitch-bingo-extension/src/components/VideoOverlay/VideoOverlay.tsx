@@ -22,6 +22,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         canModerate: false,
         canVote: false,
         isStarted: false,
+        pendingResults: new Array(0),
     }
 
     constructor(props: VideoOverlayProps){

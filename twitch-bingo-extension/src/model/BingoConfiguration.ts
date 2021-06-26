@@ -1,5 +1,5 @@
-import { BingoEntry } from "./BingoEntry";
+import { BingoEditableEntry } from "./BingoEntry";
 
 export type BingoConfiguration = {
-    entries: BingoEntry[]
+    entries: BingoEditableEntry[]
 }

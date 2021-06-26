@@ -2,15 +2,16 @@ import * as React from 'react';
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, ListItem, ListItemText, Paper, Slider, Typography } from '@material-ui/core'
 import EditableBingoEntry from './EditableBingoEntry';
 import { AddCircleOutline, AssignmentReturned, CloudUploadOutlined, RemoveCircleOutline } from '@material-ui/icons';
-import { BingoEntry } from '../../model/BingoEntry';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
 import { Twitch } from '../../services/TwitchService';
+import { BingoEntry } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoEditableEntry } from '../../model/BingoEntry';
 
 type ConfigState = {
     nextKey: number,
-    entries: BingoEntry[],
+    entries: BingoEditableEntry[],
     selectedEntries: number[],
     rows: number,
     columns: number,
@@ -68,7 +69,7 @@ export default class Config extends React.Component<any, ConfigState> {
     }
 
     onAdd = (): void => {
-        var newEntry = new BingoEntry();
+        var newEntry = new BingoEditableEntry();
         newEntry.text = "";
         newEntry.isNew = true;
         newEntry.key = this.state.nextKey;
@@ -152,7 +153,7 @@ export default class Config extends React.Component<any, ConfigState> {
         });
     }
 
-    onChangeEntry = (key: number, entry: BingoEntry): void => {
+    onChangeEntry = (key: number, entry: BingoEditableEntry): void => {
         var index = this.state.entries.findIndex((entry) => { return entry.key == key; });
         if (index == -1){
             console.error("Could not find changed key " + key);
@@ -195,11 +196,11 @@ export default class Config extends React.Component<any, ConfigState> {
             var content = ev.target.result as string;
             console.log(content);
 
-            var entries:BingoEntry[] = new Array(0);
+            var entries:BingoEditableEntry[] = new Array(0);
             var nextKey = this.state.nextKey;
 
             content.split('\n').forEach(line => {
-                var newEntry = new BingoEntry();
+                var newEntry = new BingoEditableEntry();
                 newEntry.text = line;
                 newEntry.isNew = false;
                 newEntry.key = nextKey++;

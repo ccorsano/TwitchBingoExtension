@@ -1,11 +1,11 @@
 import { Box, Grid, LinearProgress, Paper, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
-import { BingoEntry, BingoEntryState, BingoGridCell } from '../model/BingoEntry';
+import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/BingoEntry';
 import BingoViewerEntry from './BingoViewerEntry';
 import { BingoEBS } from '../EBS/BingoService/EBSBingoService';
 import { Twitch } from '../services/TwitchService';
-import { BingoGrid } from '../EBS/BingoService/EBSBingoTypes';
+import { BingoEntry, BingoGame, BingoGrid, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
 
 export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
@@ -15,7 +15,9 @@ export type ViewerBingoComponentBaseState = {
     canModerate: boolean,
     canVote: boolean,
     gameId?: string,
+    activeGame?: BingoGame,
     grid?: BingoGrid,
+    pendingResults: BingoPendingResult[],
 }
 
 export type ViewerBingoComponentBaseProps = {
@@ -29,6 +31,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         isStarted: false,
         canModerate: false,
         canVote: false,
+        pendingResults: new Array(0),
     };
 
     constructor(props: PropType){
@@ -45,6 +48,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                         entries: message.payload.entries,
                         rows: message.payload.rows,
                         columns: message.payload.columns,
+                        activeGame: message.payload.activeGame,
                     });
                     break;
                 case 'start':
@@ -65,21 +69,24 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         });
     };
 
-    onStart = (payload: any) => {
+    onStart = (payload: BingoGame) => {
         console.log("Received start for game:" + payload.gameId);
+        this.refreshGrid(payload, payload.entries);
+    };
 
-        BingoEBS.getGrid(payload.gameId).then(grid => {
-            
+    refreshGrid = (game: BingoGame, entries: BingoEntry[]) => {
+        BingoEBS.getGrid(game.gameId).then(grid => {
             this.setState({
-                gameId: payload.gameId,
-                entries: payload.entries,
+                gameId: game.gameId,
+                entries: entries,
                 grid: grid,
                 isStarted: true,
+                activeGame: game,
             });
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
         });
-    };
+    }
 
     loadConfig = (_broadcasterConfig: any) => {
         var extensionConfig = Twitch.configuration;
@@ -91,7 +98,8 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         this.setState({
             entries: configContent?.entries ?? new Array(0),
             rows: configContent?.rows ?? 3,
-            columns: configContent?.columns ?? 3
+            columns: configContent?.columns ?? 3,
+            activeGame: configContent?.activeGame,
         });
         if (configContent?.activeGame)
         {
@@ -100,14 +108,18 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
     };
 
     getCell = (row: number, col: number): [BingoGridCell,BingoEntry] => {
-        var cellResult = this.state.grid.cells.filter(c => c.row == row && c.col == col);
+        var state = this.state as ViewerBingoComponentBaseState;
+
+        var cellResult = state.grid.cells.filter(c => c.row == row && c.col == col);
         if (cellResult.length == 1)
         {
             var cell = cellResult[0];
-            var entryResult = this.state.entries.filter(e => e.key == cell.key);
+            var entryResult = state.entries.filter(e => e.key == cell.key);
             if (entryResult.length == 1)
             {
                 var entry = entryResult[0];
+                var pending: BingoPendingResult = state.pendingResults.find(p => p.key == cell.key);
+                console.log("Pending result for key " + cell.key + " : " + pending);
                 return [
                     {
                         row: row,
@@ -115,6 +127,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                         key: entry.key,
                         text: entry.text,
                         state: cell.state,
+                        timer: pending?.expireAt,
                     },
                     entry
                 ];
@@ -124,9 +137,10 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             {
                 row: row,
                 col: col,
-                key: -(col + (row * this.state.columns)) - 1,
+                key: -(col + (row * state.columns)) - 1,
                 text: "",
                 state: BingoEntryState.Idle,
+                timer: null,
             },
             null
         ];
@@ -142,6 +156,30 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
 
     onTentative = (entry: BingoEntry) => {  
         BingoEBS.tentative(this.state.gameId, entry.key.toString());
+        var grid: BingoGrid = this.state.grid;
+        var cellIndex = grid.cells.findIndex(c => c.key == entry.key);
+        grid.cells[cellIndex].state = BingoEntryState.Pending;
+        var pendingResults:BingoPendingResult[] = this.state.pendingResults.filter(p => p.key != entry.key);
+
+        var confirmationTimeout = ParseTimespan((this.state as ViewerBingoComponentBaseState).activeGame.confirmationThreshold) + 1;
+
+        pendingResults.push({
+            key: entry.key,
+            expireAt: new Date(Date.now() + confirmationTimeout),
+        });
+        this.setState({
+            grid: grid,
+            pendingResults: pendingResults,
+        });
+        setTimeout(() => {
+            console.log("onTentative, refreshing grid after timeout");
+            var pendingResults:BingoPendingResult[] = this.state.pendingResults.filter(p => p.key != entry.key);
+            this.setState({
+                pendingResults: pendingResults
+            });
+            this.refreshGrid(this.state.gameId, this.state.entries);
+        }, confirmationTimeout*1000);
+        console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
     };
 
     onConfirm = (entry: BingoEntry) => {
@@ -161,9 +199,10 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                     let [cell, entry] = this.getCell(row, col);
                                     if (! entry)
                                     {
-                                        return <Grid item xs key={this.state.nextKey + col + (row * this.state.columns)}>
+                                        var key = this.state.nextKey + col + (row * this.state.columns);
+                                        return <Grid item xs key={key}>
                                             <BingoViewerEntry
-                                                config={new BingoEntry()}
+                                                config={{key: key, text: ""}}
                                                 state={BingoEntryState.Idle}
                                                 canInteract={false}
                                                 canConfirm={false}
@@ -180,10 +219,11 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                             <BingoViewerEntry
                                                 config={entry}
                                                 state={cell.state}
-                                                canInteract={this.state.canVote}
+                                                canInteract={this.state.canVote && cell.state == BingoEntryState.Idle}
                                                 canConfirm={this.state.canModerate}
                                                 isColCompleted={isColComplete}
                                                 isRowCompleted={isRowComplete}
+                                                countdown={cell.timer}
                                                 onTentative={this.onTentative}
                                                 onConfirm={this.onConfirm}
                                             />
