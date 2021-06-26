@@ -212,7 +212,18 @@ namespace TwitchBingoService.Services
             var cutoff = entry.confirmedAt?.Add(game.confirmationThreshold) ?? DateTime.MaxValue;
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, cutoff);
 
-            foreach (var tentative in tentatives)
+            var earliestTentatives = from t in tentatives
+                       group t by t.playerId into perPlayer
+                       select new BingoTentative
+                       {
+                           playerId = perPlayer.Key,
+                           tentativeTime = perPlayer.Min(t => t.tentativeTime),
+                           entryKey = perPlayer.First().entryKey,
+                           confirmed = perPlayer.Max(t => t.confirmed)
+                       };
+
+
+            foreach (var tentative in earliestTentatives)
             {
                 await ProcessTentative(game, tentative, entry);
             }
@@ -222,7 +233,7 @@ namespace TwitchBingoService.Services
         {
             var grid = await GetGrid(game.gameId, tentative.playerId);
 
-            var state = GetCellState(entry, tentative, game.confirmationThreshold);
+            BingoCellState state = GetCellState(entry, tentative, game.confirmationThreshold);
             if (state != BingoCellState.Confirmed)
             {
                 return;
@@ -323,7 +334,7 @@ namespace TwitchBingoService.Services
                 messageBuilder.Append(bingoStr);
             }
 
-            await _ebsService.SendChatMessage(game.channelId, messageBuilder.ToString(), _options.Version);
+            await _ebsService.TrySendChatMessage(game.channelId, messageBuilder.ToString(), _options.Version);
         }
 
     }

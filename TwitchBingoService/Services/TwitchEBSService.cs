@@ -75,6 +75,18 @@ namespace TwitchBingoService.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public string GetChatJWTToken(string channelId)
+        {
+            var exp = DateTimeOffset.UtcNow - EPOCH;
+
+            var token = new JwtSecurityToken(null, null, null, null, DateTime.UtcNow.AddDays(1), _jwtSigningCredentials);
+            token.Payload["channel_id"] = channelId;
+            token.Payload["user_id"] = channelId;
+            token.Payload["role"] = "external";
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
         public async Task BroadcastJson(string channelId, string jsonPayload)
         {
             var token = GetJWTToken(channelId);
@@ -103,13 +115,15 @@ namespace TwitchBingoService.Services
             await BroadcastJson(channelId, contentStr);
         }
 
-        public async Task SendChatMessage(string channelId, string message, string version)
+        private async Task<bool> SendChatMessageInternal(string channelId, string message, string version, bool throwOnError)
         {
             if (message.Length > 280)
             {
                 throw new ArgumentOutOfRangeException("message", "Chat message must be 280 characters max");
             }
-            var token = GetJWTToken(channelId);
+            _logger.LogInformation("Sending chat message for {channelId}: {message}", channelId, message);
+
+            var token = GetChatJWTToken(channelId);
             var content = new StringContent(JsonSerializer.Serialize(new { text = message }), Encoding.UTF8, "application/json");
             var httpMessage = new HttpRequestMessage(HttpMethod.Post, $"{_options.ClientId}/{version}/channels/{channelId}/chat");
 
@@ -121,7 +135,17 @@ namespace TwitchBingoService.Services
                 var error = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
                 _logger.LogError($"Could not send chat message: {error.error} - {error.message} ({error.status})");
             }
-            response.EnsureSuccessStatusCode();
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task SendChatMessage(string channelId, string message, string version)
+        {
+            await SendChatMessageInternal(channelId, message, version, throwOnError: true);
+        }
+
+        public Task<bool> TrySendChatMessage(string channelId, string message, string version)
+        {
+            return SendChatMessageInternal(channelId, message, version, throwOnError: false);
         }
     }
 }
