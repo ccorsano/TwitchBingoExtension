@@ -20,6 +20,8 @@ jobs:
           dotnet-version: 5.0.x
       - name: Restore dependencies
         run: dotnet restore ./TwitchBingo.sln
+      - name: Build
+        run: dotnet build --no-restore ./BlipBloopBot.sln
       - name: Test
         run: dotnet test --no-build --verbosity normal ./TwitchBingo.sln
       - name: Coverlet
