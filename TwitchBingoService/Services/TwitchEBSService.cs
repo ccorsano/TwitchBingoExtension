@@ -87,14 +87,36 @@ namespace TwitchBingoService.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task BroadcastJson(string channelId, string jsonPayload)
+        public Task WhisperJson(string channelId, string[] userIds, object payload)
+        {
+            var jsonPayload = JsonSerializer.Serialize(payload);
+            return BroadcastExtensionJson(channelId, userIds, jsonPayload);
+        }
+
+        public Task WhisperJson(string channelId, string[] userIds, string jsonPayload)
+        {
+            return BroadcastExtensionJson(channelId, userIds, jsonPayload);
+        }
+
+        public Task BroadcastJson(string channelId, string jsonPayload)
+        {
+            return BroadcastExtensionJson(channelId, new string[] { "broadcast" }, jsonPayload);
+        }
+
+        public async Task BroadcastJson(string channelId, object payload)
+        {
+            var contentStr = JsonSerializer.Serialize(payload);
+            await BroadcastJson(channelId, contentStr);
+        }
+
+        public async Task BroadcastExtensionJson(string channelId, string[] targets, string jsonPayload)
         {
             var token = GetJWTToken(channelId);
             var requestBody = new
             {
                 content_type = "application/json",
                 message = jsonPayload,
-                targets = new string[] { "broadcast" },
+                targets = targets,
             };
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
             var message = new HttpRequestMessage(HttpMethod.Post, $"message/{channelId}");
@@ -107,12 +129,6 @@ namespace TwitchBingoService.Services
                 _logger.LogError($"Could not broadcast message: {error.error} - {error.message} ({error.status})");
             }
             response.EnsureSuccessStatusCode();
-        }
-
-        public async Task BroadcastJson(string channelId, object payload)
-        {
-            var contentStr = JsonSerializer.Serialize(payload);
-            await BroadcastJson(channelId, contentStr);
         }
 
         private async Task<bool> SendChatMessageInternal(string channelId, string message, string version, bool throwOnError)

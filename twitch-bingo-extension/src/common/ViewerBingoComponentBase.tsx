@@ -5,7 +5,7 @@ import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/Bin
 import BingoViewerEntry from './BingoViewerEntry';
 import { BingoEBS } from '../EBS/BingoService/EBSBingoService';
 import { Twitch } from '../services/TwitchService';
-import { BingoEntry, BingoGame, BingoGrid, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
+import { BingoEntry, BingoGame, BingoGrid, BingoTentativeNotification, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
 
 export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
@@ -65,6 +65,19 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             this.setState({
                 canModerate: TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator',
                 canVote: TwitchExtHelper.viewer.role != 'external',
+            });
+
+            console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.id}`);
+            TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.id, (_target, _contentType, messageStr) => {
+                let message = JSON.parse(messageStr);
+                switch (message.type) {
+                    case 'tentative':
+                        var notification = message.payload as BingoTentativeNotification;
+                        console.log(`Tentative notification for ${notification.key} ar ${notification.tentativeTime}`);
+                        break;
+                    default:
+                        break;
+                }
             });
         });
     };

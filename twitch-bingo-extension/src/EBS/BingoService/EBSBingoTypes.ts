@@ -43,6 +43,12 @@ export interface BingoGrid {
     cells: BingoGridCell[];
 }
 
+export interface BingoTentativeNotification {
+    gameId: string;
+    key: number;
+    tentativeTime: Date;
+}
+
 const TimeSpanRegexp = (/^(-?)((\d+)\.)?(\d{2}):(\d{2}):(\d{2})(\.(\d{7}))?$/);
 export function ParseTimespan(timeSpan: string): number
 {

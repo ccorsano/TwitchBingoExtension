@@ -43,6 +43,19 @@ namespace TwitchBingoService.Services
             return game;
         }
 
+        public async Task RegisterModerator(Guid gameId, string playerId)
+        {
+            var game = await _storage.ReadGame(gameId);
+            if (game.moderators?.Contains(playerId) ?? false)
+            {
+                return;
+            }
+
+            game.moderators = game.moderators?.Append(playerId)?.ToArray() ?? new string[] { playerId };
+
+            await _storage.WriteGame(game);
+        }
+
         private BingoCellState GetCellState(BingoEntry gameEntry, BingoTentative tentative, TimeSpan threshold)
         {
             // Entry has been confirmed
@@ -212,6 +225,24 @@ namespace TwitchBingoService.Services
             var cutoff = entry.confirmedAt?.Add(game.confirmationThreshold) ?? DateTime.MaxValue;
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, cutoff);
 
+            Task moderationTask = Task.CompletedTask;
+            if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
+            {
+                _logger.LogInformation($"Sending tentative notification to {string.Join(",", game.moderators)}");
+                moderationTask = _ebsService.WhisperJson(game.channelId, game.moderators,
+                    new
+                    {
+                        type = "tentative",
+                        payload = new
+                        {
+                            gameId = game.gameId,
+                            key = key,
+                            tentativeTime = tentatives.First().tentativeTime,
+                        }
+                    }
+                );
+            }
+
             var earliestTentatives = from t in tentatives
                        group t by t.playerId into perPlayer
                        select new BingoTentative
@@ -227,6 +258,7 @@ namespace TwitchBingoService.Services
             {
                 await ProcessTentative(game, tentative, entry);
             }
+            await moderationTask;
         }
 
         private async Task ProcessTentative(BingoGame game, BingoTentative tentative, BingoEntry entry)

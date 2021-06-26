@@ -33,11 +33,14 @@ namespace TwitchBingoService.Controllers
             return _gameService.CreateGame(channelClaim.Value, gameParams);
         }
 
-
         [HttpGet("{gameId}/grid")]
-        public Task<BingoGrid> GetGrid(Guid gameId)
+        public async Task<BingoGrid> GetGrid(Guid gameId)
         {
-            return _gameService.GetGrid(gameId, User.Identity.Name);
+            if (User.IsInRole("moderator") || User.IsInRole("broadcaster"))
+            {
+                await _gameService.RegisterModerator(gameId, User.Identity.Name);
+            }
+            return await _gameService.GetGrid(gameId, User.Identity.Name);
         }
 
         [HttpPost("{gameId}/{key}/tentative")]

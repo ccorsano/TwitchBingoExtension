@@ -29,5 +29,9 @@ namespace TwitchBingoService.Model
         [ProtoMember(6)]
         [JsonConverter(typeof(TimeSpanConverter))]
         public TimeSpan confirmationThreshold { get; set; }
+
+        [ProtoMember(7)]
+        [JsonIgnore]
+        public string[] moderators { get; set; }
     }
 }
