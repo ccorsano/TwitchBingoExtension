@@ -41,11 +41,6 @@ namespace TwitchBingoService
             services.AddOptions<BingoServiceOptions>();
             services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
 
-            services.Configure<JsonSerializerOptions>(options =>
-            {
-                options.Converters.Add(new TimeSpanConverter());
-            });
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

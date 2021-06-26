@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using TwitchBingoService.Configuration;
 
 namespace TwitchBingoService.Model
 {
@@ -25,6 +27,7 @@ namespace TwitchBingoService.Model
         public Byte columns { get; set; }
 
         [ProtoMember(6)]
+        [JsonConverter(typeof(TimeSpanConverter))]
         public TimeSpan confirmationThreshold { get; set; }
     }
 }
