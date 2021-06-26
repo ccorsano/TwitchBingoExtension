@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon, IconButton, ListItem, ListItemText, TextField } from '@material-ui/core'
 import { AddCircleOutline, Check, Delete } from '@material-ui/icons'
-import { BingoEntry } from '../../model/BingoEntry';
+import { BingoEditableEntry } from '../../model/BingoEntry';
 
 type EditableBingoEntryState = {
     isEditing: boolean,
@@ -10,11 +10,11 @@ type EditableBingoEntryState = {
 }
 
 type EditableBingoEntryProps = {
-    item: BingoEntry,
+    item: BingoEditableEntry,
     selected: boolean,
-    onDelete: ((entry: BingoEntry) => void),
-    onChange: ((entry: BingoEntry) => void),
-    onSelect: ((entry: BingoEntry) => void),
+    onDelete: ((entry: BingoEditableEntry) => void),
+    onChange: ((entry: BingoEditableEntry) => void),
+    onSelect: ((entry: BingoEditableEntry) => void),
 }
 
 export default class EditableBingoEntry extends React.Component<EditableBingoEntryProps, EditableBingoEntryState> {
