@@ -10,8 +10,32 @@ env:
   IMAGE_NAME: twitch-bingo-ebs
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Restore dependencies
+        run: dotnet restore ./TwitchBingo.sln
+      - name: Test
+        run: dotnet test --no-build --verbosity normal ./TwitchBingo.sln
+      - name: Coverlet
+        uses: b3b00/coverlet-action@1.1.0
+        with:
+          testProject: 'TwitchBingoServiceTests/TwitchBingoServiceTests.csproj'
+          output: 'lcov.info'
+          outputFormat: 'lcov'
+      - name: Coverall
+        uses: coverallsapp/github-action@v1.1.1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN }} 
+          path-to-lcov: ${{steps.Coverlet.outputs.coverageFile}} 
   docker-push:
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
       - uses: actions/checkout@v2
 
