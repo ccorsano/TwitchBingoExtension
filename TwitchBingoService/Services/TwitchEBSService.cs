@@ -69,7 +69,7 @@ namespace TwitchBingoService.Services
             token.Payload["pubsub_perms"] = new
             {
                 listen = new string[] { "broadcast" },
-                send = new string[] { "broadcast", "global" }
+                send = new string[] { "all" }
             };
 
             return new JwtSecurityTokenHandler().WriteToken(token);

@@ -46,7 +46,7 @@ namespace TwitchBingoService.Services
         public async Task RegisterModerator(Guid gameId, string playerId)
         {
             var game = await _storage.ReadGame(gameId);
-            if (game.moderators?.Contains(playerId) ?? false)
+            if (game?.moderators?.Contains(playerId) ?? false)
             {
                 return;
             }
