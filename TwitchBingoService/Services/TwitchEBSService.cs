@@ -87,20 +87,20 @@ namespace TwitchBingoService.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public Task WhisperJson(string channelId, string[] userIds, object payload)
+        public Task<bool> TryWhisperJson(string channelId, string[] userIds, object payload)
         {
             var jsonPayload = JsonSerializer.Serialize(payload);
-            return BroadcastExtensionJson(channelId, userIds, jsonPayload);
+            return BroadcastExtensionJson(channelId, userIds, jsonPayload, false);
         }
 
-        public Task WhisperJson(string channelId, string[] userIds, string jsonPayload)
+        public Task<bool> TryWhisperJson(string channelId, string[] userIds, string jsonPayload)
         {
-            return BroadcastExtensionJson(channelId, userIds, jsonPayload);
+            return BroadcastExtensionJson(channelId, userIds, jsonPayload, false);
         }
 
         public Task BroadcastJson(string channelId, string jsonPayload)
         {
-            return BroadcastExtensionJson(channelId, new string[] { "broadcast" }, jsonPayload);
+            return BroadcastExtensionJson(channelId, new string[] { "broadcast" }, jsonPayload, true);
         }
 
         public async Task BroadcastJson(string channelId, object payload)
@@ -109,7 +109,7 @@ namespace TwitchBingoService.Services
             await BroadcastJson(channelId, contentStr);
         }
 
-        public async Task BroadcastExtensionJson(string channelId, string[] targets, string jsonPayload)
+        public async Task<bool> BroadcastExtensionJson(string channelId, string[] targets, string jsonPayload, bool throwOnError)
         {
             var token = GetJWTToken(channelId);
             var requestBody = new
@@ -128,7 +128,11 @@ namespace TwitchBingoService.Services
                 var error  = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
                 _logger.LogError($"Could not broadcast message: {error.error} - {error.message} ({error.status})");
             }
-            response.EnsureSuccessStatusCode();
+            if (throwOnError)
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            return response.IsSuccessStatusCode;
         }
 
         private async Task<bool> SendChatMessageInternal(string channelId, string message, string version, bool throwOnError)

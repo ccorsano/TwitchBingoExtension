@@ -67,7 +67,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 canVote: TwitchExtHelper.viewer.role != 'external',
             });
 
-            console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.id}`);
+            console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
             TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.id, (_target, _contentType, messageStr) => {
                 let message = JSON.parse(messageStr);
                 switch (message.type) {

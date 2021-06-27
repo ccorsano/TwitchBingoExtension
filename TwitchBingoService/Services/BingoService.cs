@@ -43,15 +43,15 @@ namespace TwitchBingoService.Services
             return game;
         }
 
-        public async Task RegisterModerator(Guid gameId, string playerId)
+        public async Task RegisterModerator(Guid gameId, string opaqueId)
         {
             var game = await _storage.ReadGame(gameId);
-            if (game?.moderators?.Contains(playerId) ?? false)
+            if (game?.moderators?.Contains(opaqueId) ?? false)
             {
                 return;
             }
 
-            game.moderators = game.moderators?.Append(playerId)?.ToArray() ?? new string[] { playerId };
+            game.moderators = game.moderators?.Append(opaqueId)?.ToArray() ?? new string[] { opaqueId };
 
             await _storage.WriteGame(game);
         }
@@ -229,7 +229,7 @@ namespace TwitchBingoService.Services
             if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
             {
                 _logger.LogInformation($"Sending tentative notification to {string.Join(",", game.moderators)}");
-                moderationTask = _ebsService.WhisperJson(game.channelId, game.moderators,
+                moderationTask = _ebsService.TryWhisperJson(game.channelId, game.moderators,
                     new
                     {
                         type = "tentative",
