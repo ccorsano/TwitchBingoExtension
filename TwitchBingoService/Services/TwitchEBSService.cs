@@ -69,7 +69,7 @@ namespace TwitchBingoService.Services
             token.Payload["pubsub_perms"] = new
             {
                 listen = new string[] { "broadcast" },
-                send = new string[] { "all" }
+                send = new string[] { "*" }
             };
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -89,13 +89,14 @@ namespace TwitchBingoService.Services
 
         public Task<bool> TryWhisperJson(string channelId, string[] userIds, object payload)
         {
+            // https://discord.com/channels/504015559252377601/523676096277905419/776561330110857236
             var jsonPayload = JsonSerializer.Serialize(payload);
-            return BroadcastExtensionJson(channelId, userIds, jsonPayload, false);
+            return TryWhisperJson(channelId, userIds, jsonPayload);
         }
 
         public Task<bool> TryWhisperJson(string channelId, string[] userIds, string jsonPayload)
         {
-            return BroadcastExtensionJson(channelId, userIds, jsonPayload, false);
+            return BroadcastExtensionJson(channelId, userIds.Select(t => "whisper-" + t).ToArray(), jsonPayload, false);
         }
 
         public Task BroadcastJson(string channelId, string jsonPayload)
