@@ -68,7 +68,8 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             });
 
             console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
-            TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.id, (_target, _contentType, messageStr) => {
+            TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, (_target, _contentType, messageStr) => {
+                console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
                 let message = JSON.parse(messageStr);
                 switch (message.type) {
                     case 'tentative':
