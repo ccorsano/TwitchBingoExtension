@@ -225,24 +225,6 @@ namespace TwitchBingoService.Services
             var cutoff = entry.confirmedAt?.Add(game.confirmationThreshold) ?? DateTime.MaxValue;
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, cutoff);
 
-            Task moderationTask = Task.CompletedTask;
-            if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
-            {
-                _logger.LogInformation($"Sending tentative notification to {string.Join(",", game.moderators)}");
-                moderationTask = _ebsService.TryWhisperJson(game.channelId, game.moderators,
-                    new
-                    {
-                        type = "tentative",
-                        payload = new
-                        {
-                            gameId = game.gameId,
-                            key = key,
-                            tentativeTime = tentatives.First().tentativeTime,
-                        }
-                    }
-                );
-            }
-
             var earliestTentatives = from t in tentatives
                        group t by t.playerId into perPlayer
                        select new BingoTentative
@@ -253,12 +235,10 @@ namespace TwitchBingoService.Services
                            confirmed = perPlayer.Max(t => t.confirmed)
                        };
 
-
             foreach (var tentative in earliestTentatives)
             {
                 await ProcessTentative(game, tentative, entry);
             }
-            await moderationTask;
         }
 
         private async Task ProcessTentative(BingoGame game, BingoTentative tentative, BingoEntry entry)
@@ -285,6 +265,27 @@ namespace TwitchBingoService.Services
                 };
                 await _storage.QueueNotification(game.gameId, tentative.entryKey, notification);
                 return;
+            }
+
+            var cutoff = tentative.tentativeTime.Add(game.confirmationThreshold);
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, cutoff);
+
+            Task moderationTask = Task.CompletedTask;
+            if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
+            {
+                _logger.LogInformation($"Sending tentative notification to {string.Join(",", game.moderators)}");
+                await _ebsService.TryWhisperJson(game.channelId, game.moderators,
+                    new
+                    {
+                        type = "tentative",
+                        payload = new
+                        {
+                            gameId = game.gameId,
+                            key = tentative.entryKey,
+                            tentativeTime = tentatives.First().tentativeTime,
+                        }
+                    }
+                );
             }
         }
 
