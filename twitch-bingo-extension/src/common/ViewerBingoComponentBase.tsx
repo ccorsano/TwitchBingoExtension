@@ -1,4 +1,4 @@
-import { Box, Grid, LinearProgress, Paper, Typography } from '@material-ui/core';
+import { Box, Grid, LinearProgress, Paper } from '@material-ui/core';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/BingoEntry';
@@ -18,9 +18,11 @@ export type ViewerBingoComponentBaseState = {
     activeGame?: BingoGame,
     grid?: BingoGrid,
     pendingResults: BingoPendingResult[],
+    moderationDrawerOpen: boolean,
 }
 
 export type ViewerBingoComponentBaseProps = {
+    onReceiveGame?: (game: BingoGame) => void,
 }
 
 export default class ViewerBingoComponentBase<PropType extends ViewerBingoComponentBaseProps, StateType extends ViewerBingoComponentBaseState> extends React.Component<PropType & ViewerBingoComponentBaseProps, StateType & ViewerBingoComponentBaseState> {
@@ -32,6 +34,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         canModerate: false,
         canVote: false,
         pendingResults: new Array(0),
+        moderationDrawerOpen: false,
     };
 
     constructor(props: PropType){
@@ -118,6 +121,10 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         if (configContent?.activeGame)
         {
             this.onStart(configContent.activeGame);
+            if (this.props.onReceiveGame)
+            {
+                this.props.onReceiveGame(configContent.activeGame);
+            }
         }
     };
 
@@ -196,10 +203,6 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
     };
 
-    onConfirm = (entry: BingoEntry) => {
-        BingoEBS.confirm(this.state.gameId, entry.key.toString());
-    };
-
     renderGrid(){
         return (
             <Grid container className="bingoGrid">
@@ -223,7 +226,6 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                                 isColCompleted={isColComplete}
                                                 isRowCompleted={isRowComplete}
                                                 onTentative={this.onTentative}
-                                                onConfirm={this.onConfirm}
                                             />
                                         </Grid>
                                     }
@@ -239,7 +241,6 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                                 isRowCompleted={isRowComplete}
                                                 countdown={cell.timer}
                                                 onTentative={this.onTentative}
-                                                onConfirm={this.onConfirm}
                                             />
                                         </Grid>
                                     }
@@ -253,9 +254,6 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
 
     render(){
         return [
-            <Paper>
-                <Typography>{this.state.canModerate ? "Moderator" : (this.state.canVote ? "Player" : "Lurker")}</Typography>
-            </Paper>,
             <Box my={12} mx={2}>
             {
                 this.state.isStarted ? this.renderGrid() : <Paper><LinearProgress /></Paper>

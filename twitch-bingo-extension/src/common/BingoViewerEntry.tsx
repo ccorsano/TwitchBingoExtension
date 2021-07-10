@@ -48,7 +48,6 @@ type BingoViewerEntryProps = {
     isRowCompleted: boolean,
     isColCompleted: boolean,
     onTentative: (entry: BingoEntry) => void,
-    onConfirm: (entry: BingoEntry) => void,
     countdown?: Date,
 }
 
@@ -86,9 +85,6 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     const handleTentative = (_event: React.MouseEvent<HTMLButtonElement>) => {
         props.onTentative(props.config);
     };
-    const handleConfirm = (_event: React.MouseEvent<HTMLButtonElement>) => {
-        props.onConfirm(props.config);
-    };
 
     let stateClass = classes.idle;
     switch(props.state)
@@ -117,7 +113,6 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 </Typography>
                 { timerComponent }
                 { props.canInteract ? <Button onClick={handleTentative}>Bingo !</Button> : null}
-                { props.canConfirm ? <Button onClick={handleConfirm}>Confirm</Button> : null}
             </Box>
         </Paper>
     )

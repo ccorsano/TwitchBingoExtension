@@ -13,3 +13,9 @@ div.tabWidget
     justify-content: center;
     align-items: center;
 }
+
+div.tabWidget > img
+{
+    height: 3rem;
+    width: 3rem;
+}
