@@ -10,6 +10,7 @@ import { TwitchExtHelper } from "./TwitchExtension"
 type ModerationBingoComponentProps = {
     entries: BingoEntry[],
     isStarted: boolean,
+    gameId: string,
     confirmationTimeout: number,
     onReceiveTentative?: (tentative: BingoTentativeNotification) => void,
 }
@@ -41,8 +42,9 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
     });
 
     var onConfirm = (entry: BingoEntry) => {
-        BingoEBS.confirm(this.state.gameId, entry.key.toString());
-        setTentatives(tentatives.filter(t => t.key != entry.key));
+        BingoEBS.confirm(props.gameId, entry.key.toString()).then(() => {
+            setTentatives(tentatives.filter(t => t.key != entry.key));
+        });
     };
 
     var onTentativeExpire = (entry: BingoEntry) => {

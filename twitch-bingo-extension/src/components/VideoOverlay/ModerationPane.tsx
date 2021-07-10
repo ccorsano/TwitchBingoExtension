@@ -10,6 +10,7 @@ type ModerationPaneProps = {
     onClose: (e: React.MouseEvent<any>) => void,
     entries: BingoEntry[],
     isStarted: boolean,
+    gameId: string,
     confirmationTimeout: number,
 }
 
@@ -27,6 +28,7 @@ export default function ModerationPane(props: ModerationPaneProps)
                 <ModerationBingoComponent
                     entries={props.entries}
                     isStarted={props.isStarted}
+                    gameId={props.gameId}
                     confirmationTimeout={props.confirmationTimeout}
                     onReceiveTentative={() => props.onOpen() } />
             </Drawer>

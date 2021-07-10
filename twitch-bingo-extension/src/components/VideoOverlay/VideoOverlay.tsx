@@ -47,6 +47,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                     entries={this.state.entries}
                     onOpen={() => {this.setState({moderationDrawerOpen: true})}}
                     onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
+                    gameId={this.state.activeGame?.gameId}
                     confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")} />
             )
         }
