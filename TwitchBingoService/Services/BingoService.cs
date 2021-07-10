@@ -54,6 +54,8 @@ namespace TwitchBingoService.Services
             game.moderators = game.moderators?.Append(opaqueId)?.ToArray() ?? new string[] { opaqueId };
 
             await _storage.WriteGame(game);
+
+            _logger.LogWarning("Moderators in game {gameId} of channel {channelId}: {moderators}", game.gameId, game.channelId, string.Join(',', game.moderators));
         }
 
         private BingoCellState GetCellState(BingoEntry gameEntry, BingoTentative tentative, TimeSpan threshold)
@@ -271,9 +273,9 @@ namespace TwitchBingoService.Services
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, cutoff);
 
             Task moderationTask = Task.CompletedTask;
-            if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
+            if (/*tentatives.Length == 1 &&*/ (game.moderators?.Any() ?? false))
             {
-                _logger.LogInformation($"Sending tentative notification to {string.Join(",", game.moderators)}");
+                _logger.LogWarning($"Sending tentative notification to {string.Join(",", game.moderators)}");
                 await _ebsService.TryWhisperJson(game.channelId, game.moderators,
                     new
                     {
