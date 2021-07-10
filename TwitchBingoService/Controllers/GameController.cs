@@ -62,6 +62,7 @@ namespace TwitchBingoService.Controllers
             }
             catch(InvalidOperationException ex)
             {
+                _logger.LogError(ex, "Error in confirmation of game {gameId} for key {key} by player {playerName}", gameId, key, User.Identity.Name);
                 return new ConflictObjectResult(new APIError
                 {
                     Error = ex.Message

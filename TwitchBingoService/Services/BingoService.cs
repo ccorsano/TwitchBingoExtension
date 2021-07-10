@@ -253,22 +253,6 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            var cell = grid.cells.First(c => c.key == tentative.entryKey);
-            var isRowConfirmed = grid.completedRows.Contains(cell.row);
-            var isColConfirmed = grid.completedCols.Contains(cell.col);
-
-            if (grid.isCompleted || isRowConfirmed || isColConfirmed)
-            {
-                var notification = new BingoNotification
-                {
-                    key = cell.key,
-                    type = grid.isCompleted ? NotificationType.CompletedGrid : isRowConfirmed ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
-                    playerId = tentative.playerId,
-                };
-                await _storage.QueueNotification(game.gameId, tentative.entryKey, notification);
-                return;
-            }
-
             var cutoff = tentative.tentativeTime.Add(game.confirmationThreshold);
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, cutoff);
 
@@ -288,6 +272,22 @@ namespace TwitchBingoService.Services
                         }
                     }
                 );
+            }
+
+            var cell = grid.cells.First(c => c.key == tentative.entryKey);
+            var isRowConfirmed = grid.completedRows.Contains(cell.row);
+            var isColConfirmed = grid.completedCols.Contains(cell.col);
+
+            if (grid.isCompleted || isRowConfirmed || isColConfirmed)
+            {
+                var notification = new BingoNotification
+                {
+                    key = cell.key,
+                    type = grid.isCompleted ? NotificationType.CompletedGrid : isRowConfirmed ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
+                    playerId = tentative.playerId,
+                };
+                await _storage.QueueNotification(game.gameId, tentative.entryKey, notification);
+                return;
             }
         }
 
