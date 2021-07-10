@@ -86,7 +86,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         });
     };
 
-    onStart = (payload: BingoGame) => {
+    onStart(payload: BingoGame) {
         console.log("Received start for game:" + payload.gameId);
         this.refreshGrid(payload, payload.entries);
     };

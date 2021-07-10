@@ -21,7 +21,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
             <List>
                 {
                     props.tentatives.map((tentative) => {
-                        if (tentative.key)
+                        if (tentative)
                         {
                             var entry: BingoEntry = props.entries.find(e => e.key == tentative.key);
 
@@ -43,8 +43,6 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
             <List>
                 {
                     props.entries.map((entry) => {
-                        if (entry.key)
-
                         return (
                             <ListItem key={entry.key}>
                                 <ListItemText primary={entry.text} />

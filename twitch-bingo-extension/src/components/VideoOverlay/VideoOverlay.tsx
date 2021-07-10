@@ -2,7 +2,7 @@ import { Box, Grid } from '@material-ui/core';
 import React from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
-import { ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoGame, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
 import ModerationPane from './ModerationPane';
 import VideoOverlayTabWidget from './TabWidget';
 require('./VideoOverlay.scss');
@@ -35,6 +35,11 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
     componentDidMount() {
         super.componentDidMount();
     }
+
+    onStart(payload: BingoGame) {
+        super.onStart(payload);
+        this.setState({entries : payload.entries});
+    };
 
     render(){
         var moderationDrawer: JSX.Element = null;
