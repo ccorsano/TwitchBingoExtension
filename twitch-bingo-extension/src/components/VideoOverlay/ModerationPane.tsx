@@ -28,7 +28,13 @@ export default function ModerationPane(props: ModerationPaneProps)
             console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
             TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, (_target, _contentType, messageStr) => {
                 console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
-                let message = JSON.parse(messageStr);
+                let message = JSON.parse(messageStr, (key, value) => {
+                    if (key == "tentativeTime")
+                    {
+                        return new Date(value);
+                    }
+                    return value;
+                });
                 switch (message.type) {
                     case 'tentative':
                         var notification = message.payload as BingoTentativeNotification;
