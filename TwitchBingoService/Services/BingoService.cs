@@ -268,7 +268,7 @@ namespace TwitchBingoService.Services
                         {
                             gameId = game.gameId,
                             key = tentative.entryKey,
-                            tentativeTime = tentatives.First().tentativeTime,
+                            tentativeTime = tentatives.FirstOrDefault()?.tentativeTime ?? tentative.tentativeTime,
                         }
                     }
                 );
