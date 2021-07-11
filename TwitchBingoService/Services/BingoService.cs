@@ -46,6 +46,10 @@ namespace TwitchBingoService.Services
         public async Task RegisterModerator(Guid gameId, string opaqueId)
         {
             var game = await _storage.ReadGame(gameId);
+            if (game == null)
+            {
+                throw new ArgumentOutOfRangeException("gameId");
+            }
             if (game?.moderators?.Contains(opaqueId) ?? false)
             {
                 return;
@@ -225,7 +229,7 @@ namespace TwitchBingoService.Services
                 throw new ArgumentOutOfRangeException("key");
             }
             var cutoff = entry.confirmedAt?.Add(game.confirmationThreshold) ?? DateTime.MaxValue;
-            var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, cutoff);
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, key);
 
             var earliestTentatives = from t in tentatives
                        group t by t.playerId into perPlayer
@@ -254,7 +258,7 @@ namespace TwitchBingoService.Services
             }
 
             var cutoff = tentative.tentativeTime.Add(game.confirmationThreshold);
-            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, cutoff);
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey);
 
             Task moderationTask = Task.CompletedTask;
             if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))

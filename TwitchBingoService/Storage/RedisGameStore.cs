@@ -22,9 +22,9 @@ namespace TwitchBingoService.Storage
         }
 
         private string GetGameKey(Guid gameId) => $"game:{gameId}";
-        private string GetPendingTentativeKey(Guid gameId) => $"game:{gameId}:tentatives:pending";
+        private string GetPendingTentativeKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:tentatives:pending";
         private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:tentatives:{playerId}";
-        private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{key}";
+        private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{gameId}:{key}";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -66,38 +66,28 @@ namespace TwitchBingoService.Storage
                 ProtoBuf.Serializer.Serialize(stream, tentative);
                 stream.Flush();
                 var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
-                await db.ListRightPushAsync(GetPendingTentativeKey(gameId), serializedTentative);
+                await db.ListRightPushAsync(GetPendingTentativeKey(gameId, tentative.entryKey), serializedTentative);
                 await db.HashSetAsync(GetTentativeKey(gameId, tentative.playerId), (int) tentative.entryKey, serializedTentative);
             }
         }
 
-        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime cutoff)
+        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key)
         {
-            _logger.LogInformation("Read bingo game {gameId} tentatives for all players", gameId);
+            const long batchSize = 1;
+
+            _logger.LogInformation("Read bingo game {gameId} tentatives for key {key}", gameId, key);
 
             var db = _connection.GetDatabase();
-            var listKey = GetPendingTentativeKey(gameId);
+            var listKey = GetPendingTentativeKey(gameId, key);
 
-            RedisValue value = await db.ListLeftPopAsync(listKey);
-            var requeue = new List<RedisValue>();
             var tentatives = new List<BingoTentative>();
-
-            while(value.HasValue)
+            var index = 0;
+            RedisValue[] results = null;
+            while(index == 0 || results?.Length == batchSize)
             {
-                var tentative = ProtoBuf.Serializer.Deserialize<BingoTentative>(value);
-                if (tentative.tentativeTime < cutoff && tentative.entryKey != key)
-                {
-                    requeue.Add(value);
-                }
-                else
-                {
-                    tentatives.Add(tentative);
-                }
-
-                value = await db.ListLeftPopAsync(GetPendingTentativeKey(gameId));
+                results = await db.ListRangeAsync(listKey, index, index + batchSize);
+                tentatives.AddRange(results.Select(r => ProtoBuf.Serializer.Deserialize<BingoTentative>(r)));
             }
-
-            await db.ListRightPushAsync(listKey, requeue.ToArray());
 
             return tentatives.ToArray();
         }
