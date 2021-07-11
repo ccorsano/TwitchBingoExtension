@@ -21,10 +21,10 @@ namespace TwitchBingoService.Storage
             _logger = logger;
         }
 
-        private string GetGameKey(Guid gameId) => $"game:{gameId}";
-        private string GetPendingTentativeKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:tentatives:pending";
-        private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:tentatives:{playerId}";
-        private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{gameId}:{key}";
+        private string GetGameKey(Guid gameId) => $"game:{gameId}:def";
+        private string GetPendingTentativeKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:pending";
+        private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:{playerId}:tentatives";
+        private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:notifications";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
