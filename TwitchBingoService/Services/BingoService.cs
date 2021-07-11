@@ -248,7 +248,7 @@ namespace TwitchBingoService.Services
             var grid = await GetGrid(game.gameId, tentative.playerId);
 
             BingoCellState state = GetCellState(entry, tentative, game.confirmationThreshold);
-            if (state != BingoCellState.Confirmed)
+            if (state == BingoCellState.Missed || state == BingoCellState.Rejected)
             {
                 return;
             }
@@ -257,7 +257,7 @@ namespace TwitchBingoService.Services
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, cutoff);
 
             Task moderationTask = Task.CompletedTask;
-            if (/*tentatives.Length == 1 &&*/ (game.moderators?.Any() ?? false))
+            if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
             {
                 _logger.LogWarning($"Sending tentative notification to {string.Join(",", game.moderators)}");
                 await _ebsService.TryWhisperJson(game.channelId, game.moderators,
@@ -272,6 +272,11 @@ namespace TwitchBingoService.Services
                         }
                     }
                 );
+            }
+
+            if (state != BingoCellState.Confirmed)
+            {
+                return;
             }
 
             var cell = grid.cells.First(c => c.key == tentative.entryKey);
