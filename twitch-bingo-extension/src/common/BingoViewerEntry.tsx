@@ -57,14 +57,14 @@ const renderTime = ({remainingTime}) => {
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     const classes = useStyles();
-    console.log("BingoViewerEntry ! countdown: " + props.countdown);
+    console.log("BingoViewerEntry " +  props.config.key + " countdown: " + props.countdown?.getTime() + "now: " + Date.now());
 
     var showTimer: boolean = props.countdown != null;
     var timerComponent: React.ReactElement = null;
     if (showTimer)
     {
-        var duration = props.countdown.getTime() - Date.now();
-        console.log("Updating cell with timer: " + duration)
+        var duration = (props.countdown.getTime() - Date.now()) / 1000;
+        console.log("Updating cell " + props.config.key + " with timer: " + duration)
         if (duration > 0)
         {
             timerComponent = <CountdownCircleTimer

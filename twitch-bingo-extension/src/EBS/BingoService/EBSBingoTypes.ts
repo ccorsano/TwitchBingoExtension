@@ -58,7 +58,8 @@ export function ParseTimespan(timeSpan: string): number
     var hours = Number.parseInt(result[4]);
     var minutes = Number.parseInt(result[5]);
     var secondes = Number.parseInt(result[6]);
-    var microseconds = result[8] === undefined ? 0 : Number.parseInt(result[8]);
+    var nanoseconds = result[8] === undefined ? 0 : Number.parseInt(result[8]);
 
-    return (isNegative ? -1 : 1) * ((days * 3600 * 24) + (hours * 3600) + (minutes * 60) + secondes + (microseconds/10000000));
+    // Calculate in seconds, then convert to microseconds and add remaining microseconds
+    return (isNegative ? -1 : 1) * (((days * 3600 * 24) + (hours * 3600) + (minutes * 60) + secondes) * 1000 + (nanoseconds/10000));
 }
