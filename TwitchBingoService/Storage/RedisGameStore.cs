@@ -83,10 +83,11 @@ namespace TwitchBingoService.Storage
             var tentatives = new List<BingoTentative>();
             var index = 0;
             RedisValue[] results = null;
-            while(index == 0 || results?.Length == batchSize)
+            while(results == null || results?.Length == batchSize)
             {
                 results = await db.ListRangeAsync(listKey, index, index + batchSize);
                 tentatives.AddRange(results.Select(r => ProtoBuf.Serializer.Deserialize<BingoTentative>(r)));
+                index += results.Length;
             }
 
             return tentatives.ToArray();
