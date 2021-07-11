@@ -46,7 +46,7 @@ namespace TwitchBingoService.Storage
             _logger.LogInformation("Save bingo game {gameId}", bingoGame.gameId);
 
             var db = _connection.GetDatabase();
-            var buffer = ArrayPool<byte>.Shared.Rent(512);
+            var buffer = ArrayPool<byte>.Shared.Rent(4096);
             using (var stream = new MemoryStream(buffer))
             {
                 ProtoBuf.Serializer.Serialize(stream, bingoGame);
@@ -60,7 +60,7 @@ namespace TwitchBingoService.Storage
             _logger.LogInformation("Save bingo game {gameId} tentatives for player.", gameId, tentative?.playerId);
 
             var db = _connection.GetDatabase();
-            var buffer = ArrayPool<byte>.Shared.Rent(512);
+            var buffer = ArrayPool<byte>.Shared.Rent(256);
             using (var stream = new MemoryStream(buffer))
             {
                 ProtoBuf.Serializer.Serialize(stream, tentative);

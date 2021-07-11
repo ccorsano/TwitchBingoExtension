@@ -47,7 +47,9 @@ namespace TwitchBingoService.Controllers
         [HttpPost("{gameId}/{key}/tentative")]
         public Task<BingoTentative> PostTentative(Guid gameId, ushort key)
         {
-            return _gameService.AddTentative(gameId, key, User.Identity.Name);
+            var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value ?? opaqueId;
+            return _gameService.AddTentative(gameId, key, userId);
         }
 
         [HttpPost("{gameId}/{key}/confirm")]
