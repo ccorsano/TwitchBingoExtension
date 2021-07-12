@@ -211,20 +211,23 @@ namespace TwitchBingoService.Services
 
             await _storage.WriteGame(game);
 
-            _logger.LogWarning($"Sending confirmation notification to {string.Join(",", game.moderators)}");
-            await _ebsService.TryWhisperJson(game.channelId, game.moderators,
-                new
-                {
-                    type = "confirm",
-                    payload = new
+            if (game.moderators?.Any() ?? false)
+            {
+                _logger.LogWarning($"Sending confirmation notification to {string.Join(",", game.moderators)}");
+                await _ebsService.TryWhisperJson(game.channelId, game.moderators,
+                    new
                     {
-                        gameId = game.gameId,
-                        key = key,
-                        confirmationTime = new DateTimeOffset(entry.confirmedAt.Value),
-                        confirmedBy = entry.confirmedBy,
+                        type = "confirm",
+                        payload = new
+                        {
+                            gameId = game.gameId,
+                            key = key,
+                            confirmationTime = new DateTimeOffset(entry.confirmedAt.Value),
+                            confirmedBy = entry.confirmedBy,
+                        }
                     }
-                }
-            );
+                );
+            }
 
             await ProcessTentatives(game, key);
 
