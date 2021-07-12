@@ -4,7 +4,8 @@ import React from 'react';
 import ModerationBingoComponent from '../../common/ModerationBingoComponent';
 import { TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
-import { BingoEntry, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoConfirmationNotification, BingoEntry, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
+import { EBSError } from '../../EBS/EBSBase';
 
 type ModerationPaneProps = {
     isOpen: boolean,
@@ -15,12 +16,28 @@ type ModerationPaneProps = {
     gameId: string,
     confirmationTimeout: number,
     onReceiveTentative?: (tentative: BingoTentativeNotification) => void,
+    onNotificationsEmpty?: () => void,
 }
 
 export default function ModerationPane(props: ModerationPaneProps)
 {
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
     const [hasRegistered, setRegistered] = React.useState(false);
+    const [autoOpened, setAutoOpened] = React.useState(false);
+
+    const onReceiveTentative = (notification: BingoTentativeNotification) => {
+        // Skip if a tentative is already pending for this key
+        if (tentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
+        {
+            return;
+        }
+        setTentatives([...tentatives, notification])
+        if (props.onReceiveTentative)
+        {
+            setAutoOpened(true);
+            props.onReceiveTentative(notification);
+        }
+    }
 
     React.useEffect(() => {
         if (! hasRegistered)
@@ -38,11 +55,11 @@ export default function ModerationPane(props: ModerationPaneProps)
                 switch (message.type) {
                     case 'tentative':
                         var notification = message.payload as BingoTentativeNotification;
-                        setTentatives([...tentatives, notification])
-                        if (props.onReceiveTentative)
-                        {
-                            props.onReceiveTentative(notification);
-                        }
+                        onReceiveTentative(notification);
+                        break;
+                    case 'confirm':
+                        var confirm = message.payload as BingoConfirmationNotification;
+                        console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
                         break;
                     default:
                         break;
@@ -50,23 +67,66 @@ export default function ModerationPane(props: ModerationPaneProps)
             });
             setRegistered(true);
         }
-    });
-    
-    var onConfirm = (entry: BingoEntry) => {
-        BingoEBS.confirm(props.gameId, entry.key.toString()).then(() => {
-            setTentatives(tentatives.filter(t => t.key != entry.key));
-        });
-    };
+    })
 
-    var onTentativeExpire = (entry: BingoEntry) => {
+    React.useEffect(() => {
+        if (autoOpened && tentatives.length == 0)
+        {
+            props.onNotificationsEmpty();
+        }
+    }, [tentatives, autoOpened])
+
+    const processTentative = (entry: BingoEntry) =>
+    {
+        console.log("Confirmed tentative for key " + entry.key)
+    }
+    
+    const onConfirm = (entry: BingoEntry) => {
+
+        BingoEBS.confirm(props.gameId, entry.key.toString()).then(() => {
+            processTentative(entry)
+        }, (reason: EBSError) => {
+            // If entry was already confirmed, consider it done
+            if (reason.status == 409)
+            {
+                processTentative(entry)
+            }
+            else
+            {
+                throw reason
+            }
+        })
+    }
+
+    const onTentativeExpire = (entry: BingoEntry) =>
+    {
         setTentatives(tentatives.filter(t => t.key != entry.key));
-    };
+        console.log("Entry expired: " + entry.text + " Active tentatives: " + tentatives.length)
+    }
+
+    const onTestTentative = (entry: BingoEntry) => {
+        var notification: BingoTentativeNotification = {
+            gameId: props.gameId,
+            key: entry.key,
+            tentativeTime: new Date(Date.now())
+        }
+        onReceiveTentative(notification)
+    }
+
+    const onClose = (e: React.MouseEvent<any>) => {
+        setAutoOpened(false);
+        if (props.onNotificationsEmpty && tentatives.length == 0)
+        {
+            props.onNotificationsEmpty();
+        }
+        return props.onClose(e);
+    }
 
     return (
         <React.Fragment>
             <Drawer variant="temporary" anchor="left" open={props.isOpen}>
                 <div>
-                <IconButton onClick={props.onClose}>
+                <IconButton onClick={onClose}>
                     <ChevronLeft />
                 </IconButton>
                 </div>
@@ -78,7 +138,8 @@ export default function ModerationPane(props: ModerationPaneProps)
                     gameId={props.gameId}
                     confirmationTimeout={props.confirmationTimeout}
                     onConfirm={onConfirm}
-                    onTentativeExpire={onTentativeExpire} />
+                    onTentativeExpire={onTentativeExpire}
+                    onTest={onTestTentative} />
             </Drawer>
         </React.Fragment>
     );

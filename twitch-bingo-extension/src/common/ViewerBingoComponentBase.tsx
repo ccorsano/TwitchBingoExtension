@@ -77,7 +77,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 switch (message.type) {
                     case 'tentative':
                         var notification = message.payload as BingoTentativeNotification;
-                        console.log(`Tentative notification for ${notification.key} ar ${notification.tentativeTime}`);
+                        console.log(`Tentative notification for ${notification.key} at ${notification.tentativeTime}`);
                         break;
                     default:
                         break;

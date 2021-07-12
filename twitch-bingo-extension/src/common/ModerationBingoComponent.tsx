@@ -1,4 +1,4 @@
-import { Button, List, ListItem, ListItemSecondaryAction, ListItemText, Paper } from "@material-ui/core"
+import { Button, ButtonGroup, List, ListItem, ListItemSecondaryAction, ListItemText, Paper } from "@material-ui/core"
 import React from "react"
 import { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
 import TentativeNotificationComponent from "./TentativeNotificationComponent"
@@ -12,6 +12,7 @@ type ModerationBingoComponentProps = {
     confirmationTimeout: number,
     onConfirm: (entry: BingoEntry) => void,
     onTentativeExpire: (entry: BingoEntry) => void,
+    onTest? : (entry: BingoEntry) => void,
 }
 
 export default function ModerationBingoComponent(props: ModerationBingoComponentProps)
@@ -43,11 +44,20 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
             <List>
                 {
                     props.entries.map((entry) => {
+                        const tentative = props.tentatives.find(t => t.key == entry.key)
+                        if (tentative)
+                        {
+                            return null;
+                        }
+                        
                         return (
                             <ListItem key={entry.key}>
                                 <ListItemText primary={entry.text} />
                                 <ListItemSecondaryAction>
-                                    <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} variant="outlined">Confirm</Button>
+                                    <ButtonGroup size="small">
+                                        <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} >Confirm</Button>
+                                        {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
+                                    </ButtonGroup>
                                 </ListItemSecondaryAction>
                             </ListItem>
                         );

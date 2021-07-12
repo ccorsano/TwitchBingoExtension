@@ -1,7 +1,9 @@
-import { Button } from "@material-ui/core"
+import { Button, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText } from "@material-ui/core"
 import React from "react"
+import clsx from 'clsx'
 import { CountdownCircleTimer } from "react-countdown-circle-timer"
 import { BingoEntry } from "../EBS/BingoService/EBSBingoTypes"
+import { bingoStyles } from "./BingoStyles"
 
 type TentativeNotificationComponentProps = {
     gameId: string,
@@ -12,44 +14,51 @@ type TentativeNotificationComponentProps = {
     confirmationTimeout: number
 }
 
-const renderTime = ({remainingTime}) => {
-    return `${remainingTime}`;
-}
-
-function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-}
-
 export default function TentativeNotificationComponent(props: TentativeNotificationComponentProps)
 {
     const [isConfirmed, setConfirmed] = React.useState(false);
+    const [referenceTime, setReferenceTime] = React.useState<Date>(props.tentativeTime);
+    const classes = bingoStyles();
 
     const handleConfirm = (_event: React.MouseEvent<HTMLButtonElement>) => {
-        props.onConfirm(props.entry);
-        setConfirmed(true);
+        props.onConfirm(props.entry)
+        setConfirmed(true)
+        setReferenceTime(new Date())
     };
 
-    var duration: number = (props.tentativeTime.getTime() - Date.now()) + props.confirmationTimeout;
-
-    delay(duration * 1000).then(() => {
-        if (! isConfirmed && props.onExpire)
-        {
-            props.onExpire(props.entry);
-        }
-    });
+    var duration: number = (referenceTime.getTime() - Date.now()) + props.confirmationTimeout;
     
     return (
-        <div>
-            <p>{props.entry.text}</p>
-            <CountdownCircleTimer
-                isPlaying
-                size={50}
-                strokeWidth={3}
-                colors="#FFFFFF"
-                duration={duration}
-                children={renderTime}
-            />
-            <Button onClick={handleConfirm}>Confirm</Button>
-        </div>
+        <ListItem key={props.entry.key} className={clsx(isConfirmed ? classes.confirmed : classes.pending)}>
+            <ListItemIcon>
+                <CountdownCircleTimer
+                    isPlaying
+                    key={isConfirmed ? "pre-confirmation" : "post-confirmation" }
+                    size={40}
+                    strokeWidth={2}
+                    colors={ isConfirmed ? "#000" : "#FFF" }
+                    duration={duration/1000}
+                    children={renderTime}
+                    onComplete={ (_elapsed) => {
+                        if (! isConfirmed)
+                        {
+                            if (props.onExpire) props.onExpire(props.entry)
+                        }
+                        else
+                        {
+                            if (props.onExpire) props.onExpire(props.entry)
+                        }
+                    }}
+                />
+            </ListItemIcon>
+            <ListItemText primary={props.entry.text}  />
+            <ListItemSecondaryAction>
+                <Button onClick={handleConfirm} disabled={isConfirmed}>Confirm</Button>
+            </ListItemSecondaryAction>
+        </ListItem>
     )
+}
+
+const renderTime = ({remainingTime}) => {
+    return `${remainingTime}`;
 }

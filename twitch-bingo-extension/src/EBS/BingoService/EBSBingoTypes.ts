@@ -49,6 +49,13 @@ export interface BingoTentativeNotification {
     tentativeTime: Date;
 }
 
+export interface BingoConfirmationNotification {
+    gameId: string;
+    key: number;
+    confirmationTime: Date;
+    confirmedBy: string;
+}
+
 const TimeSpanRegexp = (/^(-?)((\d+)\.)?(\d{2}):(\d{2}):(\d{2})(\.(\d{7}))?$/);
 export function ParseTimespan(timeSpan: string): number
 {

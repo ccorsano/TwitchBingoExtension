@@ -9,6 +9,7 @@ require('./VideoOverlay.scss');
 
 interface VideoOverlayState extends ViewerBingoComponentBaseState {
     isCollapsed: boolean;
+    hasModNotifications: boolean;
 }
 
 interface VideoOverlayProps extends ViewerBingoComponentBaseProps {
@@ -26,6 +27,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         isStarted: false,
         pendingResults: new Array(0),
         moderationDrawerOpen: false,
+        hasModNotifications: false,
     }
 
     constructor(props: VideoOverlayProps){
@@ -41,6 +43,20 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         this.setState({entries : payload.entries});
     };
 
+    onTentative = () => {
+        this.setState({
+            moderationDrawerOpen: true,
+            hasModNotifications: true,
+        })
+    }
+
+    onNotificationsEmpty = () => {
+        this.setState({
+            moderationDrawerOpen: false,
+            hasModNotifications: false,
+        })
+    }
+
     render(){
         var moderationDrawer: JSX.Element = null;
         if (this.state.canModerate)
@@ -54,7 +70,8 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                     onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
                     gameId={this.state.activeGame?.gameId}
                     confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")}
-                    onReceiveTentative={() => this.setState({ moderationDrawerOpen: true })} />
+                    onReceiveTentative={this.onTentative}
+                    onNotificationsEmpty={this.onNotificationsEmpty} />
             )
         }
 
@@ -64,6 +81,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                     <VideoOverlayTabWidget
                         collapsed={this.state.isCollapsed}
                         canModerate={this.state.canModerate}
+                        hasModNotifications={this.state.hasModNotifications}
                         onToggleGrid={(_) => {this.setState({isCollapsed: !this.state.isCollapsed});}}
                         onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
                     { this.state.isCollapsed ? null : super.render() }

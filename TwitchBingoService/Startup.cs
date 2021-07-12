@@ -38,7 +38,7 @@ namespace TwitchBingoService
             services.AddHttpClient();
             services.AddSingleton<TwitchEBSService>();
             services.AddSingleton<BingoService>();
-            services.AddOptions<BingoServiceOptions>();
+            services.Configure<BingoServiceOptions>(Configuration.GetSection("bingo"));
             services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
 
             services.AddControllers();

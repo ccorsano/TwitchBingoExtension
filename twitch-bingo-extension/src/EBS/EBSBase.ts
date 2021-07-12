@@ -2,6 +2,11 @@ import { Twitch } from '../services/TwitchService';
 import { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
 require('../common/TwitchExtension')
 
+export interface EBSError {
+    status: number,
+    statusText: string,
+}
+
 export class EBSBase {
     context: TwitchAuthCallbackContext;
     configuration: TwitchExtensionConfiguration;
@@ -77,7 +82,10 @@ export class EBSBase {
         var response = await fetch(this.baseUrl + path, opts);
 
         if (!response.ok) {
-            throw new Error(response.statusText)
+            return Promise.reject<T>({
+                status: response.status,
+                statusText: response.statusText,
+            })
         }
         
         return response.json();

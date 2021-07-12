@@ -80,13 +80,15 @@ export default class Config extends React.Component<any, ConfigState> {
     }
 
     onSave = (): void => {
-        TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
+        const serializedConfig = JSON.stringify({
             nextKey: this.state.nextKey,
             entries: this.state.entries,
             selectedEntries: this.state.selectedEntries,
             rows: this.state.rows,
             columns: this.state.columns,
-        }));
+        });
+        TwitchExtHelper.configuration.set('broadcaster', '0.0.1', serializedConfig);
+        (window as any).Twitch.ext.rig.log(serializedConfig);
         TwitchExtHelper.send('broadcast','application/json', {
             type: "set-config",
             payload: {
@@ -200,15 +202,19 @@ export default class Config extends React.Component<any, ConfigState> {
             var nextKey = this.state.nextKey;
 
             content.split('\n').forEach(line => {
+                if(! line) return;
+
                 var newEntry = new BingoEditableEntry();
                 newEntry.text = line;
                 newEntry.isNew = false;
                 newEntry.key = nextKey++;
+                console.log("Entry: " + newEntry.key + " - " + newEntry.text)
                 entries.push(newEntry);
             });
             this.setState({
                 nextKey: nextKey,
                 entries: entries,
+                selectedEntries: new Array(0),
             });
         };
         reader.readAsText(file);
