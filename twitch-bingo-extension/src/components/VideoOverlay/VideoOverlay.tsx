@@ -43,7 +43,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         this.setState({entries : payload.entries});
     };
 
-    onTentative = () => {
+    onTentativeNotification = () => {
         this.setState({
             moderationDrawerOpen: true,
             hasModNotifications: true,
@@ -70,7 +70,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                     onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
                     gameId={this.state.activeGame?.gameId}
                     confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")}
-                    onReceiveTentative={this.onTentative}
+                    onReceiveTentative={this.onTentativeNotification}
                     onNotificationsEmpty={this.onNotificationsEmpty} />
             )
         }
