@@ -32,7 +32,7 @@ export default function ModerationPane(props: ModerationPaneProps)
             return;
         }
         console.log("Adding tentative " + notification.gameId + " " + notification.key + " to set of " + tentatives.length)
-        setTentatives([...tentatives, notification])
+        setTentatives(currentTentatives => [...currentTentatives, notification])
         if (props.onReceiveTentative)
         {
             setAutoOpened(true);
@@ -68,6 +68,7 @@ export default function ModerationPane(props: ModerationPaneProps)
 
         TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         return () => {
+            console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
             TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         }
     }, [])
