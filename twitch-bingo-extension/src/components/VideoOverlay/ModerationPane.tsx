@@ -25,14 +25,16 @@ export default function ModerationPane(props: ModerationPaneProps)
     const [autoOpened, setAutoOpened] = React.useState(false);
 
     const receiveTentative = (notification: BingoTentativeNotification) => {
-        // Skip if a tentative is already pending for this key
-        if (tentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
-        {
-            console.log("Skipped adding tentative " + notification.gameId + " " + notification.key)
-            return;
-        }
-        console.log("Adding tentative " + notification.gameId + " " + notification.key + " to set of " + tentatives.length)
-        setTentatives(currentTentatives => [...currentTentatives, notification])
+        setTentatives(currentTentatives => {
+            // Skip if a tentative is already pending for this key
+            if (currentTentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
+            {
+                console.log("Skipped adding tentative " + notification.gameId + " " + notification.key)
+                return;
+            }
+            console.log("Adding tentative " + notification.gameId + " " + notification.key + " to set of " + currentTentatives.length)
+            return [...currentTentatives, notification]
+        })
         if (props.onReceiveTentative)
         {
             setAutoOpened(true);
