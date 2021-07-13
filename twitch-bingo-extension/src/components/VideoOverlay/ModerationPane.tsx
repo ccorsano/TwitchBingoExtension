@@ -29,8 +29,10 @@ export default function ModerationPane(props: ModerationPaneProps)
         // Skip if a tentative is already pending for this key
         if (tentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
         {
+            console.log("Skipped adding tentative " + notification.gameId + " " + notification.key)
             return;
         }
+        console.log("Adding tentative " + notification.gameId + " " + notification.key + " to set of " + tentatives.length)
         setTentatives([...tentatives, notification])
         if (props.onReceiveTentative)
         {
