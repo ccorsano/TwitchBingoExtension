@@ -22,7 +22,6 @@ type ModerationPaneProps = {
 export default function ModerationPane(props: ModerationPaneProps)
 {
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
-    const [hasRegistered, setRegistered] = React.useState(false);
     const [autoOpened, setAutoOpened] = React.useState(false);
 
     const onReceiveTentative = (notification: BingoTentativeNotification) => {
@@ -41,35 +40,37 @@ export default function ModerationPane(props: ModerationPaneProps)
         }
     }
 
-    React.useEffect(() => {
-        if (! hasRegistered)
-        {
-            console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
-            TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, (_target, _contentType, messageStr) => {
-                console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
-                let message = JSON.parse(messageStr, (key, value) => {
-                    if (key == "tentativeTime")
-                    {
-                        return new Date(value);
-                    }
-                    return value;
-                });
-                switch (message.type) {
-                    case 'tentative':
-                        var notification = message.payload as BingoTentativeNotification;
-                        onReceiveTentative(notification);
-                        break;
-                    case 'confirm':
-                        var confirm = message.payload as BingoConfirmationNotification;
-                        console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
-                        break;
-                    default:
-                        break;
-                }
-            });
-            setRegistered(true);
+    const onReceiveWhisper = (_target, _contentType, messageStr) => {
+        console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
+        let message = JSON.parse(messageStr, (key, value) => {
+            if (key == "tentativeTime")
+            {
+                return new Date(value);
+            }
+            return value;
+        });
+        switch (message.type) {
+            case 'tentative':
+                var notification = message.payload as BingoTentativeNotification;
+                onReceiveTentative(notification);
+                break;
+            case 'confirm':
+                var confirm = message.payload as BingoConfirmationNotification;
+                console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
+                break;
+            default:
+                break;
         }
-    })
+    }
+
+    React.useEffect(() => {
+        console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
+
+        TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
+        return () => {
+            TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
+        }
+    }, [])
 
     React.useEffect(() => {
         if (autoOpened && tentatives.length == 0)
