@@ -24,7 +24,7 @@ export default function ModerationPane(props: ModerationPaneProps)
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
     const [autoOpened, setAutoOpened] = React.useState(false);
 
-    const onReceiveTentative = (notification: BingoTentativeNotification) => {
+    const receiveTentative = (notification: BingoTentativeNotification) => {
         // Skip if a tentative is already pending for this key
         if (tentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
         {
@@ -52,7 +52,7 @@ export default function ModerationPane(props: ModerationPaneProps)
         switch (message.type) {
             case 'tentative':
                 var notification = message.payload as BingoTentativeNotification;
-                onReceiveTentative(notification);
+                receiveTentative(notification);
                 break;
             case 'confirm':
                 var confirm = message.payload as BingoConfirmationNotification;
@@ -73,6 +73,7 @@ export default function ModerationPane(props: ModerationPaneProps)
     }, [])
 
     React.useEffect(() => {
+        console.log(`Tentatives effect ${tentatives.length}`);
         if (autoOpened && tentatives.length == 0)
         {
             props.onNotificationsEmpty();
@@ -103,8 +104,8 @@ export default function ModerationPane(props: ModerationPaneProps)
 
     const onTentativeExpire = (entry: BingoEntry) =>
     {
-        setTentatives(tentatives.filter(t => t.key != entry.key));
         console.log("Entry expired: " + entry.text + " Active tentatives: " + tentatives.length)
+        setTentatives(tentatives.filter(t => t.key != entry.key));
     }
 
     const onTestTentative = (entry: BingoEntry) => {
@@ -113,7 +114,7 @@ export default function ModerationPane(props: ModerationPaneProps)
             key: entry.key,
             tentativeTime: new Date(Date.now())
         }
-        onReceiveTentative(notification)
+        receiveTentative(notification)
     }
 
     const onClose = (e: React.MouseEvent<any>) => {
