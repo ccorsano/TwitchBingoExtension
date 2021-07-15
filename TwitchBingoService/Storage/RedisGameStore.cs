@@ -116,6 +116,7 @@ namespace TwitchBingoService.Storage
 
         public async Task QueueNotification(Guid gameId, ushort key, BingoNotification notification)
         {
+            _logger.LogInformation($"Queue: {gameId}, {key}, {notification.playerId}");
             var db = _connection.GetDatabase();
 
             var buffer = ArrayPool<byte>.Shared.Rent(256);
@@ -138,6 +139,7 @@ namespace TwitchBingoService.Storage
                 notifRedisValue = await db.ListLeftPopAsync(GetNotificationsKey(gameId, key));
                 var data = (ReadOnlyMemory<byte>)notifRedisValue;
                 notifications.Add(ProtoBuf.Serializer.Deserialize<BingoNotification>(data));
+                _logger.LogInformation($"Dequeue: {gameId}, {key}, {notifications.Last().playerId}");
             }
             while (notifRedisValue.HasValue);
 

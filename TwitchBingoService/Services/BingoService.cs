@@ -332,6 +332,7 @@ namespace TwitchBingoService.Services
             var rowComplete = notifications.Where(n => n.type == NotificationType.CompletedRow).Select(n => n.playerId).ToArray();
             var gridComplete = notifications.Where(n => n.type == NotificationType.CompletedGrid).Select(n => n.playerId).ToArray();
 
+            _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colComplete), string.Join(',', rowComplete), string.Join(',', gridComplete));
             await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
             {
                 type = "bingo",
