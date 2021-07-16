@@ -88,7 +88,7 @@ export class EBSBase {
             })
         }
         
-        return response.json();
+        return response.json().catch(() => null);
     }
 
     servicePost = async <T>(path: string, bodyObject: any, init: RequestInit = null): Promise<T> => {
@@ -107,6 +107,38 @@ export class EBSBase {
         console.log(path);
         return this.serviceFetch<T>(path, init);
         
+    }
+
+    servicePut = async <T>(path: string, bodyObject: any, init: RequestInit = null): Promise<T> => {
+        if (! init)
+        {
+            init = {
+                method: 'PUT',
+                body: JSON.stringify(bodyObject)
+            };
+        }
+        else
+        {
+            init.method = 'PUT';
+            init.body = JSON.stringify(bodyObject);
+        }
+        console.log(path);
+        return this.serviceFetch<T>(path, init);
+    }
+
+    serviceDelete = async <T>(path: string, init: RequestInit = null): Promise<T> => {
+        if (! init)
+        {
+            init = {
+                method: 'DELETE'
+            };
+        }
+        else
+        {
+            init.method = 'DELETE';
+        }
+        console.log(path);
+        return this.serviceFetch<T>(path, init);
     }
 
     _onAuthorized = (context: TwitchAuthCallbackContext) => {

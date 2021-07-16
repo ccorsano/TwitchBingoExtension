@@ -26,7 +26,7 @@ export default function VideoOverlayTabWidget(props: VideoOverlayTabWidgetProps)
     if (props.canModerate)
     {
         moderationWidget = (
-            <div onClick={props.onToggleModerationPane} className={clsx(props.hasModNotifications ? classes.pending : "", "tabWidget")}>
+            <div onClickCapture={props.onToggleModerationPane} className={clsx(props.hasModNotifications ? classes.pending : "", "tabWidget")}>
                 <SupervisorAccountIcon />
             </div>
         )
@@ -34,7 +34,7 @@ export default function VideoOverlayTabWidget(props: VideoOverlayTabWidgetProps)
 
     return (
         <div>
-            <div className="tabWidget" onClick={props.onToggleGrid}>
+            <div className="tabWidget" onClickCapture={props.onToggleGrid}>
                 <img src={BingoLogo} alt="Bingo Logo" />
             </div>
             { moderationWidget }

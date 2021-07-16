@@ -144,12 +144,14 @@ namespace TwitchBingoService
             {
                 if (env.IsDevelopment())
                 {
-                    config.AllowAnyOrigin();
+                    config.AllowAnyOrigin().AllowAnyMethod();
                 }
                 else
                 {
-                    config.WithOrigins("https://*.ext-twitch.tv")
-                        .SetIsOriginAllowedToAllowWildcardSubdomains();
+                    config
+                        .WithOrigins("https://*.ext-twitch.tv")
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .AllowAnyMethod();
                 }
                 config.WithHeaders("Authorization", "Content-Type");
             });

@@ -1,12 +1,12 @@
-import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
+import Check from "@material-ui/icons/Check";
 import React from "react";
 import clsx from 'clsx';
 import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry } from "../EBS/BingoService/EBSBingoTypes";
 import { bingoStyles } from "./BingoStyles";
+import Button from "@material-ui/core/Button";
 
 type BingoViewerEntryProps = {
     config: BingoEntry,
@@ -25,7 +25,9 @@ const renderTime = ({remainingTime}) => {
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     const classes = bingoStyles();
-    console.log("BingoViewerEntry " +  props.config.key + " countdown: " + props.countdown?.getTime() + "now: " + Date.now());
+    const [confirmationPrompt, setConfirmationPrompt] = React.useState(false);
+
+    console.log("BingoViewerEntry " +  props.config.key + " countdown: " + props.countdown?.getTime() + " now: " + Date.now());
 
     var showTimer: boolean = props.countdown != null;
     var timerComponent: React.ReactElement = null;
@@ -35,26 +37,34 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         console.log("Updating cell " + props.config.key + " with timer: " + duration)
         if (duration > 0)
         {
-            timerComponent = <CountdownCircleTimer
-                isPlaying
-                size={50}
-                strokeWidth={3}
-                colors="#FFFFFF"
-                duration={duration}
-                children={renderTime}
-            />
+            timerComponent = 
+            <div style={{ display: 'inline-block' }}>
+                <CountdownCircleTimer
+                    isPlaying
+                    size={50}
+                    strokeWidth={3}
+                    colors="#FFFFFF"
+                    duration={duration}
+                    children={renderTime}
+                />
+            </div>
         }
         else
         {
-            timerComponent = <CircularProgress/>
+            timerComponent = <CircularProgress />
         }
     }
 
-    const handleTentative = (_event: React.MouseEvent<HTMLButtonElement>) => {
-        props.onTentative(props.config);
+    const handlePrompt = (_event: React.MouseEvent<HTMLElement>) => {
+        setConfirmationPrompt(! confirmationPrompt)
     };
 
-    let stateClass = classes.idle;
+    const handleTentative = (_event: React.MouseEvent<HTMLElement>) => {
+        props.onTentative(props.config)
+        setConfirmationPrompt(false)
+    };
+
+    let stateClass = confirmationPrompt ? classes.prompt : classes.idle;
     switch(props.state)
     {
         case BingoEntryState.Confirmed:
@@ -74,14 +84,19 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     }
 
     return (
-        <div className={clsx(classes.paper, stateClass, props.isColCompleted ? classes.colConfirmed : '', props.isRowCompleted ? classes.rowConfirmed : '')}>
+        <div className={clsx(classes.paper, stateClass, props.isColCompleted ? classes.colConfirmed : '', props.isRowCompleted ? classes.rowConfirmed : '')} onClick={handlePrompt}>
             <div className={clsx(classes.bingoEntry)}>
-                <Typography>
+                <div>
                     {props.config.text}
-                </Typography>
-                { timerComponent }
-                { props.canInteract ? <Button onClick={handleTentative}>Bingo !</Button> : null}
+                </div>
             </div>
+            {
+                confirmationPrompt ?
+                    <Button aria-label="Confirm" onClickCapture={handleTentative} variant="outlined" color="primary" size="large">
+                        <Check color="action" />
+                    </Button> : null
+            }
+            { timerComponent }
         </div>
     )
 }

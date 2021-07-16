@@ -14,14 +14,15 @@ type TentativeNotificationComponentProps = {
     entry: BingoEntry,
     onExpire?: (entry: BingoEntry) => void,
     onConfirm: (entry: BingoEntry) => void,
-    tentativeTime: Date,
-    confirmationTimeout: number
+    referenceTime: Date,
+    confirmationTimeout: number,
+    isConfirmed: boolean,
 }
 
 export default function TentativeNotificationComponent(props: TentativeNotificationComponentProps)
 {
-    const [isConfirmed, setConfirmed] = React.useState(false);
-    const [referenceTime, setReferenceTime] = React.useState<Date>(props.tentativeTime);
+    const [isConfirmed, setConfirmed] = React.useState(props.isConfirmed);
+    const [referenceTime, setReferenceTime] = React.useState<Date>(props.referenceTime);
     const classes = bingoStyles();
 
     const handleConfirm = (_event: React.MouseEvent<HTMLButtonElement>) => {

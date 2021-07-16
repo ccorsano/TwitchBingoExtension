@@ -62,6 +62,17 @@ namespace TwitchBingoService.Services
             _logger.LogWarning("Moderators in game {gameId} of channel {channelId}: {moderators}", game.gameId, game.channelId, string.Join(',', game.moderators));
         }
 
+        public async Task DeleteGame(Guid gameId)
+        {
+            var game = await _storage.ReadGame(gameId);
+            if (game == null)
+            {
+                throw new ArgumentOutOfRangeException("gameId");
+            }
+
+            _storage.DeleteGame(gameId);
+        }
+
         public async Task RegisterPlayer(string userId)
         {
             var userName = await _storage.ReadUserName(userId);

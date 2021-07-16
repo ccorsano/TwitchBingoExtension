@@ -205,7 +205,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
 
     renderGrid(){
         return (
-            <div className="bingoGrid" style={{ display: "grid" }}>
+            <div className="bingoGrid">
                 {
                     [...Array(this.state.rows).keys()].map(row => {
                         let isRowComplete = this.isRowComplete(row);

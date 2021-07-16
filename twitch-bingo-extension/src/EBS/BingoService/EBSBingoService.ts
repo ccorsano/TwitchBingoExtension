@@ -11,16 +11,20 @@ export class EBSBingoService extends EBSBase {
         return this.servicePost("/game", gameParams);
     }
 
+    stopGame = (gameId: string): Promise<void> => {
+        return this.serviceDelete("/game/" + encodeURI(gameId));
+    }
+
     tentative = (gameId: string, entryKey: string): Promise<BingoTentative> => {
-        return this.servicePost("/game/" + gameId + "/" + entryKey + "/tentative", {});
+        return this.servicePost("/game/" + encodeURI(gameId) + "/" + encodeURI(entryKey) + "/tentative", {});
     }
     
     confirm = (gameId: string, entryKey: string): Promise<BingoTentative> => {
-        return this.servicePost("/game/" + gameId + "/" + entryKey + "/confirm", {});
+        return this.servicePost("/game/" + encodeURI(gameId) + "/" + encodeURI(entryKey) + "/confirm", {});
     }
 
     getGrid = (gameId: string): Promise<BingoGrid> => {
-        return this.serviceFetch("/game/" + gameId + "/grid", {});
+        return this.serviceFetch("/game/" + encodeURI(gameId) + "/grid", {});
     }
 }
 

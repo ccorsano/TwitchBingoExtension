@@ -44,6 +44,24 @@ export default function ModerationPane(props: ModerationPaneProps)
         }
     }
 
+    const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
+        setTentatives(currentTentatives => {
+            return currentTentatives.map(tentative => {
+                if (tentative.gameId == confirmation.gameId && tentative.key == confirmation.key)
+                {
+                    return {
+                        gameId: tentative.gameId,
+                        key: tentative.key,
+                        tentativeTime: tentative.tentativeTime,
+                        confirmationTime: confirmation.confirmationTime,
+                        confirmedBy: confirmation.confirmedBy
+                    }
+                }
+                return tentative
+            })
+        })
+    }
+
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
         let message = JSON.parse(messageStr, (key, value) => {
@@ -61,6 +79,7 @@ export default function ModerationPane(props: ModerationPaneProps)
             case 'confirm':
                 var confirm = message.payload as BingoConfirmationNotification;
                 console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
+                receiveConfirmation(confirm);
                 break;
             default:
                 break;

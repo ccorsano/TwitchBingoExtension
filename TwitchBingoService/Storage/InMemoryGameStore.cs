@@ -29,6 +29,31 @@ namespace TwitchBingoService.Storage
             return Task.FromResult<BingoGame>(null);
         }
 
+        public Task DeleteGame(Guid gameId)
+        {
+            if (Store.TryRemove(gameId, out var deletedGame))
+            {
+                foreach(var entry in deletedGame.entries)
+                {
+                    if (PendingTentatives.TryRemove(GetPendingTentativeKey(gameId, entry.key), out var pendingTentatives))
+                    {
+                        foreach(var tentative in pendingTentatives)
+                        {
+                            Tentatives.TryRemove(GetTentativeKey(gameId, tentative.playerId), out var _);
+                        }
+                    }
+                    if (Notifications.TryRemove(GetNotificationKey(gameId, entry.key), out var notifications))
+                    {
+                        foreach (var notification in notifications)
+                        {
+                            Tentatives.TryRemove(GetTentativeKey(gameId, notification.playerId), out var _);
+                        }
+                    }
+                }
+            }
+            return Task.CompletedTask;
+        }
+
         public Task<BingoTentative[]> ReadGameState(Guid gameId, string playerId)
         {
             if (Tentatives.TryGetValue(GetTentativeKey(gameId, playerId), out BingoTentative[] bingoTentative))

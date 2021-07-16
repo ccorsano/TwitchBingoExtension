@@ -47,6 +47,8 @@ export interface BingoTentativeNotification {
     gameId: string;
     key: number;
     tentativeTime: Date;
+    confirmationTime?: Date;
+    confirmedBy?: string;
 }
 
 export interface BingoConfirmationNotification {

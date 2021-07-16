@@ -33,6 +33,13 @@ namespace TwitchBingoService.Controllers
             return _gameService.CreateGame(channelClaim.Value, gameParams);
         }
 
+        [HttpDelete("{gameId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
+        public Task DeleteGame(Guid gameId)
+        {
+            return _gameService.DeleteGame(gameId);
+        }
+
         [HttpGet("{gameId}/grid")]
         public async Task<BingoGrid> GetGrid(Guid gameId)
         {
@@ -41,7 +48,7 @@ namespace TwitchBingoService.Controllers
             {
                 await _gameService.RegisterModerator(gameId, opaqueId);
             }
-            var userId = User.Claims.First(c => c.Type == "user_id").Value;
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
             if (userId != null)
             {
                 var userTask = _gameService.RegisterPlayer(userId);

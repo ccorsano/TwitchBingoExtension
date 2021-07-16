@@ -52,7 +52,28 @@ namespace TwitchBingoService.Storage
             {
                 ProtoBuf.Serializer.Serialize(stream, bingoGame);
                 stream.Flush();
-                await db.StringSetAsync(GetGameKey(bingoGame.gameId), new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position));
+                await Task.WhenAll(
+                    db.StringSetAsync(GetGameKey(bingoGame.gameId), new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position)),
+                    db.KeyExpireAsync(GetGameKey(bingoGame.gameId), TimeSpan.FromDays(7))
+                );
+            }
+        }
+
+        public async Task DeleteGame(Guid gameId)
+        {
+            _logger.LogInformation("Delete bingo game {gameId}", gameId);
+
+            var game = await ReadGame(gameId);
+
+            if (game != null)
+            {
+                var db = _connection.GetDatabase();
+                await db.KeyDeleteAsync(GetGameKey(gameId));
+
+                var deleteTentatives = game.entries.Select(entry => db.KeyDeleteAsync(GetPendingTentativeKey(game.gameId, entry.key)));
+                var deleteNotifications = game.entries.Select(entry => db.KeyDeleteAsync(GetNotificationsKey(game.gameId, entry.key)));
+                await Task.WhenAll(deleteTentatives);
+                await Task.WhenAll(deleteNotifications);
             }
         }
 
@@ -67,8 +88,12 @@ namespace TwitchBingoService.Storage
                 ProtoBuf.Serializer.Serialize(stream, tentative);
                 stream.Flush();
                 var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
-                await db.ListRightPushAsync(GetPendingTentativeKey(gameId, tentative.entryKey), serializedTentative);
-                await db.HashSetAsync(GetTentativeKey(gameId, tentative.playerId), (int) tentative.entryKey, serializedTentative);
+                await Task.WhenAll(
+                    db.ListRightPushAsync(GetPendingTentativeKey(gameId, tentative.entryKey), serializedTentative),
+                    db.HashSetAsync(GetTentativeKey(gameId, tentative.playerId), (int) tentative.entryKey, serializedTentative),
+                    db.KeyExpireAsync(GetPendingTentativeKey(gameId, tentative.entryKey), TimeSpan.FromDays(7)),
+                    db.KeyExpireAsync(GetTentativeKey(gameId, tentative.playerId), TimeSpan.FromDays(7))
+                );
             }
         }
 
@@ -126,7 +151,10 @@ namespace TwitchBingoService.Storage
                 ProtoBuf.Serializer.Serialize(stream, notification);
                 stream.Flush();
                 var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
-                await db.ListRightPushAsync(GetNotificationsKey(gameId, key), serializedTentative);
+                await Task.WhenAll(
+                    db.ListRightPushAsync(GetNotificationsKey(gameId, key), serializedTentative),
+                    db.KeyExpireAsync(GetNotificationsKey(gameId, key), TimeSpan.FromDays(7))
+                );
             }
         }
 

@@ -76,14 +76,22 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
 
         return [
             <div id="bingoRenderingArea">
-                <VideoOverlayTabWidget
-                    collapsed={this.state.isCollapsed}
-                    canModerate={this.state.canModerate}
-                    hasModNotifications={this.state.hasModNotifications}
-                    onToggleGrid={(_) => {this.setState({isCollapsed: !this.state.isCollapsed});}}
-                    onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
-                { this.state.isCollapsed ? null : super.render() }
-                { this.state.canModerate ? moderationDrawer : null }
+                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }}></div>
+                <div style={{ gridColumn: 1, gridRow: 2 }}>
+                    <VideoOverlayTabWidget
+                        collapsed={this.state.isCollapsed}
+                        canModerate={this.state.canModerate}
+                        hasModNotifications={this.state.hasModNotifications}
+                        onToggleGrid={(_) => {this.setState({isCollapsed: !this.state.isCollapsed});}}
+                        onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
+                    { this.state.canModerate ? moderationDrawer : null }
+                </div>
+                <div style={{ gridColumn: 2, gridRow: 2, width: '1fr' }}>
+                    { this.state.isCollapsed ? null : super.render() }
+                </div>
+                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }}>
+                </div>
+                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '6rem', width: '100%' }}></div>
             </div>
         ];
     }

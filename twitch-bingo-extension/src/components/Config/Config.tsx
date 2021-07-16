@@ -25,6 +25,7 @@ import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
 import { Twitch } from '../../services/TwitchService';
 import { BingoEntry } from '../../EBS/BingoService/EBSBingoTypes';
 import { BingoEditableEntry } from '../../model/BingoEntry';
+import { EBSVersion } from '../../EBS/EBSConfig';
 
 type ConfigState = {
     nextKey: number,
@@ -33,7 +34,7 @@ type ConfigState = {
     rows: number,
     columns: number,
     fileDownloadUrl: string,
-    gameId?: string,
+    activeGame?: EBSBingo.BingoGame,
 }
 
 export default class Config extends React.Component<any, ConfigState> {
@@ -81,7 +82,7 @@ export default class Config extends React.Component<any, ConfigState> {
             selectedEntries: configContent?.selectedEntries ?? new Array(0),
             rows: configContent?.rows ?? 3,
             columns: configContent?.columns ?? 3,
-            gameId: configContent?.activeGame?.gameId,
+            activeGame: configContent?.activeGame,
         });
     }
 
@@ -103,8 +104,9 @@ export default class Config extends React.Component<any, ConfigState> {
             selectedEntries: this.state.selectedEntries,
             rows: this.state.rows,
             columns: this.state.columns,
+            activeGame: this.state.activeGame,
         });
-        TwitchExtHelper.configuration.set('broadcaster', '0.0.1', serializedConfig);
+        TwitchExtHelper.configuration.set('broadcaster', EBSVersion, serializedConfig);
         (window as any).Twitch.ext.rig.log(serializedConfig);
         TwitchExtHelper.send('broadcast','application/json', {
             type: "set-config",
@@ -154,7 +156,7 @@ export default class Config extends React.Component<any, ConfigState> {
             console.log("Started game " + game.gameId);
 
             this.setState({
-                gameId: game.gameId,
+                activeGame: game,
             });
             
             var configUpdateJson = JSON.stringify({
@@ -165,13 +167,25 @@ export default class Config extends React.Component<any, ConfigState> {
                 columns: this.state.columns,
                 activeGame: game,
             })
-            TwitchExtHelper.configuration.set('broadcaster', '0.0.1', configUpdateJson);
+            TwitchExtHelper.configuration.set('broadcaster', EBSVersion, configUpdateJson);
             console.log(configUpdateJson);
             TwitchExtHelper.send('broadcast','application/json', {
                 type: "start",
                 payload: game
             });
         });
+    }
+
+    onStop = (): void => {
+        if (! this.state.activeGame)
+        {
+            return;
+        }
+        BingoEBS.stopGame(this.state.activeGame.gameId).finally(() => {
+            this.setState({
+                activeGame: null
+            })
+        })
     }
 
     onChangeEntry = (key: number, entry: BingoEditableEntry): void => {
@@ -314,112 +328,119 @@ export default class Config extends React.Component<any, ConfigState> {
                 <CardHeader title="Status" />
                 <CardContent>
                     {
-                        this.state.gameId != null ?
+                        this.state.activeGame != null ?
                         <Typography>Active</Typography> :
                         <Typography>Inactive</Typography>
                     }
                 </CardContent>
                 <CardActions>
                     {
-                        this.state.gameId ? <Button>Stop game</Button> : null
+                        this.state.activeGame ? <Button variant="contained" color="secondary" onClick={this.onStop}>Stop game</Button> : null
                     }
                 </CardActions>
             </Card>,
-            <Card>
-                <CardHeader title="Library" subheader="Load or add all your bingo entries here."/>
-                <CardActions>
-                    <input
-                        ref={this.setTextInputRef}
-                        type="file"
-                        style={{display: 'none'}}
-                        onChange={this.onEntriesUpload} />
-                    <IconButton onClick={(_) => this.textInput.click()}>
-                        <Icon>
-                            <CloudUploadOutlined />
-                        </Icon> 
-                    </IconButton>
-                    <textarea ref={this.setTextAreaRef} style={{display: 'none'}}/>
-                    <IconButton onClick={this.onEntriesCopy}>
-                        <Icon>
-                            <AssignmentReturned />
-                        </Icon>
-                    </IconButton>
-                    <IconButton onClick={this.onAdd}>
-                        <Icon>
-                            <AddCircleOutline />
-                        </Icon>
-                    </IconButton>
-                </CardActions>
-                <CardContent>
-                    { sourceListElement }
-                </CardContent>
-            </Card>,
-            <Card>
-                <CardHeader title="Selection" subheader="These are the bingo entries currently selected for the next game."/>
-                <CardContent>
-                    { targetListElement }
-                </CardContent>
-            </Card>,
-            <Card>
-                <CardHeader title="Configure Grid" />
-                <CardContent>
-                    <Typography>
-                        Columns
-                    </Typography>
-                    <Slider
-                        defaultValue={3}
-                        step={1}
-                        min={1}
-                        marks
-                        max={9}
-                        valueLabelDisplay="auto"
-                        value={columns}
-                        onChange={(_, value) => this.onColumnsChange(value as number)}
-                    />
-                    <Typography>
-                        Rows
-                    </Typography>
-                    <Slider
-                        defaultValue={3}
-                        step={1}
-                        min={1}
-                        marks
-                        max={9}
-                        valueLabelDisplay="auto"
-                        value={rows}
-                        onChange={(_, value) => this.onRowsChange(value as number)}
-                    />
-                    <Grid container xs={12}>
-                    {
-                        [...Array(rows).keys()].map(r => {
-                            return <Grid container item xs={12} spacing={1}>
-                                {
-                                    [...Array(columns).keys()].map(c => {
-                                        return <Grid item xs>
-                                            <Paper className="paper" elevation={3}>
-                                                <Box py={2} my={0.5} bgcolor={ (r * columns + c) < this.state.selectedEntries.length ? "primary.main" : "text.disabled" }>
-                                                    <Typography>
-                                                        
-                                                    </Typography>
-                                                </Box>
-                                            </Paper>
-                                        </Grid>
-                                    })
-                                }
+            <React.Fragment>
+            {
+                this.state.activeGame != null ? null :
+                [
+                    <Card>
+                        <CardHeader title="Library" subheader="Load or add all your bingo entries here."/>
+                        <CardActions>
+                            <input
+                                ref={this.setTextInputRef}
+                                type="file"
+                                style={{display: 'none'}}
+                                onChange={this.onEntriesUpload} />
+                            <IconButton onClick={(_) => this.textInput.click()}>
+                                <Icon>
+                                    <CloudUploadOutlined />
+                                </Icon> 
+                            </IconButton>
+                            <textarea ref={this.setTextAreaRef} style={{display: 'none'}}/>
+                            <IconButton onClick={this.onEntriesCopy}>
+                                <Icon>
+                                    <AssignmentReturned />
+                                </Icon>
+                            </IconButton>
+                            <IconButton onClick={this.onAdd}>
+                                <Icon>
+                                    <AddCircleOutline />
+                                </Icon>
+                            </IconButton>
+                        </CardActions>
+                        <CardContent>
+                            { sourceListElement }
+                        </CardContent>
+                    </Card>,
+                    <Card>
+                        <CardHeader title="Selection" subheader="These are the bingo entries currently selected for the next game."/>
+                        <CardContent>
+                            { targetListElement }
+                        </CardContent>
+                    </Card>,
+                    <Card>
+                        <CardHeader title="Configure Grid" />
+                        <CardContent>
+                            <Typography>
+                                Columns
+                            </Typography>
+                            <Slider
+                                defaultValue={3}
+                                step={1}
+                                min={1}
+                                marks
+                                max={9}
+                                valueLabelDisplay="auto"
+                                value={columns}
+                                onChange={(_, value) => this.onColumnsChange(value as number)}
+                            />
+                            <Typography>
+                                Rows
+                            </Typography>
+                            <Slider
+                                defaultValue={3}
+                                step={1}
+                                min={1}
+                                marks
+                                max={9}
+                                valueLabelDisplay="auto"
+                                value={rows}
+                                onChange={(_, value) => this.onRowsChange(value as number)}
+                            />
+                            <Grid container xs={12}>
+                            {
+                                [...Array(rows).keys()].map(r => {
+                                    return <Grid container item xs={12} spacing={1}>
+                                        {
+                                            [...Array(columns).keys()].map(c => {
+                                                return <Grid item xs>
+                                                    <Paper className="paper" elevation={3}>
+                                                        <Box py={2} my={0.5} bgcolor={ (r * columns + c) < this.state.selectedEntries.length ? "primary.main" : "text.disabled" }>
+                                                            <Typography>
+                                                                
+                                                            </Typography>
+                                                        </Box>
+                                                    </Paper>
+                                                </Grid>
+                                            })
+                                        }
+                                    </Grid>
+                                })
+                            }
                             </Grid>
-                        })
-                    }
-                    </Grid>
-                </CardContent>
-                <CardActions>
-                    <Button variant="contained" color="primary" onClick={this.onSave}>
-                        Save
-                    </Button>
-                    <Button variant="contained" color="primary" onClick={this.onStart} disabled={!this.canStart()}>
-                        Start
-                    </Button>
-                </CardActions>
-            </Card>
+                        </CardContent>
+                        <CardActions>
+                            <Button variant="contained" color="primary" onClick={this.onSave}>
+                                Save
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={this.onStart} disabled={!this.canStart()}>
+                                Start
+                            </Button>
+                        </CardActions>
+                    </Card>
+                ]
+            }
+            </React.Fragment>
         ]
     }
 }

@@ -1,17 +1,29 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-
 export const bingoStyles = makeStyles({
     paper: {
         background: 'linear-gradient(45deg, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.8) 100%);',
         height: '95%',
         borderRadius: '1rem',
+        userSelect: 'none',
+        textAlign: 'center',
+        textSizeAdjust: 'auto',
     },
     idle: {
-
+        "&:hover": {
+            cursor: 'pointer',
+            background: 'linear-gradient(45deg, rgba(255,255,255,0.8) 100%, rgba(200,200,200,0.8) 0%);'
+        }
+    },
+    prompt: {
+        background: 'radial-gradient(circle, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);',
+        "&:hover": {
+            cursor: 'pointer',
+            background: 'radial-gradient(circle, rgba(122,196,255,1) 50%, rgba(38,214,255,0.8) 100%);'
+        }
     },
     pending: {
-        background: 'linear-gradient(45deg, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);',
+        background: 'linear-gradient(45deg, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);'
     },
     confirmed: {
         background: 'linear-gradient(45deg, rgba(223,255,50,0.8) 33%, rgba(151,255,124,0.8) 90%);',

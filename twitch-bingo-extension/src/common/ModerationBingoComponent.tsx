@@ -37,7 +37,8 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                 <TentativeNotificationComponent
                                     gameId={tentative.gameId}
                                     entry={entry}
-                                    tentativeTime={tentative.tentativeTime}
+                                    isConfirmed={tentative.confirmationTime != null}
+                                    referenceTime={tentative.confirmationTime ?? tentative.tentativeTime}
                                     key={tentative.key}
                                     confirmationTimeout={props.confirmationTimeout}
                                     onConfirm={props.onConfirm}
