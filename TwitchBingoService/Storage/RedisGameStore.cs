@@ -25,6 +25,7 @@ namespace TwitchBingoService.Storage
         private string GetPendingTentativeKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:pending";
         private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:{playerId}:tentatives";
         private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:notifications";
+        private string GetUserKey(string userId) => $"bingo:username:{userId}";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -144,6 +145,24 @@ namespace TwitchBingoService.Storage
             while (notifRedisValue.HasValue);
 
             return notifications.ToArray();
+        }
+
+        public async Task<string> ReadUserName(string userId)
+        {
+            var db = _connection.GetDatabase();
+            var userValue = await db.StringGetAsync(GetUserKey(userId));
+            if (userValue.HasValue)
+            {
+                return userValue;
+            }
+
+            return null;
+        }
+
+        public async Task WriteUserName(string userId, string userName)
+        {
+            var db = _connection.GetDatabase();
+            await db.StringSetAsync(GetUserKey(userId), userName, TimeSpan.FromDays(1));
         }
     }
 }

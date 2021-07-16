@@ -13,6 +13,7 @@ namespace TwitchBingoService.Storage
         private ConcurrentDictionary<string, BingoTentative[]> PendingTentatives = new ConcurrentDictionary<string, BingoTentative[]>();
         private ConcurrentDictionary<string, BingoTentative[]> Tentatives = new ConcurrentDictionary<string, BingoTentative[]>();
         private ConcurrentDictionary<string, ConcurrentQueue<BingoNotification>> Notifications = new ConcurrentDictionary<string, ConcurrentQueue<BingoNotification>>();
+        private ConcurrentDictionary<string, string> UserNames = new ConcurrentDictionary<string, string>();
 
         public string GetTentativeKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";
         public string GetPendingTentativeKey(Guid gameId, ushort key) => $"{gameId}:{key}";
@@ -100,6 +101,21 @@ namespace TwitchBingoService.Storage
                 notifs.Add(notif);
             }
             return Task.FromResult(notifs.ToArray());
+        }
+
+        public Task<string> ReadUserName(string userId)
+        {
+            if (UserNames.TryGetValue(userId, out string userName))
+            {
+                return Task.FromResult(userName);
+            }
+            return Task.FromResult<string>(null);
+        }
+
+        public Task WriteUserName(string userId, string userName)
+        {
+            UserNames.AddOrUpdate(userId, userName, (key, oldValue) => userName);
+            return Task.CompletedTask;
         }
     }
 }

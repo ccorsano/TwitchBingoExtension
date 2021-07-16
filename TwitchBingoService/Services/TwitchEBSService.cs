@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Conceptoire.Twitch.API;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using TwitchAchievementTrackerBackend.Configuration;
 
 namespace TwitchBingoService.Services
@@ -18,18 +20,20 @@ namespace TwitchBingoService.Services
     public class TwitchEBSService
     {
         static readonly DateTimeOffset EPOCH = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        private readonly TwitchAPIClient _apiClient;
         private readonly TwitchOptions _options;
         private readonly ILogger _logger;
         private HttpClient _twitchExtensionClient;
         private SigningCredentials _jwtSigningCredentials;
 
-        public TwitchEBSService(IHttpClientFactory httpClientFactory, IOptions<TwitchOptions> options, ILogger<TwitchEBSService> logger)
+        public TwitchEBSService(IHttpClientFactory httpClientFactory, TwitchAPIClient apiClient, IOptions<TwitchOptions> options, ILogger<TwitchEBSService> logger)
         {
             _options = options.Value;
             _logger = logger;
             _twitchExtensionClient = httpClientFactory.CreateClient("twitchExt");
             _twitchExtensionClient.BaseAddress = new Uri("https://api.twitch.tv/extensions/");
-            _twitchExtensionClient.DefaultRequestHeaders.Add("client-id", _options.ClientId);
+            _twitchExtensionClient.DefaultRequestHeaders.Add("client-id", _options.ExtensionId);
+            _apiClient = apiClient;
 
             var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_options.ExtensionSecret));
             _jwtSigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -79,9 +83,9 @@ namespace TwitchBingoService.Services
         {
             var exp = DateTimeOffset.UtcNow - EPOCH;
 
-            var token = new JwtSecurityToken(null, null, null, null, DateTime.UtcNow.AddDays(1), _jwtSigningCredentials);
-            token.Payload["channel_id"] = channelId;
+            var token = new JwtSecurityToken(null, null, null, null, DateTime.UtcNow.AddHours(1), _jwtSigningCredentials);
             token.Payload["user_id"] = channelId;
+            token.Payload["channel_id"] = channelId;
             token.Payload["role"] = "external";
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -145,11 +149,18 @@ namespace TwitchBingoService.Services
             _logger.LogInformation("Sending chat message for {channelId}: {message}", channelId, message);
 
             var token = GetChatJWTToken(channelId);
-            var content = new StringContent(JsonSerializer.Serialize(new { text = message }), Encoding.UTF8, "application/json");
-            var httpMessage = new HttpRequestMessage(HttpMethod.Post, $"{_options.ClientId}/{version}/channels/{channelId}/chat");
+            var payload = new
+            {
+                text = message,
+                extension_id = _options.ExtensionId,
+                extension_version = version,
+            };
+            var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            var httpMessage = new HttpRequestMessage(HttpMethod.Post, $"https://api.twitch.tv/helix/extensions/chat?broadcaster_id={HttpUtility.UrlEncode(channelId)}");
 
             httpMessage.Content = content;
             httpMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            httpMessage.Headers.Add("Client-Id", _options.ExtensionId);
             var response = await _twitchExtensionClient.SendAsync(httpMessage);
             if (!response.IsSuccessStatusCode)
             {
@@ -167,6 +178,11 @@ namespace TwitchBingoService.Services
         public Task<bool> TrySendChatMessage(string channelId, string message, string version)
         {
             return SendChatMessageInternal(channelId, message, version, throwOnError: false);
+        }
+
+        public async Task<string> GetUserDisplayName(string userId)
+        {
+            return (await _apiClient.GetUsersByIdAsync(new string[] { userId })).FirstOrDefault()?.DisplayName;
         }
     }
 }

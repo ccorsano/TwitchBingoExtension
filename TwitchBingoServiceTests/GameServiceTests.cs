@@ -34,13 +34,17 @@ namespace TwitchBingoServiceTests
             };
         }
 
-        private TwitchEBSService GetEBSService()
+        private TwitchEBSService GetEBSService(Func<HttpRequestMessage, HttpResponseMessage> callback = null)
         {
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .Returns((HttpRequestMessage request, CancellationToken token) =>
                 {
+                    if (callback != null)
+                    {
+                        return Task.FromResult(callback(request));
+                    }
                     return Task.FromResult(new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
@@ -58,9 +62,9 @@ namespace TwitchBingoServiceTests
                 .Returns(new HttpClient(handlerMock.Object));
             var loggerFactory = new LoggerFactory();
 
-            return new TwitchEBSService(mockHttpFactory.Object, new OptionsWrapper<TwitchOptions>(new TwitchOptions
+            return new TwitchEBSService(mockHttpFactory.Object, null, new OptionsWrapper<TwitchOptions>(new TwitchOptions
             {
-                ClientId = "nope",
+                ExtensionId = "nope",
                 ExtensionSecret = "dGhpcyBpcyBhIHNlY3JldCBwaHJhc2UgdG8gZ2VuZXJhdGUgYSB0ZXN0IHByaXZhdGUga2V5"
             }), loggerFactory.CreateLogger<TwitchEBSService>());
         }
@@ -136,7 +140,10 @@ namespace TwitchBingoServiceTests
         {
             var storage = new InMemoryGameStore();
             var mockEBS = GetEBSService();
-            var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions());
+            var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions
+            {
+                DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(2)
+            });
             var loggerFactory = new LoggerFactory();
             var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
 
@@ -151,16 +158,19 @@ namespace TwitchBingoServiceTests
             var cell_0_2 = grid01.cells.FirstOrDefault(c => c.col == 2 && c.row == 0);
             // Add a tentative from player on cell 0,0
             var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
-            var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
-            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
             Assert.False(tentative01.confirmed);
-            Assert.False(tentative02.confirmed);
-            Assert.False(tentative03.confirmed);
 
             // Confirm entry from moderator
             var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
+            await Task.Delay(2);
+            var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
+            Assert.False(tentative02.confirmed);
             var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
+            await Task.Delay(2);
+            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
+            Assert.False(tentative03.confirmed);
             var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
+            await Task.Delay(2);
 
             // Get updated grid for player
             var grid01_2 = await gameService.GetGrid(game.gameId, "Player01");

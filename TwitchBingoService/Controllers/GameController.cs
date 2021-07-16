@@ -41,6 +41,11 @@ namespace TwitchBingoService.Controllers
                 var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
                 await _gameService.RegisterModerator(gameId, opaqueId);
             }
+            var userId = User.Claims.First(c => c.Type == "user_id").Value;
+            if (userId != null)
+            {
+                var userTask = _gameService.RegisterPlayer(userId);
+            }
             return await _gameService.GetGrid(gameId, User.Identity.Name);
         }
 
