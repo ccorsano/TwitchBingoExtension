@@ -1,5 +1,6 @@
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
+import LinearProgress from "@material-ui/core/LinearProgress"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
@@ -58,27 +59,29 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
             </List>
             <List>
                 {
-                    props.entries.map((entry) => {
-                        const tentative = props.tentatives.find(t => t.key == entry.key)
-                        if (tentative)
-                        {
-                            return null;
-                        }
+                    props.entries.length > 0 ?
+                        props.entries.map((entry) => {
+                            const tentative = props.tentatives.find(t => t.key == entry.key)
+                            if (tentative)
+                            {
+                                return null;
+                            }
 
-                        const isConfirmed = entry.confirmedAt != null;
-                        
-                        return (
-                            <ListItem key={entry.key} className={isConfirmed ? classes.confirmed : classes.idle }>
-                                <ListItemText primary={entry.text} />
-                                <ListItemSecondaryAction>
-                                    <ButtonGroup size="small">
-                                        <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>Confirm</Button>
-                                        {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
-                                    </ButtonGroup>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        );
-                    })
+                            const isConfirmed = entry.confirmedAt != null;
+                            
+                            return (
+                                <ListItem key={entry.key} className={isConfirmed ? classes.confirmed : classes.idle }>
+                                    <ListItemText primary={entry.text} />
+                                    <ListItemSecondaryAction>
+                                        <ButtonGroup size="small">
+                                            <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>Confirm</Button>
+                                            {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
+                                        </ButtonGroup>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            );
+                        })
+                    : <LinearProgress variant="indeterminate" />
                 }
             </List>
         </Paper>

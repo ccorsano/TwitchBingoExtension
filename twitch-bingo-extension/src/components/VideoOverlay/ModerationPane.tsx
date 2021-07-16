@@ -8,12 +8,12 @@ import { TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import { BingoConfirmationNotification, BingoEntry, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
 import { EBSError } from '../../EBS/EBSBase';
+import { Twitch } from '../../services/TwitchService';
 
 type ModerationPaneProps = {
     isOpen: boolean,
     onOpen: () => void,
     onClose: (e: React.MouseEvent<any>) => void,
-    entries: BingoEntry[],
     isStarted: boolean,
     gameId: string,
     confirmationTimeout: number,
@@ -26,6 +26,20 @@ export default function ModerationPane(props: ModerationPaneProps)
 {
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
     const [autoOpened, setAutoOpened] = React.useState(false);
+    const [entries, setEntries] = React.useState<BingoEntry[]>(new Array(0));
+
+    const refreshEntries = (gameId: string) => {
+        BingoEBS.getGame(gameId).then(game => {
+            setEntries(game.entries)
+        })
+    }
+
+    React.useEffect(() => {
+        if (props.gameId)
+        {
+            refreshEntries(props.gameId)
+        }
+    }, [props.gameId])
 
     const receiveTentative = (notification: BingoTentativeNotification) => {
         setTentatives(currentTentatives => {
@@ -61,6 +75,7 @@ export default function ModerationPane(props: ModerationPaneProps)
                 return tentative
             })
         })
+        refreshEntries(confirmation.gameId)
     }
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
@@ -88,11 +103,11 @@ export default function ModerationPane(props: ModerationPaneProps)
     }
 
     React.useEffect(() => {
-        console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
+        console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
 
         TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         return () => {
-            console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
+            console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
             TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         }
     }, [])
@@ -111,7 +126,6 @@ export default function ModerationPane(props: ModerationPaneProps)
     }
     
     const onConfirm = (entry: BingoEntry) => {
-
         BingoEBS.confirm(props.gameId, entry.key.toString()).then(() => {
             processTentative(entry)
         }, (reason: EBSError) => {
@@ -161,7 +175,7 @@ export default function ModerationPane(props: ModerationPaneProps)
                 </div>
                 <Divider />
                 <ModerationBingoComponent
-                    entries={props.entries}
+                    entries={entries}
                     tentatives={tentatives}
                     isStarted={props.isStarted}
                     gameId={props.gameId}

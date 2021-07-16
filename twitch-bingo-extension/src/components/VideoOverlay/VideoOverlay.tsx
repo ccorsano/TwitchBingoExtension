@@ -81,7 +81,6 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                 <ModerationPane
                     isOpen={this.state.moderationDrawerOpen}
                     isStarted={this.state.isStarted}
-                    entries={this.state.entries}
                     onOpen={() => {this.setState({moderationDrawerOpen: true})}}
                     onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
                     gameId={this.state.activeGame?.gameId}
