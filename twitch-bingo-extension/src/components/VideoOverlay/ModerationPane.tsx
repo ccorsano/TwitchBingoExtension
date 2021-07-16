@@ -65,7 +65,7 @@ export default function ModerationPane(props: ModerationPaneProps)
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
         let message = JSON.parse(messageStr, (key, value) => {
-            if (key == "tentativeTime")
+            if (key == "tentativeTime" || key == "confirmationTime")
             {
                 return new Date(value);
             }

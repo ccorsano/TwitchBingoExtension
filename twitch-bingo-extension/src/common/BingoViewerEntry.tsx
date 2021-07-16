@@ -57,7 +57,10 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     }
 
     const handlePrompt = (_event: React.MouseEvent<HTMLElement>) => {
-        setConfirmationPrompt(! confirmationPrompt)
+        if (confirmationPrompt || props.state == BingoEntryState.Idle)
+        {
+            setConfirmationPrompt(! confirmationPrompt)
+        }
     };
 
     const handleTentative = (_event: React.MouseEvent<HTMLElement>) => {
