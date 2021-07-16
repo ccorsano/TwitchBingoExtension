@@ -8,7 +8,6 @@ import { TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import { BingoConfirmationNotification, BingoEntry, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
 import { EBSError } from '../../EBS/EBSBase';
-import { Twitch } from '../../services/TwitchService';
 
 type ModerationPaneProps = {
     isOpen: boolean,
