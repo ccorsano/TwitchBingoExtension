@@ -182,6 +182,10 @@ export default class Config extends React.Component<any, ConfigState> {
             return;
         }
         BingoEBS.stopGame(this.state.activeGame.gameId).finally(() => {
+            TwitchExtHelper.send('broadcast','application/json', {
+                type: "stop",
+                payload: this.state.activeGame
+            })
             this.setState({
                 activeGame: null
             })

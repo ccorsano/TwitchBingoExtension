@@ -59,6 +59,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                     break;
                 case 'bingo':
                     console.log(messageStr);
+                    this.refreshGrid(this.state.activeGame, this.state.entries);
                     break;
                 default:
                     break;
