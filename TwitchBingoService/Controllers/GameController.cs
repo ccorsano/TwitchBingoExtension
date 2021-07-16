@@ -36,9 +36,9 @@ namespace TwitchBingoService.Controllers
         [HttpGet("{gameId}/grid")]
         public async Task<BingoGrid> GetGrid(Guid gameId)
         {
+            var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
             if (User.IsInRole("moderator") || User.IsInRole("broadcaster"))
             {
-                var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
                 await _gameService.RegisterModerator(gameId, opaqueId);
             }
             var userId = User.Claims.First(c => c.Type == "user_id").Value;
@@ -46,7 +46,7 @@ namespace TwitchBingoService.Controllers
             {
                 var userTask = _gameService.RegisterPlayer(userId);
             }
-            return await _gameService.GetGrid(gameId, User.Identity.Name);
+            return await _gameService.GetGrid(gameId, userId ?? opaqueId);
         }
 
         [HttpPost("{gameId}/{key}/tentative")]

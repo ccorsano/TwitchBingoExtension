@@ -114,6 +114,8 @@ namespace TwitchBingoService.Services
             var seed = playerId.GetHashCode() ^ gameId.GetHashCode();
             var random = new Random(seed);
 
+            _logger.LogInformation("Generating grid for game {gameId}, player {playerId} (seed: {seed})", gameId, playerId, seed);
+
             var user = await _storage.ReadTentatives(gameId, playerId);
 
             var cells = new List<BingoGridCell>();
