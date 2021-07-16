@@ -1,4 +1,10 @@
-import { Button, ButtonGroup, List, ListItem, ListItemSecondaryAction, ListItemText, Paper } from "@material-ui/core"
+import Button from "@material-ui/core/Button"
+import ButtonGroup from "@material-ui/core/ButtonGroup"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
+import ListItemText from "@material-ui/core/ListItemText"
+import Paper from "@material-ui/core/Paper"
 import React from "react"
 import { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
 import TentativeNotificationComponent from "./TentativeNotificationComponent"
@@ -61,7 +67,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                 <ListItemSecondaryAction>
                                     <ButtonGroup size="small">
                                         <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} >Confirm</Button>
-                                        {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
+                                        <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button>
                                     </ButtonGroup>
                                 </ListItemSecondaryAction>
                             </ListItem>

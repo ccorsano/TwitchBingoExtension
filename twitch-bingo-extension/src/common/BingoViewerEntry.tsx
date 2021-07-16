@@ -1,4 +1,6 @@
-import { Box, Button, CircularProgress, Paper, Typography } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
 import React from "react";
 import clsx from 'clsx';
 import { BingoEntryState } from "../model/BingoEntry";
@@ -72,14 +74,14 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     }
 
     return (
-        <Paper elevation={3} className={clsx(classes.paper, stateClass, props.isColCompleted ? classes.colConfirmed : '', props.isRowCompleted ? classes.rowConfirmed : '')}>
-            <Box py={3} my={0.5} px={2}>
+        <div className={clsx(classes.paper, stateClass, props.isColCompleted ? classes.colConfirmed : '', props.isRowCompleted ? classes.rowConfirmed : '')}>
+            <div className={clsx(classes.bingoEntry)}>
                 <Typography>
                     {props.config.text}
                 </Typography>
                 { timerComponent }
                 { props.canInteract ? <Button onClick={handleTentative}>Bingo !</Button> : null}
-            </Box>
-        </Paper>
+            </div>
+        </div>
     )
 }

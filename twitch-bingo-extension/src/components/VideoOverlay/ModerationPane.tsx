@@ -1,5 +1,7 @@
-import { Divider, Drawer, IconButton } from '@material-ui/core';
-import { ChevronLeft } from '@material-ui/icons';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import IconButton from '@material-ui/core/IconButton';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import React from 'react';
 import ModerationBingoComponent from '../../common/ModerationBingoComponent';
 import { TwitchExtHelper } from '../../common/TwitchExtension';

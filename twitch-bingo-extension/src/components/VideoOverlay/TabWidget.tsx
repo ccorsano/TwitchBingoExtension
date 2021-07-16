@@ -1,6 +1,6 @@
 import React from "react"
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount'
-import { makeStyles } from "@material-ui/core/styles"
+import makeStyles from "@material-ui/core/styles/makeStyles"
 import clsx from 'clsx';
 require('./TabWidget.scss')
 const BingoLogo = require('../../../assets/BingoLogo.svg')

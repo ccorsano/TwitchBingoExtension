@@ -1,4 +1,4 @@
-import { Box, Grid, LinearProgress, Paper } from '@material-ui/core';
+import { LinearProgress, Paper } from '@material-ui/core';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/BingoEntry';
@@ -205,60 +205,56 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
 
     renderGrid(){
         return (
-            <Grid container className="bingoGrid">
+            <div className="bingoGrid" style={{ display: "grid" }}>
                 {
                     [...Array(this.state.rows).keys()].map(row => {
                         let isRowComplete = this.isRowComplete(row);
-                        return <Grid container item xs={12} spacing={1} key={row}>
+                        return [...Array(this.state.columns).keys()].map(col => {
+                            let isColComplete = this.isColComplete(col);
+                            let [cell, entry] = this.getCell(row, col);
+                            if (! entry)
                             {
-                                [...Array(this.state.columns).keys()].map(col => {
-                                    let isColComplete = this.isColComplete(col);
-                                    let [cell, entry] = this.getCell(row, col);
-                                    if (! entry)
-                                    {
-                                        var key = this.state.nextKey + col + (row * this.state.columns);
-                                        return <Grid item xs key={key}>
-                                            <BingoViewerEntry
-                                                config={{key: key, text: ""}}
-                                                state={BingoEntryState.Idle}
-                                                canInteract={false}
-                                                canConfirm={false}
-                                                isColCompleted={isColComplete}
-                                                isRowCompleted={isRowComplete}
-                                                onTentative={this.onTentative}
-                                            />
-                                        </Grid>
-                                    }
-                                    else
-                                    {
-                                        return <Grid item xs key={cell.key}>
-                                            <BingoViewerEntry
-                                                config={entry}
-                                                state={cell.state}
-                                                canInteract={this.state.canVote && cell.state == BingoEntryState.Idle}
-                                                canConfirm={this.state.canModerate}
-                                                isColCompleted={isColComplete}
-                                                isRowCompleted={isRowComplete}
-                                                countdown={cell.timer}
-                                                onTentative={this.onTentative}
-                                            />
-                                        </Grid>
-                                    }
-                                })
+                                var key = this.state.nextKey + col + (row * this.state.columns);
+                                return <div key={key} style={{gridColumn: col + 1, gridRow: row + 1}}>
+                                    <BingoViewerEntry
+                                        config={{key: key, text: ""}}
+                                        state={BingoEntryState.Idle}
+                                        canInteract={false}
+                                        canConfirm={false}
+                                        isColCompleted={isColComplete}
+                                        isRowCompleted={isRowComplete}
+                                        onTentative={this.onTentative}
+                                    />
+                                </div>
                             }
-                        </Grid>
+                            else
+                            {
+                                return <div key={cell.key} style={{gridColumn: col + 1, gridRow: row + 1}}>
+                                    <BingoViewerEntry
+                                        config={entry}
+                                        state={cell.state}
+                                        canInteract={this.state.canVote && cell.state == BingoEntryState.Idle}
+                                        canConfirm={this.state.canModerate}
+                                        isColCompleted={isColComplete}
+                                        isRowCompleted={isRowComplete}
+                                        countdown={cell.timer}
+                                        onTentative={this.onTentative}
+                                    />
+                                </div>
+                            }
+                        })
                     })
                 }
-            </Grid>);
+            </div>);
     }
 
     render(){
         return [
-            <Box my={12} mx={2}>
+            <React.Fragment>
             {
                 this.state.isStarted ? this.renderGrid() : <Paper><LinearProgress /></Paper>
             }
-            </Box>
+            </React.Fragment>
         ]
     }
 }

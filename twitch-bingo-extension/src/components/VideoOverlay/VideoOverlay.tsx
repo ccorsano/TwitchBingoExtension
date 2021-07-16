@@ -1,4 +1,3 @@
-import { Box, Grid } from '@material-ui/core';
 import React from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
@@ -76,18 +75,16 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         }
 
         return [
-            <Grid container>
-                <Box id="bingoRenderingArea">
-                    <VideoOverlayTabWidget
-                        collapsed={this.state.isCollapsed}
-                        canModerate={this.state.canModerate}
-                        hasModNotifications={this.state.hasModNotifications}
-                        onToggleGrid={(_) => {this.setState({isCollapsed: !this.state.isCollapsed});}}
-                        onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
-                    { this.state.isCollapsed ? null : super.render() }
-                    { this.state.canModerate ? moderationDrawer : null }
-                </Box>
-            </Grid>
+            <div id="bingoRenderingArea">
+                <VideoOverlayTabWidget
+                    collapsed={this.state.isCollapsed}
+                    canModerate={this.state.canModerate}
+                    hasModNotifications={this.state.hasModNotifications}
+                    onToggleGrid={(_) => {this.setState({isCollapsed: !this.state.isCollapsed});}}
+                    onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
+                { this.state.isCollapsed ? null : super.render() }
+                { this.state.canModerate ? moderationDrawer : null }
+            </div>
         ];
     }
 }

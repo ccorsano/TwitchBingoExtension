@@ -1,6 +1,12 @@
 import * as React from 'react';
-import { Icon, IconButton, ListItem, ListItemText, TextField } from '@material-ui/core'
-import { AddCircleOutline, Check, Delete } from '@material-ui/icons'
+import Icon from '@material-ui/core/Icon'
+import IconButton from '@material-ui/core/IconButton'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import TextField from '@material-ui/core/TextField'
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
+import Check from '@material-ui/icons/Check'
+import Delete from '@material-ui/icons/Delete'
 import { BingoEditableEntry } from '../../model/BingoEntry';
 
 type EditableBingoEntryState = {

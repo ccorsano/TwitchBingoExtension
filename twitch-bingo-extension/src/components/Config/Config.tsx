@@ -1,7 +1,24 @@
 import * as React from 'react';
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Grid, Icon, IconButton, List, ListItem, ListItemText, Paper, Slider, Typography } from '@material-ui/core'
+import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import CardHeader from '@material-ui/core/CardHeader'
+import Grid from '@material-ui/core/Grid'
+import Icon from '@material-ui/core/Icon'
+import IconButton from '@material-ui/core/IconButton'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import Paper from '@material-ui/core/Paper'
+import Slider from '@material-ui/core/Slider'
+import Typography from '@material-ui/core/Typography'
 import EditableBingoEntry from './EditableBingoEntry';
-import { AddCircleOutline, AssignmentReturned, CloudUploadOutlined, RemoveCircleOutline } from '@material-ui/icons';
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
+import AssignmentReturned from '@material-ui/icons/AssignmentReturned';
+import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined';
+import RemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
 import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
@@ -140,14 +157,16 @@ export default class Config extends React.Component<any, ConfigState> {
                 gameId: game.gameId,
             });
             
-            TwitchExtHelper.configuration.set('broadcaster', '0.0.1', JSON.stringify({
+            var configUpdateJson = JSON.stringify({
                 nextKey: this.state.nextKey,
                 entries: this.state.entries,
                 selectedEntries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
                 activeGame: game,
-            }));
+            })
+            TwitchExtHelper.configuration.set('broadcaster', '0.0.1', configUpdateJson);
+            console.log(configUpdateJson);
             TwitchExtHelper.send('broadcast','application/json', {
                 type: "start",
                 payload: game
@@ -175,7 +194,8 @@ export default class Config extends React.Component<any, ConfigState> {
         }
         this.state.entries.splice(index, 1);
         this.setState({
-            entries: this.state.entries
+            entries: this.state.entries,
+            selectedEntries: this.state.selectedEntries.filter(s => s != key),
         });
     }
 

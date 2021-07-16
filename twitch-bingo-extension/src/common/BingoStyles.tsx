@@ -1,10 +1,11 @@
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 
 export const bingoStyles = makeStyles({
     paper: {
         background: 'linear-gradient(45deg, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.8) 100%);',
         height: '95%',
+        borderRadius: '1rem',
     },
     idle: {
 
@@ -32,5 +33,11 @@ export const bingoStyles = makeStyles({
         borderTopColor: 'black',
         borderBottomStyle: 'solid',
         borderBottomColor: 'black',
+    },
+    bingoEntry: {
+        paddingTop: '24px',
+        paddingBottom: '24px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
     }
   });
