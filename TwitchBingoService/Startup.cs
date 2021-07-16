@@ -113,8 +113,8 @@ namespace TwitchBingoService
             services.AddSingleton(s =>
                 Twitch.Authenticate()
                     .FromAppCredentials(
-                        s.GetService<IOptions<TwitchApplicationOptions>>().Value.ClientId,
-                        s.GetService<IOptions<TwitchApplicationOptions>>().Value.ClientSecret)
+                        s.GetService<IOptions<TwitchOptions>>().Value.ClientId,
+                        s.GetService<IOptions<TwitchOptions>>().Value.ClientSecret)
                     .Build()
             );
             services.AddTransient<TwitchAPIClient>();
