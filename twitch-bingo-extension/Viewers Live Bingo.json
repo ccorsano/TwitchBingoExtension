@@ -111,6 +111,28 @@
       "orientation": "Portrait",
       "type": "video_overlay",
       "viewerType": "Logged-In Viewer"
+    },
+    {
+      "channelId": "158511925",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": true,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "5",
+      "isPopout": false,
+      "label": "LiveConfig",
+      "linked": true,
+      "linkedUserId": "265737932",
+      "orientation": "Portrait",
+      "type": "dashboard",
+      "viewerType": "Broadcaster"
     }
   ],
   "manifest": {
@@ -145,13 +167,9 @@
     "viewerSummary": "",
     "viewerUrl": "",
     "viewerUrls": {
-      "mobile": "https://localhost:8180/mobile.html",
       "videoOverlay": "https://localhost:8180/video_overlay.html"
     },
     "views": {
-      "mobile": {
-        "viewerUrl": "https://localhost:8180/mobile.html"
-      },
       "videoOverlay": {
         "viewerUrl": "https://localhost:8180/video_overlay.html",
         "canLinkExternalContent": false
