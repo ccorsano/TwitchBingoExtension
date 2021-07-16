@@ -6,8 +6,7 @@ export const bingoStyles = makeStyles({
         height: '95%',
         borderRadius: '1rem',
         userSelect: 'none',
-        textAlign: 'center',
-        textSizeAdjust: 'auto',
+        textAlign: 'center'
     },
     idle: {
         "&:hover": {

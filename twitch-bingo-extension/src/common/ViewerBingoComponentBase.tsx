@@ -127,6 +127,19 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             }
         }
     };
+    
+    getCellFontSize(_cell: BingoGridCell): string
+    {
+        var state = this.state as ViewerBingoComponentBaseState;
+        var numberOfCells = state.columns * state.rows;
+
+        // Function to get a vw unit font-size based on number of cells
+        //  used these points for plotting: (6, 2.5vw), (12, 1.6vw), (16, 1.35vw), (20, 1.2vw)
+        //  used https://mycurvefit.com/
+        var fontSize = 0.7081993 + (6.028139 - 0.7081993)/(1 + Math.pow(numberOfCells/3.611081, 1.33441))
+
+        return fontSize.toFixed(2) + "vw";
+    }
 
     getCell = (row: number, col: number): [BingoGridCell,BingoEntry] => {
         var state = this.state as ViewerBingoComponentBaseState;
@@ -224,6 +237,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                         isColCompleted={isColComplete}
                                         isRowCompleted={isRowComplete}
                                         onTentative={this.onTentative}
+                                        fontSize="16px"
                                     />
                                 </div>
                             }
@@ -239,6 +253,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                         isRowCompleted={isRowComplete}
                                         countdown={cell.timer}
                                         onTentative={this.onTentative}
+                                        fontSize={this.getCellFontSize(cell)}
                                     />
                                 </div>
                             }

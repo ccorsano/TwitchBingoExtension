@@ -17,6 +17,7 @@ type BingoViewerEntryProps = {
     isColCompleted: boolean,
     onTentative: (entry: BingoEntry) => void,
     countdown?: Date,
+    fontSize: string
 }
 
 const renderTime = ({remainingTime}) => {
@@ -86,7 +87,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     return (
         <div className={clsx(classes.paper, stateClass, props.isColCompleted ? classes.colConfirmed : '', props.isRowCompleted ? classes.rowConfirmed : '')} onClick={handlePrompt}>
             <div className={clsx(classes.bingoEntry)}>
-                <div>
+                <div style={{fontSize: props.fontSize}}>
                     {props.config.text}
                 </div>
             </div>
