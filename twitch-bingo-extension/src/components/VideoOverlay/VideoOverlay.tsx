@@ -1,7 +1,7 @@
 import React from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
-import { BingoGame, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoConfirmationNotification, BingoGame, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
 import ModerationPane from './ModerationPane';
 import VideoOverlayTabWidget from './TabWidget';
 require('./VideoOverlay.scss');
@@ -49,6 +49,23 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         })
     }
 
+    onConfirmationNotification = (confirmation: BingoConfirmationNotification) => {
+        this.setState({
+            entries: this.state.entries.map(entry => {
+                if (entry.key == confirmation.key)
+                {
+                    return {
+                        key: confirmation.key,
+                        text: entry.text,
+                        confirmedAt: confirmation.confirmationTime,
+                        confirmedBy: confirmation.confirmedBy,
+                    }
+                }
+                return entry
+            })
+        })
+    }
+
     onNotificationsEmpty = () => {
         this.setState({
             moderationDrawerOpen: false,
@@ -70,6 +87,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                     gameId={this.state.activeGame?.gameId}
                     confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")}
                     onReceiveTentative={this.onTentativeNotification}
+                    onReceiveConfirmation={this.onConfirmationNotification}
                     onNotificationsEmpty={this.onNotificationsEmpty} />
             )
         }

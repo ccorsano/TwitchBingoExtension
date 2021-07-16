@@ -7,6 +7,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import Paper from "@material-ui/core/Paper"
 import React from "react"
 import { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
+import { bingoStyles } from "./BingoStyles"
 import TentativeNotificationComponent from "./TentativeNotificationComponent"
 
 
@@ -23,6 +24,8 @@ type ModerationBingoComponentProps = {
 
 export default function ModerationBingoComponent(props: ModerationBingoComponentProps)
 {
+    const classes = bingoStyles();
+
     return (
         <Paper elevation={3}>
             <List>
@@ -61,14 +64,16 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                         {
                             return null;
                         }
+
+                        const isConfirmed = entry.confirmedAt != null;
                         
                         return (
-                            <ListItem key={entry.key}>
+                            <ListItem key={entry.key} className={isConfirmed ? classes.confirmed : classes.idle }>
                                 <ListItemText primary={entry.text} />
                                 <ListItemSecondaryAction>
                                     <ButtonGroup size="small">
-                                        <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} >Confirm</Button>
-                                        <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button>
+                                        <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>Confirm</Button>
+                                        {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
                                     </ButtonGroup>
                                 </ListItemSecondaryAction>
                             </ListItem>

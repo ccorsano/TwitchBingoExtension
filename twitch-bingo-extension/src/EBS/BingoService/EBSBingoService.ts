@@ -11,6 +11,10 @@ export class EBSBingoService extends EBSBase {
         return this.servicePost("/game", gameParams);
     }
 
+    getGame = (gameId: string): Promise<BingoGame> => {
+        return this.serviceFetch("/game/" + encodeURI(gameId));
+    }
+
     stopGame = (gameId: string): Promise<void> => {
         return this.serviceDelete("/game/" + encodeURI(gameId));
     }

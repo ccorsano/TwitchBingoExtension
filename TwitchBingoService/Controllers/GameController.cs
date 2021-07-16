@@ -40,6 +40,14 @@ namespace TwitchBingoService.Controllers
             return _gameService.DeleteGame(gameId);
         }
 
+        [HttpGet("{gameId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
+        public Task<BingoGame> GetGame(Guid gameId)
+        {
+            var channelClaim = User.Claims.First(c => c.Type == "channel_id");
+            return _gameService.GetGame(gameId);
+        }
+
         [HttpGet("{gameId}/grid")]
         public async Task<BingoGrid> GetGrid(Guid gameId)
         {

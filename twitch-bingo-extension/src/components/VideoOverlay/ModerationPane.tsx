@@ -18,6 +18,7 @@ type ModerationPaneProps = {
     gameId: string,
     confirmationTimeout: number,
     onReceiveTentative?: (tentative: BingoTentativeNotification) => void,
+    onReceiveConfirmation?: (confirmation: BingoConfirmationNotification) => void,
     onNotificationsEmpty?: () => void,
 }
 

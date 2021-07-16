@@ -49,6 +49,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 case 'set-config':
                     this.setState({
                         entries: message.payload.entries,
+                        isStarted: message.payload.activeGame != null,
                         rows: message.payload.rows,
                         columns: message.payload.columns,
                         activeGame: message.payload.activeGame,
@@ -80,20 +81,6 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             this.setState({
                 canModerate: TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator',
                 canVote: TwitchExtHelper.viewer.role != 'external',
-            });
-
-            console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`);
-            TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, (_target, _contentType, messageStr) => {
-                console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
-                let message = JSON.parse(messageStr);
-                switch (message.type) {
-                    case 'tentative':
-                        var notification = message.payload as BingoTentativeNotification;
-                        console.log(`Tentative notification for ${notification.key} at ${notification.tentativeTime}`);
-                        break;
-                    default:
-                        break;
-                }
             });
         });
     };
