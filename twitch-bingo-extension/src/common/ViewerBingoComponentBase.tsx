@@ -61,6 +61,17 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                     console.log(messageStr);
                     this.refreshGrid(this.state.activeGame, this.state.entries);
                     break;
+                case 'stop':
+                    this.setState({
+                        entries: new Array(0),
+                        isStarted: false,
+                        rows: 0,
+                        columns: 0,
+                        activeGame: null,
+                        pendingResults: new Array(0),
+                        moderationDrawerOpen: false,
+                    });
+                    break;
                 default:
                     break;
             }
