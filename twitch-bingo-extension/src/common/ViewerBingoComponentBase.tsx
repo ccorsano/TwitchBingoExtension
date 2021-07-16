@@ -1,11 +1,12 @@
-import { LinearProgress, Paper } from '@material-ui/core';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Paper from '@material-ui/core/Paper';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/BingoEntry';
 import BingoViewerEntry from './BingoViewerEntry';
 import { BingoEBS } from '../EBS/BingoService/EBSBingoService';
 import { Twitch } from '../services/TwitchService';
-import { BingoEntry, BingoGame, BingoGrid, BingoTentativeNotification, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
+import { BingoEntry, BingoGame, BingoGrid, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
 
 export type ViewerBingoComponentBaseState = {
     entries: BingoEntry[],
