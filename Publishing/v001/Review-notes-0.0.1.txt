@@ -1,5 +1,20 @@
 Review channel: https://www.twitch.tv/blipbloopbot
 
+# Description
+
+First release !
+Please consider this as a minimum viable version of this extension, and check regularly for updates.
+
+Customizable & interactive bingo games for streamers communities:
+- Have yourself or your moderation team come up with stream events viewers should pay attention to.
+- Let viewers spot and report the events as they appear on your stream
+- Moderators as well as yourself can confirm or reject reported events
+- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened
+- After the event is confirmed, viewers have a the same configurable grace period to report it
+
+The extension will celebrate the most attentive viewers by posting messages on the chat.
+
+
 # Format of the archive
 
 This extension is built with React + Typescript and distributed with included Webpack sourcemaps.
