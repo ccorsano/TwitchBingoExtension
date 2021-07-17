@@ -14,6 +14,7 @@ Source code for this release is also available on
 - Moderators and the broadcaster must then confirm the occurence
 - Viewers must pay extra attention to the stream to complete their grid
 - An EBS is used to keep track of the game and send notifications to moderators and viewers
+- A Live Configuration view is provided for convenience, and mirror the features of the static Configuration page.
 
 # Testing walkthrough
 
@@ -47,5 +48,18 @@ Source code for this release is also available on
   - On the chat, if a viewer has completed a row, a column, or the full grid, a celebration will be sent from the EBS. (Note: I expect this feature will only be active once published)
   - Viewers are expected to celebrate on the chat on their own initiative as well, of course
 
+5- Stop the game
+  - Use the static configuration page or the live configuration pane to stop the game and clear it from the EBS (if not all data expires within 7 days).
 
 
+# Sample entry file to import
+
+As an example, you can save the following lines to a separate file and use the import feature on the configuration page:
+
+Green screen is glitching.
+OBS CRASH. BOOM. move along.
+It's not me ! My gamepad has issues !!!
+Sound is missing but we still have video... Nani ?!
+Full crash. Take a pancake.
+Streamer is lost, coop player is confused.
+Will you please send the INVITE ???!
