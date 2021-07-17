@@ -1,8 +1,10 @@
+import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
+import { Suspense } from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
 import { BingoConfirmationNotification, BingoGame, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
-import ModerationPane from './ModerationPane';
+const ModerationPane = React.lazy(() => import('./ModerationPane'));
 import VideoOverlayTabWidget from './TabWidget';
 require('./VideoOverlay.scss');
 
@@ -78,16 +80,18 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         if (this.state.canModerate)
         {
             moderationDrawer = (
-                <ModerationPane
-                    isOpen={this.state.moderationDrawerOpen}
-                    isStarted={this.state.isStarted}
-                    onOpen={() => {this.setState({moderationDrawerOpen: true})}}
-                    onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
-                    gameId={this.state.activeGame?.gameId}
-                    confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")}
-                    onReceiveTentative={this.onTentativeNotification}
-                    onReceiveConfirmation={this.onConfirmationNotification}
-                    onNotificationsEmpty={this.onNotificationsEmpty} />
+                <Suspense fallback={<LinearProgress variant="indeterminate" />}>
+                    <ModerationPane
+                        isOpen={this.state.moderationDrawerOpen}
+                        isStarted={this.state.isStarted}
+                        onOpen={() => {this.setState({moderationDrawerOpen: true})}}
+                        onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
+                        gameId={this.state.activeGame?.gameId}
+                        confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")}
+                        onReceiveTentative={this.onTentativeNotification}
+                        onReceiveConfirmation={this.onConfirmationNotification}
+                        onNotificationsEmpty={this.onNotificationsEmpty} />
+                </Suspense>
             )
         }
 

@@ -74,7 +74,7 @@ export default class Config extends React.Component<any, ConfigState> {
         {
             return;
         }
-        (window as any).Twitch.ext.rig.log(broadcasterConfig.content);
+        TwitchExtHelper.rig.log(broadcasterConfig.content);
         var configContent = JSON.parse(broadcasterConfig.content);
         this.setState({
             nextKey: configContent?.nextKey ?? 0,
@@ -107,7 +107,7 @@ export default class Config extends React.Component<any, ConfigState> {
             activeGame: this.state.activeGame,
         });
         TwitchExtHelper.configuration.set('broadcaster', EBSVersion, serializedConfig);
-        (window as any).Twitch.ext.rig.log(serializedConfig);
+        TwitchExtHelper.rig.log(serializedConfig);
         TwitchExtHelper.send('broadcast','application/json', {
             type: "set-config",
             payload: {
@@ -234,7 +234,6 @@ export default class Config extends React.Component<any, ConfigState> {
         var reader = new FileReader();
         reader.onload = (ev: ProgressEvent<FileReader>) => {
             var content = ev.target.result as string;
-            console.log(content);
 
             var entries:BingoEditableEntry[] = new Array(0);
             var nextKey = this.state.nextKey;
@@ -355,18 +354,18 @@ export default class Config extends React.Component<any, ConfigState> {
                                 type="file"
                                 style={{display: 'none'}}
                                 onChange={this.onEntriesUpload} />
-                            <IconButton onClick={(_) => this.textInput.click()}>
+                            <IconButton onClick={(_) => this.textInput.click()} aria-label="Upload entry list" title="Replace entries by uploading a .txt file">
                                 <Icon>
                                     <CloudUploadOutlined />
                                 </Icon> 
                             </IconButton>
                             <textarea ref={this.setTextAreaRef} style={{display: 'none'}}/>
-                            <IconButton onClick={this.onEntriesCopy}>
+                            <IconButton onClick={this.onEntriesCopy} aria-label="Copy current entries to your pasteboard" title="Copy current entries to your pasteboard">
                                 <Icon>
                                     <AssignmentReturned />
                                 </Icon>
                             </IconButton>
-                            <IconButton onClick={this.onAdd}>
+                            <IconButton onClick={this.onAdd} aria-label="Add a new entry to the list" title="Add a new entry to the list">
                                 <Icon>
                                     <AddCircleOutline />
                                 </Icon>

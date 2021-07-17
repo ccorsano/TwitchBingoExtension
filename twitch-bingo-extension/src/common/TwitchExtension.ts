@@ -77,6 +77,10 @@ export interface TwitchExtensionViewerHelper {
     onChange: (callback: () => void) => void;
 }
 
+export interface TwitchExtensionRigHelper {
+    log: (message: string) => void;
+}
+
 export interface TwitchExtensionHelper {
     onAuthorized: (authCallback: (context: TwitchAuthCallbackContext) => void) => void;
     onContext: (contextCallback: (context: TwitchContext, changedProperties: string[]) => void) => void;
@@ -89,6 +93,7 @@ export interface TwitchExtensionHelper {
     unlisten: (target: string, callback: (target: string, contentType: string, message: string) => void) => void;
     configuration: TwitchExtensionConfigurationHelper;
     viewer: TwitchExtensionViewerHelper;
+    rig: TwitchExtensionRigHelper;
 }
 
 export const TwitchExtHelper: TwitchExtensionHelper = (<any>window).Twitch.ext;

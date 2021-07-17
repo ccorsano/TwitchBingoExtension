@@ -35,7 +35,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                         if (tentative)
                         {
                             var entry: BingoEntry = props.entries.find(e => e.key == tentative.key);
-                            console.log("ModerationBingoComponent tentative key: " + tentative.key)
+                            // console.log("ModerationBingoComponent tentative key: " + tentative.key)
 
                             return (
                                 <TentativeNotificationComponent
@@ -49,10 +49,6 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                     onExpire={props.onTentativeExpire}
                                 />
                             );
-                        }
-                        else
-                        {
-                            console.log("Empty tentative")
                         }
                     })
                 }

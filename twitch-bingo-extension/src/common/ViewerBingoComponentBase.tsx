@@ -153,7 +153,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             {
                 var entry = entryResult[0];
                 var pending: BingoPendingResult = state.pendingResults.find(p => p.key == cell.key);
-                console.log("Pending result for key " + cell.key + " : " + pending?.key +  " expires at " + pending?.expireAt);
+                // console.log("Pending result for key " + cell.key + " : " + pending?.key +  " expires at " + pending?.expireAt);
                 return [
                     {
                         row: row,
@@ -206,14 +206,14 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
             pendingResults: pendingResults,
         });
         setTimeout(() => {
-            console.log("onTentative, refreshing grid after timeout");
+            // console.log("onTentative, refreshing grid after timeout");
             var pendingResults:BingoPendingResult[] = this.state.pendingResults.filter(p => p.key != entry.key);
             this.setState({
                 pendingResults: pendingResults
             });
             this.refreshGrid(this.state.activeGame, this.state.entries);
         }, confirmationTimeout);
-        console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
+        // console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
     };
 
     renderGrid(){

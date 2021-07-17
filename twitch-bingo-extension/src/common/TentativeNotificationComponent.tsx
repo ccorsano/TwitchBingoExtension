@@ -32,7 +32,6 @@ export default function TentativeNotificationComponent(props: TentativeNotificat
     };
 
     var duration: number = (referenceTime.getTime() - Date.now()) + props.confirmationTimeout;
-    console.log("TentativeNotificationComponent key: " + props.entry.key)
     
     return (
         <ListItem key={props.entry.key} className={clsx(isConfirmed ? classes.confirmed : classes.pending)}>

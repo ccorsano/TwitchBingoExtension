@@ -112,7 +112,6 @@ export default function ModerationPane(props: ModerationPaneProps)
     }, [])
 
     React.useEffect(() => {
-        console.log(`Tentatives effect ${tentatives.length}`);
         if (autoOpened && tentatives.length == 0)
         {
             props.onNotificationsEmpty();
