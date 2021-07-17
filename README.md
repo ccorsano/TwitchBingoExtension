@@ -30,6 +30,20 @@ The extension will celebrate the most attentive viewers by posting messages on t
 - An EBS is used to keep track of the game and send notifications to moderators and viewers
 - A Live Configuration view is provided for convenience, and mirror the features of the static Configuration page.
 
+## Stack
+
+### Twitch Extension
+- yarn
+- Webpack for bundling
+- React
+- Typescript
+- MaterialUI (trying to limit its use)
+
+### Extension Backend Service
+- .net 5
+- asp.net core
+- Redis for storage
+
 ## How to run
 ### Prerequisite
 - node 14.x (or 15.x)
