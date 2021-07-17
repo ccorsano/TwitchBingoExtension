@@ -1,2 +1,51 @@
 Review channel: https://www.twitch.tv/blipbloopbot
 
+# Format of the archive
+
+This extension is built with React + Typescript and distributed with included Webpack sourcemaps.
+Source code for this release is also available on
+  https://github.com/ccorsano/TwitchBingoExtension/tree/be0ec6379cd3aa6850765f34b5a8265bb79619ab/twitch-bingo-extension, or upon request by email.
+
+# Feature summary
+
+- Broadcaster can configure a number of bingo entries, meant to represent funny occurences that happen regularly on his Stream
+- These entries will be presented (randomized) on a configurable Bingo grid, to each participating Viewer
+- Viewers must report the funny occurences as they occur
+- Moderators and the broadcaster must then confirm the occurence
+- Viewers must pay extra attention to the stream to complete their grid
+- An EBS is used to keep track of the game and send notifications to moderators and viewers
+
+# Testing walkthrough
+
+1- Configure the Bingo entries & grid
+  1.1 - Populate entries
+    1.1.a - By clicking the import button. Select a text file, one line per entry.
+    1.1.b - By clicking the + button, type-in the entry text.
+  1.2 - Select entries for the next game
+    - Click the + button next to the entries you want to select for the next game.
+  1.3 - Configure the Bingo grid
+    - Configure the number of rows & columns you want for the game
+    - Number of cells in the grid need to be lesser or equal to the number selected entries
+  1.4 - Save the configuration
+    - Click Save
+  1.5 - Launch the game
+    - Click Start game
+  
+2- Play as a viewer
+  - On the stream, unfold the grid by clicking the widget on the top-left corner
+  - Click one of the cell and confirm your observation with the tick button
+  - Observe that a countdown is now ticking, waiting for a moderator confirmation
+
+3- Confirm as a moderator
+  - On the stream, as a moderator, observe the moderation pane open when a viewer makes a tentative
+  - If needed, click the moderation widget below the grid widget to unfold the moderation pane
+  - Pending confirmations are displayed on top, with their countdown ticking
+  - All the other entries are available for confirmation below, if viewers haven't spotted them yet
+
+4- See the result
+  - On the viewer's overlay, observe the cell either turn green or red, depending whether a moderator confirmed it
+  - On the chat, if a viewer has completed a row, a column, or the full grid, a celebration will be sent from the EBS. (Note: I expect this feature will only be active once published)
+  - Viewers are expected to celebrate on the chat on their own initiative as well, of course
+
+
+
