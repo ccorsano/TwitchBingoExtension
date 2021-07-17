@@ -35,7 +35,7 @@ namespace TwitchBingoService.Services
                 entries = gameParams.entries,
                 rows = gameParams.rows,
                 columns = gameParams.columns,
-                confirmationThreshold = _options.DefaultConfirmationThreshold,
+                confirmationThreshold = gameParams.confirmationThreshold ?? _options.DefaultConfirmationThreshold,
             };
 
             await _storage.WriteGame(game);

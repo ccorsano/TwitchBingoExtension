@@ -20,6 +20,7 @@ export interface BingoGameCreationParams {
     rows: number;
     columns: number;
     entries: BingoEntry[];
+    confirmationThreshold: string;
 }
 
 export interface BingoTentative {
@@ -71,4 +72,28 @@ export function ParseTimespan(timeSpan: string): number
 
     // Calculate in seconds, then convert to microseconds and add remaining microseconds
     return (isNegative ? -1 : 1) * (((days * 3600 * 24) + (hours * 3600) + (minutes * 60) + secondes) * 1000 + (nanoseconds/10000));
+}
+
+export function FormatTimeout(seconds: number): string
+{
+    const minutes = (Math.floor(seconds / 60))
+    const minutesStr = minutes.toFixed(0).padStart(2, "0")
+    const secondsStr = Math.floor(seconds - (minutes * 60)).toFixed(0).padStart(2, "0")
+
+    return minutesStr + ":" + secondsStr
+}
+
+export function FormatTimespan(seconds: number): string
+{
+    const days = Math.floor(seconds / (3600 * 24))
+    seconds = seconds - (days * 3600 * 24)
+    const hours = Math.floor(seconds / 3600)
+    seconds = seconds - (hours * 3600)
+    const minutes = Math.floor(seconds / 60)
+    seconds = seconds - (minutes * 60)
+    const secondsOut = Math.floor(seconds)
+    seconds = seconds - secondsOut
+    const milliseconds = Math.floor(seconds * 1000)
+
+    return `${days == 0 ? '' : days + "."}${hours.toString().padStart(2,"0")}:${minutes.toString().padStart(2,"0")}:${secondsOut.toString().padStart(2,"0")}${milliseconds == 0 ? '' : "." + milliseconds.toString().padStart(4, "0")}`
 }

@@ -23,7 +23,7 @@ import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/Twit
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
 import { Twitch } from '../../services/TwitchService';
-import { BingoEntry } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoEntry, FormatTimeout } from '../../EBS/BingoService/EBSBingoTypes';
 import { BingoEditableEntry } from '../../model/BingoEntry';
 import { EBSVersion } from '../../EBS/EBSConfig';
 
@@ -33,6 +33,7 @@ type ConfigState = {
     selectedEntries: number[],
     rows: number,
     columns: number,
+    confirmationThresholdSeconds: number,
     fileDownloadUrl: string,
     activeGame?: EBSBingo.BingoGame,
 }
@@ -44,6 +45,7 @@ export default class Config extends React.Component<any, ConfigState> {
         selectedEntries: new Array(0),
         rows: 3,
         columns: 3,
+        confirmationThresholdSeconds: 120,
         fileDownloadUrl: null,
     }
 
@@ -82,6 +84,7 @@ export default class Config extends React.Component<any, ConfigState> {
             selectedEntries: configContent?.selectedEntries ?? new Array(0),
             rows: configContent?.rows ?? 3,
             columns: configContent?.columns ?? 3,
+            confirmationThresholdSeconds: configContent?.confirmationThreshold ?? 120,
             activeGame: configContent?.activeGame,
         });
     }
@@ -104,6 +107,7 @@ export default class Config extends React.Component<any, ConfigState> {
             selectedEntries: this.state.selectedEntries,
             rows: this.state.rows,
             columns: this.state.columns,
+            confirmationThreshold: this.state.confirmationThresholdSeconds,
             activeGame: this.state.activeGame,
         });
         TwitchExtHelper.configuration.set('broadcaster', EBSVersion, serializedConfig);
@@ -115,6 +119,7 @@ export default class Config extends React.Component<any, ConfigState> {
                 selectedEntries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
+                confirmationThreshold: this.state.confirmationThresholdSeconds,
             }
         });
     }
@@ -151,7 +156,8 @@ export default class Config extends React.Component<any, ConfigState> {
                     key: entry.key,
                     text: entry.text,
                 };
-            })
+            }),
+            confirmationThreshold: EBSBingo.FormatTimespan(this.state.confirmationThresholdSeconds)
         }).then((game)=> {
             console.log("Started game " + game.gameId);
 
@@ -165,6 +171,7 @@ export default class Config extends React.Component<any, ConfigState> {
                 selectedEntries: this.state.selectedEntries,
                 rows: this.state.rows,
                 columns: this.state.columns,
+                confirmationThreshold: this.state.confirmationThresholdSeconds,
                 activeGame: game,
             })
             TwitchExtHelper.configuration.set('broadcaster', EBSVersion, configUpdateJson);
@@ -229,6 +236,12 @@ export default class Config extends React.Component<any, ConfigState> {
         });
     }
 
+    onConfirmationTimeoutChange = (confirmationTimeout: number): void => {
+        this.setState({
+            confirmationThresholdSeconds: confirmationTimeout
+        });
+    }
+
     onEntriesUpload = (evt: React.ChangeEvent<HTMLInputElement>): void => {
         var file = evt.target.files[0];
         var reader = new FileReader();
@@ -275,8 +288,9 @@ export default class Config extends React.Component<any, ConfigState> {
     canStart = (): boolean => this.state.selectedEntries.length >= this.state.rows * this.state.columns;
 
     render(){
-        var rows = this.state.rows;
-        var columns = this.state.columns;
+        const rows = this.state.rows;
+        const columns = this.state.columns;
+        const confirmationThresholdSeconds = this.state.confirmationThresholdSeconds;
 
         var sourceListElement: JSX.Element = null;
         var targetListElement: JSX.Element = null;
@@ -431,6 +445,20 @@ export default class Config extends React.Component<any, ConfigState> {
                                 })
                             }
                             </Grid>
+                            <Typography>
+                                Confirmation time (in minutes)
+                            </Typography>
+                            <Slider
+                                defaultValue={120}
+                                step={10}
+                                min={30}
+                                marks
+                                max={300}
+                                valueLabelDisplay="auto"
+                                valueLabelFormat={FormatTimeout(confirmationThresholdSeconds)}
+                                value={confirmationThresholdSeconds}
+                                onChange={(_, value) => this.onConfirmationTimeoutChange(value as number)}
+                            />
                         </CardContent>
                         <CardActions>
                             <Button variant="contained" color="primary" onClick={this.onSave}>

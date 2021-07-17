@@ -4,7 +4,7 @@ import React from "react";
 import clsx from 'clsx';
 import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { BingoEntry } from "../EBS/BingoService/EBSBingoTypes";
+import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { bingoStyles } from "./BingoStyles";
 import Button from "@material-ui/core/Button";
 
@@ -21,7 +21,7 @@ type BingoViewerEntryProps = {
 }
 
 const renderTime = ({remainingTime}) => {
-    return `${remainingTime}`;
+    return FormatTimeout(remainingTime);
 }
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
