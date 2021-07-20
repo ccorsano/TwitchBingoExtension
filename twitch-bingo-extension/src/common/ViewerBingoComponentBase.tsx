@@ -98,6 +98,8 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 grid: grid,
                 isStarted: true,
                 activeGame: game,
+                rows: game.rows,
+                columns: game.columns,
             });
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);

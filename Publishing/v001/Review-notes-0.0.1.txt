@@ -4,6 +4,7 @@ Review channel: https://www.twitch.tv/blipbloopbot
 
 First release !
 Please consider this as a minimum viable version of this extension, and check regularly for updates.
+Note: This extension is dependent on an extension service, which for this initial release is not scaled for a large viewing audience.
 
 Customizable & interactive bingo games for streamers communities:
 - Have yourself or your moderation team come up with stream events viewers should pay attention to.
@@ -14,6 +15,15 @@ Customizable & interactive bingo games for streamers communities:
 
 The extension will celebrate the most attentive viewers by posting messages on the chat.
 
+# Feature summary
+
+- Broadcaster can configure a number of bingo entries, meant to represent funny occurrences that happen regularly on his Stream
+- These entries will be presented (randomized) on a configurable Bingo grid, to each participating Viewer
+- Viewers must report the funny occurrences as they occur
+- Moderators and the broadcaster must then confirm the occurrence
+- Viewers must pay extra attention to the stream to complete their grid
+- An EBS is used to keep track of the game and send notifications to moderators and viewers
+- A Live Configuration view is provided for convenience, and mirror the features of the static Configuration page.
 
 # Format of the archive
 
@@ -21,15 +31,6 @@ This extension is built with React + Typescript and distributed with included We
 Source code for this release is also available on
   https://github.com/ccorsano/TwitchBingoExtension/tree/a82626c118fd37d90b94168dccd9e621c02a0cd6/twitch-bingo-extension, or upon request by email.
 
-# Feature summary
-
-- Broadcaster can configure a number of bingo entries, meant to represent funny occurences that happen regularly on his Stream
-- These entries will be presented (randomized) on a configurable Bingo grid, to each participating Viewer
-- Viewers must report the funny occurences as they occur
-- Moderators and the broadcaster must then confirm the occurence
-- Viewers must pay extra attention to the stream to complete their grid
-- An EBS is used to keep track of the game and send notifications to moderators and viewers
-- A Live Configuration view is provided for convenience, and mirror the features of the static Configuration page.
 
 # Testing walkthrough
 
@@ -42,9 +43,13 @@ Source code for this release is also available on
   1.3 - Configure the Bingo grid
     - Configure the number of rows & columns you want for the game
     - Number of cells in the grid need to be lesser or equal to the number selected entries
+    - Time to allow before and after confirmation to consider a player's tentative to be valid
+    - Make sure that the number of selected items is large enough to at least fill the configured grid.
+      The grid will contain red cells and an error message will be displayed if that's not the case.
   1.4 - Save the configuration
     - Click Save
   1.5 - Launch the game
+    - Check that the start button is enabled, if not verify if there are any errors displayed on the configuration panel.
     - Click Start game
   
 2- Play as a viewer
