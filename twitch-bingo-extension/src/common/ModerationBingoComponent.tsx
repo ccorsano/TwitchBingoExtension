@@ -1,3 +1,4 @@
+import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import LinearProgress from "@material-ui/core/LinearProgress"
@@ -77,7 +78,10 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                 </ListItem>
                             );
                         })
-                    : <LinearProgress variant="indeterminate" />
+                    :<Box style={{ margin: '1vw' }}>
+                        <LinearProgress variant="indeterminate" />
+                        No entries configured.
+                    </Box>
                 }
             </List>
         </Paper>

@@ -1,5 +1,4 @@
 import LinearProgress from '@material-ui/core/LinearProgress';
-import Paper from '@material-ui/core/Paper';
 import * as React from 'react';
 import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/BingoEntry';
@@ -267,7 +266,20 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         return [
             <React.Fragment>
             {
-                this.state.isStarted ? this.renderGrid() : <Paper><LinearProgress /></Paper>
+                this.state.isStarted
+                    ? this.renderGrid()
+                    : <div style={
+                            {
+                                backgroundColor:'rgba(245,245,245, 0.8)',
+                                width: '100%',
+                                textAlign: 'center',
+                                paddingTop: '1vw',
+                                paddingBottom: '1vw',
+                                borderRadius: '0.25vw',
+                            }}>
+                        <LinearProgress style={{marginBottom: '1vw', marginTop: '1vw'}} />
+                        Waiting for the game to start !
+                    </div>
             }
             </React.Fragment>
         ]

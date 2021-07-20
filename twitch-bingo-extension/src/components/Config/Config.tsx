@@ -26,6 +26,8 @@ import { Twitch } from '../../services/TwitchService';
 import { BingoEntry, FormatTimeout } from '../../EBS/BingoService/EBSBingoTypes';
 import { BingoEditableEntry } from '../../model/BingoEntry';
 import { EBSVersion } from '../../EBS/EBSConfig';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
 type ConfigState = {
     nextKey: number,
@@ -424,6 +426,12 @@ export default class Config extends React.Component<any, ConfigState> {
                                 value={rows}
                                 onChange={(_, value) => this.onRowsChange(value as number)}
                             />
+                            { !this.canStart() ? 
+                                <Alert severity="error">
+                                    <AlertTitle>Not enough entries to fill the grid !</AlertTitle>
+                                    Add entries or reduce grid dimensions to start the game.
+                                </Alert>
+                                 : null }
                             <Grid container xs={12}>
                             {
                                 [...Array(rows).keys()].map(r => {
@@ -432,7 +440,7 @@ export default class Config extends React.Component<any, ConfigState> {
                                             [...Array(columns).keys()].map(c => {
                                                 return <Grid item xs>
                                                     <Paper className="paper" elevation={3}>
-                                                        <Box py={2} my={0.5} bgcolor={ (r * columns + c) < this.state.selectedEntries.length ? "primary.main" : "text.disabled" }>
+                                                        <Box py={2} my={0.5} bgcolor={ (r * columns + c) < this.state.selectedEntries.length ? "primary.main" : "error.main" }>
                                                             <Typography>
                                                                 
                                                             </Typography>
