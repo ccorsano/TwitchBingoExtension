@@ -31,6 +31,12 @@ This extension is built with React + Typescript and distributed with included We
 Source code for this release is also available on
   https://github.com/ccorsano/TwitchBingoExtension/tree/a82626c118fd37d90b94168dccd9e621c02a0cd6/twitch-bingo-extension, or upon request by email.
 
+# Changelog v0.0.1 rc2
+- Added visual feedback when the grid size is too large for the number of selected entries
+  Previously, it was unclear why the "Start" button was disabled when not enough entries were selected to fill the grid.
+- Added visual feedback to the viewers when the game was not yet started
+- Hide the extension completely if the video player gets too small
+
 
 # Testing walkthrough
 

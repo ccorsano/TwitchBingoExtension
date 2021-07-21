@@ -111,29 +111,6 @@
       "orientation": "Portrait",
       "type": "dashboard",
       "viewerType": "Broadcaster"
-    },
-    {
-      "channelId": "158511925",
-      "configurationAnchor": "video_overlay",
-      "displayChannelName": "miekyld",
-      "features": {
-        "isBitsEnabled": false,
-        "isChatEnabled": true,
-        "isSubscriptionStatusAvailable": false
-      },
-      "frameSize": {
-        "width": 375,
-        "height": 667
-      },
-      "id": "6",
-      "isPopout": false,
-      "label": "",
-      "linked": false,
-      "linkedUserId": "",
-      "opaqueId": "UMobileView",
-      "orientation": "Landscape",
-      "type": "mobile",
-      "viewerType": "Logged-In Viewer"
     }
   ],
   "manifest": {
