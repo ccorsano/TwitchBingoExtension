@@ -20,6 +20,7 @@ export type ViewerBingoComponentBaseState = {
     grid?: BingoGrid,
     pendingResults: BingoPendingResult[],
     moderationDrawerOpen: boolean,
+    onRefreshGrid?: (grid: BingoGrid) => void,
 }
 
 export type ViewerBingoComponentBaseProps = {
@@ -36,6 +37,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         canVote: false,
         pendingResults: new Array(0),
         moderationDrawerOpen: false,
+        onRefreshGrid: null,
     };
 
     constructor(props: PropType){
@@ -99,6 +101,8 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                 grid: grid,
                 isStarted: true,
                 activeGame: game,
+            }, () => {
+                if (this.state.onRefreshGrid) this.state.onRefreshGrid(grid)
             });
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
