@@ -77,6 +77,28 @@
         "isSubscriptionStatusAvailable": false
       },
       "frameSize": {
+        "width": 375,
+        "height": 822
+      },
+      "id": "3",
+      "isPopout": false,
+      "label": "",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "mobile",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "158511925",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
         "width": 1280,
         "height": 720
       },
@@ -89,51 +111,6 @@
       "orientation": "Portrait",
       "type": "video_overlay",
       "viewerType": "Logged-In Viewer"
-    },
-    {
-      "channelId": "158511925",
-      "configurationAnchor": "video_overlay",
-      "displayChannelName": "miekyld",
-      "features": {
-        "isBitsEnabled": false,
-        "isChatEnabled": true,
-        "isSubscriptionStatusAvailable": false
-      },
-      "frameSize": {
-        "width": 1280,
-        "height": 720
-      },
-      "id": "5",
-      "isPopout": false,
-      "label": "LiveConfig",
-      "linked": true,
-      "linkedUserId": "265737932",
-      "orientation": "Portrait",
-      "type": "dashboard",
-      "viewerType": "Broadcaster"
-    },
-    {
-      "channelId": "158511925",
-      "configurationAnchor": "video_overlay",
-      "displayChannelName": "miekyld",
-      "features": {
-        "isBitsEnabled": false,
-        "isChatEnabled": true,
-        "isSubscriptionStatusAvailable": false
-      },
-      "frameSize": {
-        "width": 375,
-        "height": 667
-      },
-      "id": "6",
-      "isPopout": false,
-      "label": "",
-      "linked": false,
-      "linkedUserId": "",
-      "opaqueId": "UMobileView",
-      "orientation": "Landscape",
-      "type": "mobile",
-      "viewerType": "Logged-In Viewer"
     }
   ],
   "manifest": {
@@ -144,7 +121,7 @@
     "canInstall": true,
     "configUrl": "https://localhost:8180/config.html",
     "configurationLocation": "hosted",
-    "description": "First release !\nPlease consider this as a minimum viable version of this extension, and check regularly for updates.\nNote: This extension is dependent on a extension service, which for this initial release is not scaled for a large viewing audience.\n\nCustomizable & interactive bingo games for streamers communities:\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have a the same configurable grace period to report it\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
+    "description": "First release !\nPlease consider this as a minimum viable version of this extension, and check regularly for updates.\nNote: This extension is dependent on an extension service, which for this initial release is not scaled for a large viewing audience.\n\nCustomizable & interactive bingo games for streamers communities:\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have a the same configurable grace period to report it\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
     "eulaTosUrl": "",
     "hasChatSupport": true,
     "iconUrl": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.1/logo8358959e-9f1f-4e93-aa61-6036d33a1878",
@@ -174,7 +151,7 @@
     "supportEmail": "twitchext@conceptoire.com",
     "vendorCode": "",
     "version": "0.0.2",
-    "viewerSummary": "Participate to a live Bingo with your favorite streamer",
+    "viewerSummary": "Participate in a live Bingo with your favorite streamer",
     "viewerUrl": "",
     "viewerUrls": {
       "mobile": "https://localhost:8180/mobile.html",

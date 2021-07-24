@@ -1,3 +1,16 @@
+@media screen and (max-width: 30em) {
+    #root
+    {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 30em) {
+    #root {
+        display: block;
+    }
+}
+
 #root
 {
     width: 100%;

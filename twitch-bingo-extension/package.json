@@ -9,11 +9,12 @@
     "test": "jest",
     "watch": "webpack --watch",
     "build": "webpack --mode=production",
-    "start": "webpack serve --progress --open"
+    "start": "webpack serve --progress"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "jest": "^27.0.6",
     "react": "^17.0.2",
     "react-countdown-circle-timer": "^2.5.3",
@@ -21,21 +22,21 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "css-loader": "^5.2.6",
+    "css-loader": "^6.2.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^6.2.10",
     "html-webpack-plugin": "^5.3.1",
-    "mini-css-extract-plugin": "^1.6.0",
+    "mini-css-extract-plugin": "^2.1.0",
     "sass": "^1.34.1",
     "sass-loader": "^12.0.0",
-    "style-loader": "^2.0.0",
+    "style-loader": "^3.2.1",
     "ts-jest": "^27.0.3",
     "ts-loader": "^9.2.2",
     "typescript": "^4.3.2",
     "webpack": "^5.38.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.0.0-rc.0"
   },
   "jest": {
     "transform": {
