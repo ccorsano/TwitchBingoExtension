@@ -12,6 +12,8 @@ div.tabWidget
     display: flex;
     justify-content: center;
     align-items: center;
+
+    transition: all 0.5s;
 }
 
 div.tabWidget > img

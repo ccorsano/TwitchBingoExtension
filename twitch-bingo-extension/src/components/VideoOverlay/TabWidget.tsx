@@ -6,6 +6,7 @@ require('./TabWidget.scss')
 const BingoLogo = require('../../../assets/BingoLogo.svg')
 
 type VideoOverlayTabWidgetProps = {
+    shown: boolean,
     collapsed: boolean,
     canModerate: boolean,
     onToggleGrid: (e: React.MouseEvent<any>) => void,
@@ -16,6 +17,16 @@ type VideoOverlayTabWidgetProps = {
 const useStyles = makeStyles({
     pending: {
         background: 'linear-gradient(45deg, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);',
+    },
+    hidden: {
+        width: '0px',
+        left: '-3rem',
+        opacity: 0,
+    },
+    shown: {
+        width: 'unset',
+        left: '0px',
+        opacity: 1,
     }
   });
 
@@ -26,7 +37,7 @@ export default function VideoOverlayTabWidget(props: VideoOverlayTabWidgetProps)
     if (props.canModerate)
     {
         moderationWidget = (
-            <div onClickCapture={props.onToggleModerationPane} className={clsx(props.hasModNotifications ? classes.pending : "", "tabWidget")}>
+            <div onClickCapture={props.onToggleModerationPane} className={clsx(props.hasModNotifications ? classes.pending : "", "tabWidget", props.shown ? classes.shown : classes.hidden)}>
                 <SupervisorAccountIcon />
             </div>
         )
@@ -34,7 +45,7 @@ export default function VideoOverlayTabWidget(props: VideoOverlayTabWidgetProps)
 
     return (
         <div>
-            <div className="tabWidget" onClickCapture={props.onToggleGrid}>
+            <div className={clsx("tabWidget", props.shown ? classes.shown : classes.hidden)} onClickCapture={props.onToggleGrid}>
                 <img src={BingoLogo} alt="Bingo Logo" />
             </div>
             { moderationWidget }

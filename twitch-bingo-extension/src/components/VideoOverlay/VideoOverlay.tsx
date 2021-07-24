@@ -1,6 +1,7 @@
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
 import { Suspense } from 'react';
+import { TwitchExtHelper } from '../../common/TwitchExtension';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
 import { BingoConfirmationNotification, BingoGame, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
@@ -11,6 +12,7 @@ require('./VideoOverlay.scss');
 interface VideoOverlayState extends ViewerBingoComponentBaseState {
     isCollapsed: boolean;
     hasModNotifications: boolean;
+    widgetShown: boolean;
 }
 
 interface VideoOverlayProps extends ViewerBingoComponentBaseProps {
@@ -29,6 +31,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         pendingResults: new Array(0),
         moderationDrawerOpen: false,
         hasModNotifications: false,
+        widgetShown: false,
     }
 
     constructor(props: VideoOverlayProps){
@@ -37,6 +40,14 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
 
     componentDidMount() {
         super.componentDidMount();
+        TwitchExtHelper.onContext((context, changedProperties) => {
+            if (changedProperties.find(c => c === 'arePlayerControlsVisible'))
+            {
+                this.setState({
+                    widgetShown: context.arePlayerControlsVisible
+                })
+            }
+        })
     }
 
     onStart(payload: BingoGame) {
@@ -100,6 +111,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                 <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }}></div>
                 <div style={{ gridColumn: 1, gridRow: 2 }}>
                     <VideoOverlayTabWidget
+                        shown={this.state.widgetShown}
                         collapsed={this.state.isCollapsed}
                         canModerate={this.state.canModerate}
                         hasModNotifications={this.state.hasModNotifications}
