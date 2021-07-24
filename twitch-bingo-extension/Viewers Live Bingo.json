@@ -77,6 +77,28 @@
         "isSubscriptionStatusAvailable": false
       },
       "frameSize": {
+        "width": 375,
+        "height": 822
+      },
+      "id": "3",
+      "isPopout": false,
+      "label": "",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "mobile",
+      "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "158511925",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
         "width": 1280,
         "height": 720
       },
@@ -89,28 +111,6 @@
       "orientation": "Portrait",
       "type": "video_overlay",
       "viewerType": "Logged-In Viewer"
-    },
-    {
-      "channelId": "158511925",
-      "configurationAnchor": "video_overlay",
-      "displayChannelName": "miekyld",
-      "features": {
-        "isBitsEnabled": false,
-        "isChatEnabled": true,
-        "isSubscriptionStatusAvailable": false
-      },
-      "frameSize": {
-        "width": 1280,
-        "height": 720
-      },
-      "id": "5",
-      "isPopout": false,
-      "label": "LiveConfig",
-      "linked": true,
-      "linkedUserId": "265737932",
-      "orientation": "Portrait",
-      "type": "dashboard",
-      "viewerType": "Broadcaster"
     }
   ],
   "manifest": {
@@ -150,13 +150,17 @@
     "summary": "Setup an interactive Bingo game for your most attentive viewers",
     "supportEmail": "twitchext@conceptoire.com",
     "vendorCode": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "viewerSummary": "Participate in a live Bingo with your favorite streamer",
     "viewerUrl": "",
     "viewerUrls": {
+      "mobile": "https://localhost:8180/mobile.html",
       "videoOverlay": "https://localhost:8180/video_overlay.html"
     },
     "views": {
+      "mobile": {
+        "viewerUrl": "https://localhost:8180/mobile.html"
+      },
       "videoOverlay": {
         "viewerUrl": "https://localhost:8180/video_overlay.html",
         "canLinkExternalContent": false
