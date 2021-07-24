@@ -29,9 +29,17 @@ export const bingoStyles = makeStyles({
     },
     missed: {
         background: 'linear-gradient(90deg, rgba(180,180,180,0.8) 30%, rgba(128,128,128,0.8) 90%);',
+        color: '#333',
+    },
+    cancel: {
+        background: 'linear-gradient(90deg, rgba(180,128,128,0.8) 30%, rgba(220,128,128,0.8) 90%);',
+    },
+    confirm: {
+        background: 'linear-gradient(90deg, rgba(128,180,128,0.8) 30%, rgba(128,220,128,0.8) 90%);',
     },
     rejected: {
         background: 'linear-gradient(90deg, rgba(224,129,129,0.8) 30%, rgba(227,79,79,0.8) 90%);',
+        color: '#333',
     },
     colConfirmed: {
         borderLeftStyle: 'solid',

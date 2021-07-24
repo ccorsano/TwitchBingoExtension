@@ -50,10 +50,11 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                         if (! cell)
                         {
                             var key = 1000 + col + (row * this.state.columns);
-                            return <rect key={key} x={col+0.05} y={row+0.025} width="0.9" height="0.45" rx="0.1" ry="0.05" />
+                            return <rect key={key} x={col+0.05} y={row+0.025} width="0.9" height="0.45" rx="0.1" ry="0.1" />
                         }
                         else
                         {
+                            const isSelected = cell.key === props.selectedKey
                             var gradient = "url(#idle)"
                             switch (cell.state) {
                                 case BingoEntryState.Pending:
@@ -71,7 +72,7 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                                 default:
                                     break;
                             }
-                            if (cell.key == props.selectedKey)
+                            if (isSelected)
                             {
                                 gradient = "url(#pending)"
                             }
@@ -84,10 +85,10 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                                     height="0.45"
                                     fill={gradient}
                                     strokeWidth="0.01"
-                                    strokeOpacity="0.5"
+                                    strokeOpacity={isSelected ? "1.0" : "0.5"}
                                     stroke="black"
                                     rx="0.1"
-                                    ry="0.05"
+                                    ry="0.1"
                                     onClickCapture={(_) => props.onSelectCell(col, row)}
                                 />)
                         }

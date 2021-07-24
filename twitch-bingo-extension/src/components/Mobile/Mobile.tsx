@@ -2,6 +2,7 @@ import React from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
 import { BingoGame, BingoGrid } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import BingoMobileEntryList from './BingoMobileEntryList';
 import BingoMobileMiniGrid from './BingoMobileMiniGrid';
 require('./Mobile.scss');
@@ -11,7 +12,7 @@ interface MobileProps extends ViewerBingoComponentBaseProps {
 }
 
 interface MobileState extends ViewerBingoComponentBaseState {
-    sortedEntries: number[]
+    sortedEntries: BingoGridCell[]
     selectedCell?: number
 }
 
@@ -42,25 +43,30 @@ export default class Mobile extends ViewerBingoComponentBase<MobileProps, Mobile
     };
 
     onSelectFromGrid = (x: number, y: number) => {
-        const [_,entry] = this.getCell(y, x)
-        this.setState({
-            selectedCell: entry.key
-        })
+        const [cell,entry] = this.getCell(y, x)
+        if (cell && cell.state === BingoEntryState.Idle)
+        {
+            this.setState({
+                selectedCell: entry.key
+            })
+        }
     }
 
     onSelectFromList = (key: number) => {
-        this.setState({
-            selectedCell: key
-        })
+        const cell = this.state.grid.cells.find(c => c.key == key)
+        if (cell && cell.state === BingoEntryState.Idle)
+        {
+            this.setState({
+                selectedCell: key
+            })
+        }
     }
 
     onRefreshGrid = (grid: BingoGrid) => {
-        const sortedEntries = this.state.entries.filter(e => grid.cells.some(c => c.key == e.key)).sort((entryA, entryB) => {
-            const cellA = grid.cells.find(c => c.key == entryA.key);
-            const cellB = grid.cells.find(c => c.key == entryB.key);
-
+        const cells = grid.cells.map(c => this.getCell(c.row, c.col)[0])
+        const sortedEntries = cells.sort((cellA, cellB) => {
             return (cellA.row*grid.cols  + cellA.col) - (cellB.row*grid.cols  + cellB.col)
-        }).map(entry => entry.key)
+        })
         this.setState({
             sortedEntries: sortedEntries
         })
@@ -86,9 +92,10 @@ export default class Mobile extends ViewerBingoComponentBase<MobileProps, Mobile
                 </div>
                 <div style={{overflowY: "scroll", gridRow: 2}}>
                     <BingoMobileEntryList
-                        entries={this.state.sortedEntries.map(s => this.state.entries.find(e => e.key == s))}
+                        entries={this.state.sortedEntries}
                         selectedKey={this.state.selectedCell}
                         onSelectKey={this.onSelectFromList}
+                        onTentative={(key) => this.onTentative(this.state.entries.find(e => e.key === key))}
                         />
                 </div>
             </div>

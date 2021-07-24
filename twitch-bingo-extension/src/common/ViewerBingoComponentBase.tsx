@@ -209,6 +209,8 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
         this.setState({
             grid: grid,
             pendingResults: pendingResults,
+        }, () => {
+            if (this.state.onRefreshGrid) this.state.onRefreshGrid(grid)
         });
         setTimeout(() => {
             // console.log("onTentative, refreshing grid after timeout");

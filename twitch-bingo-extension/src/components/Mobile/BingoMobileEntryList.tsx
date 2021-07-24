@@ -1,26 +1,87 @@
 import React from 'react'
 import clsx from 'clsx';
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { BingoEntry } from "../../EBS/BingoService/EBSBingoTypes"
 import { bingoStyles } from '../../common/BingoStyles';
 import { useRef } from 'react';
+import CheckRounded from '@material-ui/icons/CheckRounded';
+import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 
 type BingoMobileEntryListProps = {
-    entries: BingoEntry[],
+    entries: BingoGridCell[],
     selectedKey?: number,
     onSelectKey: (key: number) => void,
+    onTentative: (key: number) => void,
 }
 
 const mobileEntryStyle = makeStyles({
     bingoEntry: {
+        display: 'grid',
+        gridTemplateColumns: 'auto 1fr auto',
         paddingTop: '5px',
         paddingBottom: '5px',
         paddingLeft: '5px',
         paddingRight: '5px',
-        minHeight: '24px',
+        height: '36px',
+        overflow: 'hidden',
+        borderRadius: '5px',
+        '& > div': {
+            alignSelf: 'center'
+        },
+        transition: 'all 0.5s',
+        '& .timer': {
+            height: '0px',
+            width: '0px',
+            opacity: '0',
+            transition: 'all 0.5s'
+        },
+        '& .text': {
+            textOverflow: 'ellipsis',
+            gridColumnStart: 1,
+            gridColumnEnd: 3,
+        },
+        '& .action': {
+            height: '0px',
+            width: '0px',
+            opacity: '0',
+            transition: 'all 0.5s',
+        },
     },
     highlighted: {
-        background: 'linear-gradient(45deg, rgba(255,255,255,0.8) 100%, rgba(200,200,200,0.8) 0%);'
+        height: 'unset',
+        minHeight: '36px',
+        overflowY: 'unset',
+        '& .timer': {
+            height: 'unset',
+            width: 'fit-content',
+            opacity: 1,
+            gridColumn: 1,
+        },
+        '& .text': {
+            textOverflow: 'unset',
+            gridColumn: 2,
+        },
+        '& .action': {
+            height: 'unset',
+            width: 'fit-content',
+            opacity: 1,
+            gridColumn: 3,
+        },
+    },
+    prompting: {
+        height: 'unset',
+        minHeight: '64px',
+        overflowY: 'unset',
+        '& .text': {
+            textAlign: 'center',
+        },
+        '& .confirm': {
+            borderTopRightRadius: '5px',
+            borderBottomRightRadius: '5px',
+        },
+        '& .cancel': {
+            borderTopLeftRadius: '5px',
+            borderBottomLeftRadius: '5px',  
+        },
     }
 });
 
@@ -37,24 +98,85 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
     React.useEffect(() => {
         if (props.selectedKey && entriesRefs.current.has(props.selectedKey))
         {
-            entriesRefs.current.get(props.selectedKey).scrollIntoView()
+            var entryElement = entriesRefs.current.get(props.selectedKey)
+            if (typeof entryElement['scrollIntoViewIfNeeded'] === 'function')
+            {
+                (entryElement as any).scrollIntoViewIfNeeded()
+            }
+            else
+            {
+                entryElement.scrollIntoView()
+            }
+            setPrompting(false)
         }
     }, [props.selectedKey])
+
+    const confirmKey = (key: number) => {
+        setPrompting(false)
+        props.onTentative(key)
+    }
 
     return (
         <div ref={listRef}>
             {
-                props.entries.map(entry => {
-                    const isCurrentElementSelected = props.selectedKey == entry.key
-                    const isCurrentElementPrompting = isCurrentElementSelected && isPrompting
+                props.entries.map(cell => {
+                    const isCurrentElementSelected = props.selectedKey == cell.key
+                    
+                    var bClass = bStyles.idle
+                    switch (cell.state) {
+                        case BingoEntryState.Pending:
+                            bClass = bStyles.pending
+                            break;
+                        case BingoEntryState.Confirmed:
+                            bClass = bStyles.confirmed
+                            break;
+                        case BingoEntryState.Missed:
+                            bClass = bStyles.missed
+                            break;
+                        case BingoEntryState.Rejected:
+                            bClass = bStyles.rejected
+                            break;
+                        default:
+                            break;
+                    }
 
                     return (
-                        <div key={entry.key} ref={(ref) => { entriesRefs.current.set(entry.key, ref) }}
-                             className={clsx(styles.bingoEntry, isCurrentElementSelected ? (isPrompting ? styles.highlighted : bStyles.prompt) : '')}
-                             onClickCapture={(_) => !isCurrentElementPrompting ? props.onSelectKey(entry.key) : null }
-                             onTouchEndCapture={ (_) => !isCurrentElementPrompting ? props.onSelectKey(entry.key): null }
-                             onDoubleClickCapture={(_) => setPrompting(!isPrompting)} >
-                            {isCurrentElementPrompting ? (<React.Fragment><span>{entry.text}</span><button title="Confirm">Confirm</button></React.Fragment>) : (<span>{entry.text}</span>)}
+                        <div key={cell.key} ref={(ref) => { entriesRefs.current.set(cell.key, ref) } }
+                             className={clsx(styles.bingoEntry, bClass, isCurrentElementSelected ? [isPrompting ? styles.prompting : styles.highlighted, bStyles.prompt] : '')}
+                             onClickCapture={(_) => isCurrentElementSelected ? setPrompting(true) : props.onSelectKey(cell.key) }
+                             onTouchEndCapture={(_) => isCurrentElementSelected ? setPrompting(true) : props.onSelectKey(cell.key) }>
+                             <div className={clsx('timer')}>
+                                &nbsp;
+                             </div>
+                             <div className={clsx('text')}>
+                                 {
+                                     (isCurrentElementSelected && isPrompting) ? (
+                                        <div style={{display:'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 24px'}}>
+                                            <div style={{gridRow:1, gridColumnStart:1, gridColumnEnd: 3}}>{cell.text}</div>
+                                            <div
+                                                style={{gridRow:2, gridColumn:1, textAlign: 'center'}}
+                                                className={clsx(bStyles.cancel, 'cancel')}
+                                                onClickCapture={(_) => setPrompting(false)}>
+                                                    Cancel
+                                            </div>
+                                            <div
+                                                style={{gridRow:2, gridColumn:2, textAlign: 'center'}}
+                                                className={clsx(bStyles.confirm, 'confirm')}
+                                                onClickCapture={(_) => confirmKey(cell.key)}>
+                                                    Confirm
+                                            </div>
+                                        </div>
+                                     )
+                                     :(
+                                        <span>{cell.text}</span>
+                                     )
+                                 }
+                             </div>
+                             <div className={clsx('action')} onClickCapture={() => setPrompting(true)}>
+                                {isCurrentElementSelected ? (
+                                    <CheckRounded />
+                                ) : '&nbsp;' }
+                             </div>
                         </div>
                     )
                 })
