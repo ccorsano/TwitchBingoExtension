@@ -31,7 +31,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
         pendingResults: new Array(0),
         moderationDrawerOpen: false,
         hasModNotifications: false,
-        widgetShown: false,
+        widgetShown: true,
     }
 
     constructor(props: VideoOverlayProps){
@@ -40,13 +40,10 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
 
     componentDidMount() {
         super.componentDidMount();
-        TwitchExtHelper.onContext((context, changedProperties) => {
-            if (changedProperties.find(c => c === 'arePlayerControlsVisible'))
-            {
-                this.setState({
-                    widgetShown: context.arePlayerControlsVisible
-                })
-            }
+        TwitchExtHelper.onContext((context, _) => {
+            this.setState({
+                widgetShown: context.arePlayerControlsVisible !== false
+            })
         })
     }
 
@@ -119,7 +116,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                         onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
                     { this.state.canModerate ? moderationDrawer : null }
                 </div>
-                <div style={{ gridColumn: 2, gridRow: 2, width: '1fr' }}>
+                <div style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
                     { this.state.isCollapsed ? null : super.render() }
                 </div>
                 <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }}>
