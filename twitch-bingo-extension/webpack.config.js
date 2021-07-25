@@ -32,10 +32,10 @@ module.exports = (_env, argv) => {
             path:"./src/Config.tsx",
             outputHtml: "live_config.html",
         },
-        // Mobile:{
-        //     path:"./src/Mobile.tsx",
-        //     outputHtml: "mobile.html",
-        // }
+        Mobile:{
+            path:"./src/Mobile.tsx",
+            outputHtml: "mobile.html",
+        }
     };
 
     let entry = {};
