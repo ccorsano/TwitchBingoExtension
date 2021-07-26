@@ -6,30 +6,30 @@ export const bingoStyles = makeStyles({
         height: '100%',
         borderRadius: '0.25rem',
         userSelect: 'none',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     idle: {
         "&:hover": {
             cursor: 'pointer',
-            background: 'linear-gradient(45deg, rgba(255,255,255,0.8) 100%, rgba(200,200,200,0.8) 0%);'
+            background: 'ghostwhite'
         }
     },
     prompt: {
-        background: 'radial-gradient(circle, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);',
+        background: 'lightblue',
         "&:hover": {
             cursor: 'pointer',
-            background: 'radial-gradient(circle, rgba(122,196,255,1) 50%, rgba(38,214,255,0.8) 100%);'
+            background: 'lightsteelblue'
         }
     },
     pending: {
-        background: 'linear-gradient(45deg, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);'
+        background: 'lightskyblue'
     },
     confirmed: {
-        background: 'linear-gradient(45deg, rgba(223,255,50,0.8) 33%, rgba(151,255,124,0.8) 90%);',
+        background: 'palegoldenrod',
     },
     missed: {
-        background: 'linear-gradient(90deg, rgba(180,180,180,0.8) 30%, rgba(128,128,128,0.8) 90%);',
-        color: '#333',
+        background: 'lightgray',
+        color: '#666',
     },
     cancel: {
         background: 'linear-gradient(90deg, rgba(180,128,128,0.8) 30%, rgba(220,128,128,0.8) 90%);',
@@ -38,8 +38,8 @@ export const bingoStyles = makeStyles({
         background: 'linear-gradient(90deg, rgba(128,180,128,0.8) 30%, rgba(128,220,128,0.8) 90%);',
     },
     rejected: {
-        background: 'linear-gradient(90deg, rgba(224,129,129,0.8) 30%, rgba(227,79,79,0.8) 90%);',
-        color: '#333',
+        background: 'lightgray',
+        color: '#666',
     },
     colConfirmed: {
         borderLeftStyle: 'solid',
@@ -58,5 +58,15 @@ export const bingoStyles = makeStyles({
         paddingBottom: '24px',
         paddingLeft: '16px',
         paddingRight: '16px',
+    },
+    bingoCell: {
+        transition: 'opacity 0.3s',
+    },
+    hiddenCell: {
+        opacity: '0%',
+    },
+    visibleCell: {
+        opacity: '100%',
+        boxShadow: '0px 0px 0.4vw 0 rgb(0 0 0 / 50%)',
     }
   });

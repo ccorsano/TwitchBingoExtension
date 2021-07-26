@@ -18,6 +18,7 @@ interface MobileState extends ViewerBingoComponentBaseState {
 
 export default class Mobile extends ViewerBingoComponentBase<MobileProps, MobileState> {
     state: MobileState = {
+        isCollapsed: false,
         sortedEntries: new Array(0),
         entries: new Array(0),
         rows: 3,

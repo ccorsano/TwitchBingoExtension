@@ -8,6 +8,7 @@ import { Twitch } from '../services/TwitchService';
 import { BingoEntry, BingoGame, BingoGrid, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
 
 export type ViewerBingoComponentBaseState = {
+    isCollapsed: boolean;
     entries: BingoEntry[],
     rows: number,
     columns: number,
@@ -28,6 +29,7 @@ export type ViewerBingoComponentBaseProps = {
 
 export default class ViewerBingoComponentBase<PropType extends ViewerBingoComponentBaseProps, StateType extends ViewerBingoComponentBaseState> extends React.Component<PropType & ViewerBingoComponentBaseProps, StateType & ViewerBingoComponentBaseState> {
     state: any = {
+        isCollapsed: true,
         entries: new Array(0),
         rows: 0,
         columns: 0,
@@ -225,7 +227,12 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
 
     renderGrid(){
         return (
-            <div className="bingoGrid">
+            <div 
+                className="bingoGrid"
+                style={{
+                    gridTemplateRows: [...Array(this.state.rows).keys()].map(() => '1fr').join(' '),
+                    gridTemplateColumns: [...Array(this.state.columns).keys()].map(() => '1fr').join(' ')
+                }}>
                 {
                     [...Array(this.state.rows).keys()].map(row => {
                         let isRowComplete = this.isRowComplete(row);
@@ -245,6 +252,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                         isRowCompleted={isRowComplete}
                                         onTentative={this.onTentative}
                                         fontSize="16px"
+                                        isShown={!this.state.isCollapsed}
                                     />
                                 </div>
                             }
@@ -261,6 +269,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                         countdown={cell.timer}
                                         onTentative={this.onTentative}
                                         fontSize={this.getCellFontSize(cell)}
+                                        isShown={!this.state.isCollapsed}
                                     />
                                 </div>
                             }
@@ -284,6 +293,7 @@ export default class ViewerBingoComponentBase<PropType extends ViewerBingoCompon
                                 paddingTop: '1vw',
                                 paddingBottom: '1vw',
                                 borderRadius: '0.25vw',
+                                opacity: this.state.isCollapsed ? '0%' : '100%',
                             }}>
                         <LinearProgress style={{marginBottom: '1vw', marginTop: '1vw'}} />
                         Waiting for the game to start !

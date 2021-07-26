@@ -10,7 +10,6 @@ import VideoOverlayTabWidget from './TabWidget';
 require('./VideoOverlay.scss');
 
 interface VideoOverlayState extends ViewerBingoComponentBaseState {
-    isCollapsed: boolean;
     hasModNotifications: boolean;
     widgetShown: boolean;
 }
@@ -117,7 +116,7 @@ export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayP
                     { this.state.canModerate ? moderationDrawer : null }
                 </div>
                 <div style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
-                    { this.state.isCollapsed ? null : super.render() }
+                    { super.render() }
                 </div>
                 <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }}>
                 </div>

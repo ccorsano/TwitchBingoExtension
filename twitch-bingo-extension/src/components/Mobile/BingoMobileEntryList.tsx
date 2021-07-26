@@ -23,7 +23,7 @@ const mobileEntryStyle = makeStyles({
         paddingRight: '5px',
         height: '36px',
         overflow: 'hidden',
-        borderRadius: '5px',
+        borderRadius: '0.25rem',
         '& > div': {
             alignSelf: 'center'
         },
@@ -75,12 +75,12 @@ const mobileEntryStyle = makeStyles({
             textAlign: 'center',
         },
         '& .confirm': {
-            borderTopRightRadius: '5px',
-            borderBottomRightRadius: '5px',
+            borderTopRightRadius: '0.25rem',
+            borderBottomRightRadius: '0.25rem',
         },
         '& .cancel': {
-            borderTopLeftRadius: '5px',
-            borderBottomLeftRadius: '5px',  
+            borderTopLeftRadius: '0.25rem',
+            borderBottomLeftRadius: '0.25rem',  
         },
     }
 });
