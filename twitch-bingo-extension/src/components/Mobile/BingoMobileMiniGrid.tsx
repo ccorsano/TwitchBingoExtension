@@ -41,6 +41,9 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                     <stop offset="33%" stopColor="rgb(204, 204, 204)" stopOpacity="0.8" />
                     <stop offset="90%" stopColor="rgb(230, 230, 230)" stopOpacity="0.8" />
                 </linearGradient>
+                <filter id="dropShadow" x="0" y="0" width="110%" height="110%">
+                    <feDropShadow dx="0" dy="0" stdDeviation="0.025" floodOpacity="0.3"/>
+                </filter>
             </defs>
             {
                 [...Array(props.rows).keys()].map(row => {
@@ -85,6 +88,7 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                                     width="0.95"
                                     height="0.45"
                                     fill={gradient}
+                                    filter="url(#dropShadow)"
                                     strokeWidth="0.01"
                                     strokeOpacity={isSelected ? "1.0" : "0.5"}
                                     stroke="black"
