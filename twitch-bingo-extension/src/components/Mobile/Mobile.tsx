@@ -2,7 +2,7 @@ import React from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
 import { BingoGame, BingoGrid } from '../../EBS/BingoService/EBSBingoTypes';
-import { BingoGridCell } from '../../model/BingoEntry';
+import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import BingoMobileEntryList from './BingoMobileEntryList';
 import BingoMobileMiniGrid from './BingoMobileMiniGrid';
 require('./Mobile.scss');
@@ -65,8 +65,14 @@ export default class Mobile extends ViewerBingoComponentBase<MobileProps, Mobile
 
     onRefreshGrid = (grid: BingoGrid) => {
         const cells = grid.cells.map(c => this.getCell(c.row, c.col)[0])
+        const stateMultiplierBase = grid.rows * grid.cols * 10
+        const pendingMultiplier = 1
+        const confirmedMultiplier = stateMultiplierBase * 10
+        const missedMultiplier = stateMultiplierBase * 100
         const sortedEntries = cells.sort((cellA, cellB) => {
-            return (cellA.row*grid.cols  + cellA.col) - (cellB.row*grid.cols  + cellB.col)
+            const cellAMult = cellA.state === BingoEntryState.Idle ? pendingMultiplier : (cellA.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
+            const cellBMult = cellB.state === BingoEntryState.Idle ? pendingMultiplier : (cellB.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
+            return ((cellA.row*grid.cols  + cellA.col) * cellAMult) - ((cellB.row*grid.cols  + cellB.col) * cellBMult)
         })
         this.setState({
             sortedEntries: sortedEntries
