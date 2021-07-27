@@ -32,10 +32,10 @@ export const bingoStyles = makeStyles({
         color: '#666',
     },
     cancel: {
-        background: 'linear-gradient(90deg, rgba(180,128,128,0.8) 30%, rgba(220,128,128,0.8) 90%);',
+        background: 'rgba(220,128,128,0.8)',
     },
     confirm: {
-        background: 'linear-gradient(90deg, rgba(128,180,128,0.8) 30%, rgba(128,220,128,0.8) 90%);',
+        background: 'rgba(128,220,128,0.8)',
     },
     rejected: {
         background: 'lightgray',

@@ -20,25 +20,26 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
     return (
         <svg viewBox={`0 0 ${props.columns} ${props.rows / 2}`}>
             <defs>
+                
                 <linearGradient spreadMethod="pad" id="idle" x1="0%" y1="70%" x2="70%" y2="0%">
                     <stop offset="33%" stopColor="rgb(245, 245, 245)" stopOpacity="1" />
                     <stop offset="90%" stopColor="rgb(255, 255, 255)" stopOpacity="1" />
                 </linearGradient>
                 <linearGradient spreadMethod="pad" id="pending" x1="0%" y1="70%" x2="70%" y2="0%">
-                    <stop offset="33%" stopColor="rgb(240,248,255)" stopOpacity="1" />
+                    <stop offset="33%" stopColor="rgb(240,250,255)" stopOpacity="1" />
                     <stop offset="90%" stopColor="rgb(240,255,255 )" stopOpacity="1" />
                 </linearGradient>
                 <linearGradient spreadMethod="pad" id="confirmed" x1="0%" y1="70%" x2="70%" y2="0%">
-                    <stop offset="33%" stopColor="rgb(223, 255, 50)" stopOpacity="0.8" />
-                    <stop offset="90%" stopColor="rgb(151, 255, 124)" stopOpacity="0.8" />
+                    <stop offset="33%" stopColor="rgb(238, 232, 170)" stopOpacity="0.8" />
+                    <stop offset="90%" stopColor="rgb(234, 227, 149)" stopOpacity="0.8" />
                 </linearGradient>
                 <linearGradient spreadMethod="pad" id="missed" x1="0%" y1="70%" x2="70%" y2="0%">
-                    <stop offset="33%" stopColor="rgb(180, 180, 180)" stopOpacity="0.8" />
-                    <stop offset="90%" stopColor="rgb(128, 128, 128)" stopOpacity="0.8" />
+                    <stop offset="33%" stopColor="rgb(204, 204, 204)" stopOpacity="0.8" />
+                    <stop offset="90%" stopColor="rgb(230, 230, 230)" stopOpacity="0.8" />
                 </linearGradient>
                 <linearGradient spreadMethod="pad" id="rejected" x1="0%" y1="70%" x2="70%" y2="0%">
-                    <stop offset="33%" stopColor="rgb(224, 129, 129)" stopOpacity="0.8" />
-                    <stop offset="90%" stopColor="rgb(227, 79, 79)" stopOpacity="0.8" />
+                    <stop offset="33%" stopColor="rgb(204, 204, 204)" stopOpacity="0.8" />
+                    <stop offset="90%" stopColor="rgb(230, 230, 230)" stopOpacity="0.8" />
                 </linearGradient>
             </defs>
             {
@@ -72,7 +73,7 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                                 default:
                                     break;
                             }
-                            if (isSelected)
+                            if (isSelected && cell.state === BingoEntryState.Idle)
                             {
                                 gradient = "url(#pending)"
                             }

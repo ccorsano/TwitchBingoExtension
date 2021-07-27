@@ -2,7 +2,7 @@ import React from 'react';
 import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
 import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
 import { BingoGame, BingoGrid } from '../../EBS/BingoService/EBSBingoTypes';
-import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
+import { BingoGridCell } from '../../model/BingoEntry';
 import BingoMobileEntryList from './BingoMobileEntryList';
 import BingoMobileMiniGrid from './BingoMobileMiniGrid';
 require('./Mobile.scss');
@@ -45,7 +45,7 @@ export default class Mobile extends ViewerBingoComponentBase<MobileProps, Mobile
 
     onSelectFromGrid = (x: number, y: number) => {
         const [cell,entry] = this.getCell(y, x)
-        if (cell && cell.state === BingoEntryState.Idle)
+        if (cell)
         {
             this.setState({
                 selectedCell: entry.key
@@ -55,7 +55,7 @@ export default class Mobile extends ViewerBingoComponentBase<MobileProps, Mobile
 
     onSelectFromList = (key: number) => {
         const cell = this.state.grid.cells.find(c => c.key == key)
-        if (cell && cell.state === BingoEntryState.Idle)
+        if (cell)
         {
             this.setState({
                 selectedCell: key

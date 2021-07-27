@@ -121,6 +121,7 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
             {
                 props.entries.map(cell => {
                     const isCurrentElementSelected = props.selectedKey == cell.key
+                    const isCurrentElementActive = isCurrentElementSelected && cell.state === BingoEntryState.Idle
                     
                     var bClass = bStyles.idle
                     switch (cell.state) {
@@ -143,14 +144,14 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                     return (
                         <div key={cell.key} ref={(ref) => { entriesRefs.current.set(cell.key, ref) } }
                              className={clsx(styles.bingoEntry, bClass, isCurrentElementSelected ? [isPrompting ? styles.prompting : styles.highlighted, bStyles.prompt] : '')}
-                             onClickCapture={(_) => isCurrentElementSelected ? setPrompting(true) : props.onSelectKey(cell.key) }
-                             onTouchEndCapture={(_) => isCurrentElementSelected ? setPrompting(true) : props.onSelectKey(cell.key) }>
+                             onClickCapture={(_) => isCurrentElementActive ? setPrompting(true) : props.onSelectKey(cell.key) }
+                             onTouchEndCapture={(_) => isCurrentElementActive ? setPrompting(true) : props.onSelectKey(cell.key) }>
                              <div className={clsx('timer')}>
                                 &nbsp;
                              </div>
                              <div className={clsx('text')}>
                                  {
-                                     (isCurrentElementSelected && isPrompting) ? (
+                                     (isCurrentElementActive && isPrompting) ? (
                                         <div style={{display:'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 24px'}}>
                                             <div style={{gridRow:1, gridColumnStart:1, gridColumnEnd: 3}}>{cell.text}</div>
                                             <div
@@ -173,9 +174,9 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                                  }
                              </div>
                              <div className={clsx('action')} onClickCapture={() => setPrompting(true)}>
-                                {isCurrentElementSelected ? (
+                                {isCurrentElementActive ? (
                                     <CheckRounded />
-                                ) : '&nbsp;' }
+                                ) : '' }
                              </div>
                         </div>
                     )
