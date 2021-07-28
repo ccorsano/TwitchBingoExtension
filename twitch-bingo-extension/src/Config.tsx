@@ -1,8 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Config from './components/Config/Config'
+import TypesafeI18n from './i18n/i18n-react'
 
 ReactDOM.render(
-    <Config />,
+    <TypesafeI18n initialLocale="en">
+        <Config />
+    </TypesafeI18n>,
     document.getElementById("root") as HTMLElement
 );

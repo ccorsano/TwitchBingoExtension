@@ -4848,6 +4848,18 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
+typesafe-i18n@^2.36.0:
+  version "2.36.0"
+  resolved "https://registry.yarnpkg.com/typesafe-i18n/-/typesafe-i18n-2.36.0.tgz#2eeccaa13203c9f001aa1e615a8d42d36e78d25e"
+  integrity sha512-Lyv9NwWscFMhKoT2BrDoD7qvxfNP65VotaBq+E2D8vYhYK0vrHJjvmUu/grZgs9JBvAxOCwBh16v8+KUcRGx4w==
+  dependencies:
+    typesafe-utils "^1.15.0"
+
+typesafe-utils@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/typesafe-utils/-/typesafe-utils-1.15.0.tgz#b77456b7743a69ae9bcdabc39105b5736a0a8f0f"
+  integrity sha512-ETV3Yf1FEmTPYFbVlr6zZBlFO4dqsowclyY0gfSnkOVXK17Aqy4UT6k6eFGVqfxC6/ADx6Y2gfjjF8Ki7l9igw==
+
 typescript@^4.3.2:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
