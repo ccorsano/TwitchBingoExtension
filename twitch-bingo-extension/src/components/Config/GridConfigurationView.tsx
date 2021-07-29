@@ -12,6 +12,7 @@ import Alert from '@material-ui/lab/Alert'
 import AlertTitle from '@material-ui/lab/AlertTitle'
 import React from 'react'
 import { FormatTimeout } from '../../EBS/BingoService/EBSBingoTypes'
+import { I18nContext } from '../../i18n/i18n-react'
 
 type GridConfigurationViewProps = {
     columns: number;
@@ -27,14 +28,16 @@ type GridConfigurationViewProps = {
 
 export default function GridConfigurationView(props:GridConfigurationViewProps)
 {
+    const { LL } = React.useContext(I18nContext)
+
     const canStart = (): boolean => props.selectedEntriesLength >= props.rows * props.columns;
 
     return (
         <Card>
-            <CardHeader title="Configure Grid" />
+            <CardHeader title={LL.ConfigureGrid()} />
             <CardContent>
                 <Typography>
-                    Columns
+                    {LL.Columns()}
                 </Typography>
                 <Slider
                     defaultValue={3}
@@ -47,7 +50,7 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                     onChange={(_, value) => props.onColumnsChange(value as number)}
                 />
                 <Typography>
-                    Rows
+                    {LL.Rows()}
                 </Typography>
                 <Slider
                     defaultValue={3}
@@ -61,8 +64,8 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                 />
                 { !canStart() ? 
                     <Alert severity="error">
-                        <AlertTitle>Not enough entries to fill the grid !</AlertTitle>
-                        Add entries or reduce grid dimensions to start the game.
+                        <AlertTitle>{LL.AlertNotEnoughEntriesToFillTheGrid}</AlertTitle>
+                        {LL.AddEntriesOrReduceGridDimensionsToStartTheGame}
                     </Alert>
                      : null }
                 <Grid container xs={12}>
@@ -87,7 +90,7 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                 }
                 </Grid>
                 <Typography>
-                    Confirmation time (in minutes)
+                    {LL.ConfirmationTime()}
                 </Typography>
                 <Slider
                     defaultValue={120}
@@ -103,10 +106,10 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
             </CardContent>
             <CardActions>
                 <Button variant="contained" color="primary" onClick={props.onSave}>
-                    Save
+                    {LL.SaveGame()}
                 </Button>
                 <Button variant="contained" color="primary" onClick={props.onStart} disabled={!canStart()}>
-                    Start
+                    {LL.StartGame()}
                 </Button>
             </CardActions>
         </Card>
