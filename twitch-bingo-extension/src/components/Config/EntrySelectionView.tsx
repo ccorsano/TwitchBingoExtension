@@ -51,7 +51,7 @@ export default function EntrySelectionView(props:EntrySelectionViewProps)
 
     return (
         <Card>
-            <CardHeader title={LL.Config.EntrySelectionView.Title()} subheader={LL.Config.EntrySelectionView.TitleSubHeader} />
+            <CardHeader title={LL.Config.EntrySelectionView.Title()} subheader={LL.Config.EntrySelectionView.TitleSubHeader()} />
             <CardContent>
                 { targetListElement }
             </CardContent>

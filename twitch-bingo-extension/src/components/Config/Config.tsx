@@ -41,7 +41,14 @@ export default function Config() {
 
     React.useEffect(() => {
         Twitch.onConfiguration.push(loadConfig);
-    })
+        return () => {
+            var index = Twitch.onConfiguration.indexOf(loadConfig)
+            if (index !== -1)
+            {
+                Twitch.onConfiguration.splice(index, 1)
+            }
+        }
+    }, [])
 
     const onAdd = (): void => {
         var newEntry = new BingoEditableEntry();
