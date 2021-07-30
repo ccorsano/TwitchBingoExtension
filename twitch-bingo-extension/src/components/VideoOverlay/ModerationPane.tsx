@@ -4,12 +4,13 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import React from 'react';
 import ModerationBingoComponent from '../../common/ModerationBingoComponent';
-import { TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import { BingoConfirmationNotification, BingoEntry, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
 import { EBSError } from '../../EBS/EBSBase';
 
 type ModerationPaneProps = {
+    entries: BingoEntry[],
+    tentatives: BingoTentativeNotification[],
     isOpen: boolean,
     onOpen: () => void,
     onClose: (e: React.MouseEvent<any>) => void,
@@ -19,104 +20,19 @@ type ModerationPaneProps = {
     onReceiveTentative?: (tentative: BingoTentativeNotification) => void,
     onReceiveConfirmation?: (confirmation: BingoConfirmationNotification) => void,
     onNotificationsEmpty?: () => void,
+    onTentativeExpire?: (tentative: BingoTentativeNotification) => void,
 }
 
 export default function ModerationPane(props: ModerationPaneProps)
 {
-    const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
     const [autoOpened, setAutoOpened] = React.useState(false);
-    const [entries, setEntries] = React.useState<BingoEntry[]>(new Array(0));
-
-    const refreshEntries = (gameId: string) => {
-        BingoEBS.getGame(gameId).then(game => {
-            setEntries(game.entries)
-        })
-    }
 
     React.useEffect(() => {
-        if (props.gameId)
-        {
-            refreshEntries(props.gameId)
-        }
-    }, [props.gameId])
-
-    const receiveTentative = (notification: BingoTentativeNotification) => {
-        setTentatives(currentTentatives => {
-            // Skip if a tentative is already pending for this key
-            if (currentTentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
-            {
-                console.log("Skipped adding tentative " + notification.gameId + " " + notification.key)
-                return currentTentatives
-            }
-            console.log("Adding tentative " + notification.gameId + " " + notification.key + " to set of " + currentTentatives.length)
-            return [...currentTentatives, notification]
-        })
-        if (props.onReceiveTentative)
-        {
-            setAutoOpened(true);
-            props.onReceiveTentative(notification);
-        }
-    }
-
-    const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
-        setTentatives(currentTentatives => {
-            return currentTentatives.map(tentative => {
-                if (tentative.gameId == confirmation.gameId && tentative.key == confirmation.key)
-                {
-                    return {
-                        gameId: tentative.gameId,
-                        key: tentative.key,
-                        tentativeTime: tentative.tentativeTime,
-                        confirmationTime: confirmation.confirmationTime,
-                        confirmedBy: confirmation.confirmedBy
-                    }
-                }
-                return tentative
-            })
-        })
-        refreshEntries(confirmation.gameId)
-    }
-
-    const onReceiveWhisper = (_target, _contentType, messageStr) => {
-        console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
-        let message = JSON.parse(messageStr, (key, value) => {
-            if (key == "tentativeTime" || key == "confirmationTime")
-            {
-                return new Date(value);
-            }
-            return value;
-        });
-        switch (message.type) {
-            case 'tentative':
-                var notification = message.payload as BingoTentativeNotification;
-                receiveTentative(notification);
-                break;
-            case 'confirm':
-                var confirm = message.payload as BingoConfirmationNotification;
-                console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
-                receiveConfirmation(confirm);
-                break;
-            default:
-                break;
-        }
-    }
-
-    React.useEffect(() => {
-        console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
-
-        TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
-        return () => {
-            console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
-            TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
-        }
-    }, [])
-
-    React.useEffect(() => {
-        if (autoOpened && tentatives.length == 0)
+        if (autoOpened && props.tentatives.length == 0)
         {
             props.onNotificationsEmpty();
         }
-    }, [tentatives, autoOpened])
+    }, [props.tentatives, autoOpened])
 
     const processTentative = (entry: BingoEntry) =>
     {
@@ -141,8 +57,9 @@ export default function ModerationPane(props: ModerationPaneProps)
 
     const onTentativeExpire = (entry: BingoEntry) =>
     {
-        console.log("Entry expired: " + entry.text + " Active tentatives: " + tentatives.length)
-        setTentatives(tentatives.filter(t => t.key != entry.key));
+        console.log("Entry expired: " + entry.text + " Active tentatives: " + props.tentatives.length)
+        const tentative = props.tentatives.find(t => t.key === entry.key)
+        props.onTentativeExpire(tentative)
     }
 
     const onTestTentative = (entry: BingoEntry) => {
@@ -151,12 +68,12 @@ export default function ModerationPane(props: ModerationPaneProps)
             key: entry.key,
             tentativeTime: new Date(Date.now())
         }
-        receiveTentative(notification)
+        props.onReceiveTentative(notification)
     }
 
     const onClose = (e: React.MouseEvent<any>) => {
         setAutoOpened(false);
-        if (props.onNotificationsEmpty && tentatives.length == 0)
+        if (props.onNotificationsEmpty && props.tentatives.length == 0)
         {
             props.onNotificationsEmpty();
         }
@@ -173,8 +90,8 @@ export default function ModerationPane(props: ModerationPaneProps)
                 </div>
                 <Divider />
                 <ModerationBingoComponent
-                    entries={entries}
-                    tentatives={tentatives}
+                    entries={props.entries}
+                    tentatives={props.tentatives}
                     isStarted={props.isStarted}
                     gameId={props.gameId}
                     confirmationTimeout={props.confirmationTimeout}
