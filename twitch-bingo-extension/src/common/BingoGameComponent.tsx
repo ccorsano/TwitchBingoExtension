@@ -21,12 +21,12 @@ type BingoGameComponentProps = {
 
 export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [entries, setEntries] = React.useState<BingoEntry[]>(new Array(0))
-    const [isStarted, setStarted] = React.useState(false)
     const [canModerate, setCanModerate] = React.useState(false)
     const [canVote, setCanVote] = React.useState(false)
     const [pendingResults, setPendingResults] = React.useState<BingoPendingResult[]>(new Array(0))
     const [gameId, setGameId] = React.useState<string>(null)
     const [activeGame, setActiveGame] = React.useState<BingoGame>(null)
+    const [isStarted, setStarted] = React.useState(false)
     const [grid, setGrid] = React.useState<BingoGrid>(null)
 
     const loadConfig = (_broadcasterConfig: any) => {
@@ -53,7 +53,6 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         switch (message.type) {
             case 'set-config':
                 setEntries(message.payload.entries)
-                setStarted(message.payload.activeGame != null)
                 setActiveGame(message.payload.activeGame)
                 break;
             case 'start':
@@ -61,11 +60,10 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                 break;
             case 'bingo':
                 console.log(messageStr);
-                refreshGrid(this.state.activeGame, this.state.entries);
+                refreshGrid(activeGame, entries);
                 break;
             case 'stop':
                 setEntries(new Array(0))
-                setStarted(false)
                 setActiveGame(null)
                 setPendingResults(new Array(0))
                 if (props.onStop)
@@ -132,27 +130,28 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const onStart = (payload: BingoGame) => {
         console.log("Received start for game:" + payload.gameId);
         refreshGrid(payload, payload.entries);
+        setStarted(true)
     };
 
     const onTentative = (entry: BingoEntry) => {  
         BingoEBS.tentative(gameId, entry.key.toString());
         var cellIndex = grid.cells.findIndex(c => c.key == entry.key);
         grid.cells[cellIndex].state = BingoEntryState.Pending;
-        var pendingResults:BingoPendingResult[] = this.state.pendingResults.filter(p => p.key != entry.key);
+        var pendingResultsRefreshed:BingoPendingResult[] = pendingResults.filter(p => p.key != entry.key);
 
         var confirmationTimeout = ParseTimespan(activeGame.confirmationThreshold) + 1
 
-        pendingResults.push({
+        pendingResultsRefreshed.push({
             key: entry.key,
             expireAt: new Date(Date.now() + confirmationTimeout),
         });
         setGrid(grid)
-        setPendingResults(pendingResults)
+        setPendingResults(pendingResultsRefreshed)
 
         setTimeout(() => {
             // console.log("onTentative, refreshing grid after timeout");
             setPendingResults(pendingResults.filter(p => p.key != entry.key))
-            refreshGrid(this.state.activeGame, this.state.entries);
+            refreshGrid(activeGame, entries);
         }, confirmationTimeout);
         // console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
     };

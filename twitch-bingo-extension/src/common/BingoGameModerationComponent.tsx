@@ -19,6 +19,8 @@ type BingoGameModerationComponentProps = {
 
 export default function BingoGameModerationComponent(props: BingoGameModerationComponentProps)
 {
+    const context = React.useContext(ActiveGameContext)
+
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
 
     const receiveTentative = (notification: BingoTentativeNotification) => {
@@ -134,21 +136,16 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     }
 
     return (
-        <ActiveGameContext.Consumer>
-            {
-                context => 
-                    <ActiveGameModerationContext.Provider value={
-                            {
-                                gameContext: context,
-                                tentatives: tentatives,
-                                onConfirm: entry => onConfirm(context.game, entry),
-                                onTentativeExpire: entry => onTentativeExpire(entry),
-                                onTestTentative: entry => onTestTentative(context.game, entry),
-                            }
-                        }>
-                        { props.children }
-                    </ActiveGameModerationContext.Provider>
-            }
-        </ActiveGameContext.Consumer>
+        <ActiveGameModerationContext.Provider value={
+                {
+                    gameContext: context,
+                    tentatives: tentatives,
+                    onConfirm: entry => onConfirm(context.game, entry),
+                    onTentativeExpire: entry => onTentativeExpire(entry),
+                    onTestTentative: entry => onTestTentative(context.game, entry),
+                }
+            }>
+            { props.children }
+        </ActiveGameModerationContext.Provider>
     )
 }

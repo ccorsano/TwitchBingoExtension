@@ -5,6 +5,9 @@ const en: BaseTranslation = {
 		ConfirmButton: "Confirm",
 		CancelButton: "Cancel",
 	},
+	OverlayBingoGrid: {
+		WaitingMessage: "Waiting for the game to start !"
+	},
 	BingoViewerEntry:{
 		ConfirmButtonLabel: "Confirm",
 	},

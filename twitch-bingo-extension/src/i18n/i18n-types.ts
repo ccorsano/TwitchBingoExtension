@@ -19,6 +19,12 @@ export type Translation = {
 		 */
 		'CancelButton': string
 	}
+	'OverlayBingoGrid': {	
+		/**
+		 * Waiting for the game to start !
+		 */
+		'WaitingMessage': string
+	}
 	'BingoViewerEntry': {	
 		/**
 		 * Confirm
@@ -161,6 +167,12 @@ export type TranslationFunctions = {
 		 * Cancel
 		 */
 		'CancelButton': () => LocalizedString
+	}
+	'OverlayBingoGrid': {	
+		/**
+		 * Waiting for the game to start !
+		 */
+		'WaitingMessage': () => LocalizedString
 	}
 	'BingoViewerEntry': {	
 		/**
