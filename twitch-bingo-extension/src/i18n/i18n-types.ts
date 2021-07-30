@@ -9,6 +9,36 @@ export type Locales =
 	| 'en'
 
 export type Translation = {
+	'Mobile': {	
+		/**
+		 * Confirm
+		 */
+		'ConfirmButton': string
+		/**
+		 * Cancel
+		 */
+		'CancelButton': string
+	}
+	'BingoViewerEntry': {	
+		/**
+		 * Confirm
+		 */
+		'ConfirmButtonLabel': string
+	}
+	'BingoModeration': {	
+		/**
+		 * Confirm
+		 */
+		'ConfirmButtonLabel': string
+		/**
+		 * Confirm
+		 */
+		'ConfirmButton': string
+		/**
+		 * No entries configured.
+		 */
+		'NoEntriesMessage': string
+	}
 	'Config': {	
 		/**
 		 * Configure Grid
@@ -122,6 +152,36 @@ export type Translation = {
 }
 
 export type TranslationFunctions = {
+	'Mobile': {	
+		/**
+		 * Confirm
+		 */
+		'ConfirmButton': () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		'CancelButton': () => LocalizedString
+	}
+	'BingoViewerEntry': {	
+		/**
+		 * Confirm
+		 */
+		'ConfirmButtonLabel': () => LocalizedString
+	}
+	'BingoModeration': {	
+		/**
+		 * Confirm
+		 */
+		'ConfirmButtonLabel': () => LocalizedString
+		/**
+		 * Confirm
+		 */
+		'ConfirmButton': () => LocalizedString
+		/**
+		 * No entries configured.
+		 */
+		'NoEntriesMessage': () => LocalizedString
+	}
 	'Config': {	
 		/**
 		 * Configure Grid

@@ -1,6 +1,18 @@
 import type { BaseTranslation } from 'typesafe-i18n'
 
 const en: BaseTranslation = {
+	Mobile:{
+		ConfirmButton: "Confirm",
+		CancelButton: "Cancel",
+	},
+	BingoViewerEntry:{
+		ConfirmButtonLabel: "Confirm",
+	},
+	BingoModeration:{
+		ConfirmButtonLabel: "Confirm",
+		ConfirmButton: "Confirm",
+		NoEntriesMessage: "No entries configured.",
+	},
 	Config:{
 		ConfigureGrid: 'Configure Grid',
 		Columns: 'Columns',

@@ -7,6 +7,7 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { bingoStyles } from "./BingoStyles";
 import Button from "@material-ui/core/Button";
+import { I18nContext } from "../i18n/i18n-react";
 
 type BingoViewerEntryProps = {
     config: BingoEntry,
@@ -26,6 +27,8 @@ const renderTime = ({remainingTime}) => {
 }
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
+    const { LL } = React.useContext(I18nContext)
+    
     const classes = bingoStyles();
     const [confirmationPrompt, setConfirmationPrompt] = React.useState(false);
 
@@ -104,7 +107,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
             </div>
             {
                 confirmationPrompt ?
-                    <Button aria-label="Confirm" onClickCapture={handleTentative} variant="outlined" color="primary" size="large">
+                    <Button aria-label={LL.BingoViewerEntry.ConfirmButtonLabel()} onClickCapture={handleTentative} variant="outlined" color="primary" size="large">
                         <Check color="action" />
                     </Button> : null
             }
