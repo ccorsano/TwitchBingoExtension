@@ -12,6 +12,7 @@ import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined'
 import React from 'react'
 import { useRef } from 'react'
 import { BingoEntry } from '../../EBS/BingoService/EBSBingoTypes'
+import { I18nContext } from '../../i18n/i18n-react'
 import { BingoEditableEntry } from '../../model/BingoEntry'
 import EditableBingoEntry from './EditableBingoEntry'
 
@@ -27,6 +28,8 @@ type LibraryEditorProps = {
 
 export default function LibraryEditor(props: LibraryEditorProps)
 {
+    const { LL } = React.useContext(I18nContext)
+    
     const textInputRef = useRef<HTMLInputElement>(null)
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -70,25 +73,25 @@ export default function LibraryEditor(props: LibraryEditorProps)
 
     return (
         <Card>
-            <CardHeader title="Library" subheader="Load or add all your bingo entries here."/>
+            <CardHeader title={LL.Config.LibraryEditor.Title()} subheader={LL.Config.LibraryEditor.TitleSubHeader()}/>
             <CardActions>
                 <input
                     ref={textInputRef}
                     type="file"
                     style={{display: 'none'}}
                     onChange={props.onEntriesUpload} />
-                <IconButton onClick={(_) => textInputRef.current.click()} aria-label="Upload entry list" title="Replace entries by uploading a .txt file">
+                <IconButton onClick={(_) => textInputRef.current.click()} aria-label={LL.Config.LibraryEditor.UploadButtonLabel()} title={LL.Config.LibraryEditor.UploadButtonTitle()}>
                     <Icon>
                         <CloudUploadOutlined />
                     </Icon> 
                 </IconButton>
                 <textarea ref={textAreaRef} style={{display: 'none'}}/>
-                <IconButton onClick={onEntriesCopy} aria-label="Copy current entries to your pasteboard" title="Copy current entries to your pasteboard">
+                <IconButton onClick={onEntriesCopy} aria-label={LL.Config.LibraryEditor.CopyEntriesButtonLabel()} title={LL.Config.LibraryEditor.CopyEntriesButtonTitle()}>
                     <Icon>
                         <AssignmentReturned />
                     </Icon>
                 </IconButton>
-                <IconButton onClick={props.onAdd} aria-label="Add a new entry to the list" title="Add a new entry to the list">
+                <IconButton onClick={props.onAdd} aria-label={LL.Config.LibraryEditor.AddEntryButtonLabel()} title={LL.Config.LibraryEditor.AddEntryButtonTitle()}>
                     <Icon>
                         <AddCircleOutline />
                     </Icon>

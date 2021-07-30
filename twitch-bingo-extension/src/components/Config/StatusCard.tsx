@@ -5,6 +5,7 @@ import CardContent from '@material-ui/core/CardContent'
 import CardHeader from '@material-ui/core/CardHeader'
 import Typography from '@material-ui/core/Typography'
 import React from 'react'
+import { I18nContext } from '../../i18n/i18n-react'
 
 type StatusCardProps = {
     isActive: boolean;
@@ -13,19 +14,21 @@ type StatusCardProps = {
 
 export default function StatusCard(props: StatusCardProps)
 {
+    const { LL } = React.useContext(I18nContext)
+
     return (
         <Card>
-            <CardHeader title="Status" />
+            <CardHeader title={LL.Config.StatusCard.Title()} />
             <CardContent>
                 {
                     props.isActive != null ?
-                    <Typography>Active</Typography> :
-                    <Typography>Inactive</Typography>
+                    <Typography>{LL.Config.StatusCard.StatusActive()}</Typography> :
+                    <Typography>{LL.Config.StatusCard.StatusInactive()}</Typography>
                 }
             </CardContent>
             <CardActions>
                 {
-                    props.isActive ? <Button variant="contained" color="secondary" onClick={props.onStop}>Stop game</Button> : null
+                    props.isActive ? <Button variant="contained" color="secondary" onClick={props.onStop}>{LL.Config.StatusCard.StopButton()}</Button> : null
                 }
             </CardActions>
         </Card>

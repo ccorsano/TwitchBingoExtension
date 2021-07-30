@@ -34,10 +34,10 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
 
     return (
         <Card>
-            <CardHeader title={LL.ConfigureGrid()} />
+            <CardHeader title={LL.Config.ConfigureGrid()} />
             <CardContent>
                 <Typography>
-                    {LL.Columns()}
+                    {LL.Config.Columns()}
                 </Typography>
                 <Slider
                     defaultValue={3}
@@ -50,7 +50,7 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                     onChange={(_, value) => props.onColumnsChange(value as number)}
                 />
                 <Typography>
-                    {LL.Rows()}
+                    {LL.Config.Rows()}
                 </Typography>
                 <Slider
                     defaultValue={3}
@@ -64,8 +64,8 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                 />
                 { !canStart() ? 
                     <Alert severity="error">
-                        <AlertTitle>{LL.AlertNotEnoughEntriesToFillTheGrid}</AlertTitle>
-                        {LL.AddEntriesOrReduceGridDimensionsToStartTheGame}
+                        <AlertTitle>{LL.Config.AlertNotEnoughEntriesToFillTheGrid()}</AlertTitle>
+                        {LL.Config.AddEntriesOrReduceGridDimensionsToStartTheGame()}
                     </Alert>
                      : null }
                 <Grid container xs={12}>
@@ -90,7 +90,7 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                 }
                 </Grid>
                 <Typography>
-                    {LL.ConfirmationTime()}
+                    {LL.Config.ConfirmationTime()}
                 </Typography>
                 <Slider
                     defaultValue={120}
@@ -106,10 +106,10 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
             </CardContent>
             <CardActions>
                 <Button variant="contained" color="primary" onClick={props.onSave}>
-                    {LL.SaveGame()}
+                    {LL.Config.SaveGame()}
                 </Button>
                 <Button variant="contained" color="primary" onClick={props.onStart} disabled={!canStart()}>
-                    {LL.StartGame()}
+                    {LL.Config.StartGame()}
                 </Button>
             </CardActions>
         </Card>

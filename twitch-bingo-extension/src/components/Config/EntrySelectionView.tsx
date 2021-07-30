@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import RemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
 import React from 'react'
+import { I18nContext } from '../../i18n/i18n-react';
 import { BingoEditableEntry } from '../../model/BingoEntry';
 
 type EntrySelectionViewProps = {
@@ -20,10 +21,12 @@ type EntrySelectionViewProps = {
 
 export default function EntrySelectionView(props:EntrySelectionViewProps)
 {
+    const { LL } = React.useContext(I18nContext)
+    
     var targetListElement: JSX.Element = null;
     if (props.selectedEntries.length == 0)
     {
-        targetListElement = <Typography><em>No items selected</em></Typography>
+        targetListElement = <Typography><em>{LL.Config.EntrySelectionView.NoItemMessage()}</em></Typography>
     }
     else
     {
@@ -48,7 +51,7 @@ export default function EntrySelectionView(props:EntrySelectionViewProps)
 
     return (
         <Card>
-            <CardHeader title="Selection" subheader="These are the bingo entries currently selected for the next game."/>
+            <CardHeader title={LL.Config.EntrySelectionView.Title()} subheader={LL.Config.EntrySelectionView.TitleSubHeader} />
             <CardContent>
                 { targetListElement }
             </CardContent>

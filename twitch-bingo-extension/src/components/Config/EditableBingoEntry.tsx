@@ -8,12 +8,7 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
 import Check from '@material-ui/icons/Check'
 import Delete from '@material-ui/icons/Delete'
 import { BingoEditableEntry } from '../../model/BingoEntry';
-
-type EditableBingoEntryState = {
-    isEditing: boolean,
-    editingValue: string,
-    value: string,
-}
+import { I18nContext } from '../../i18n/i18n-react';
 
 type EditableBingoEntryProps = {
     item: BingoEditableEntry,
@@ -23,125 +18,107 @@ type EditableBingoEntryProps = {
     onSelect: ((entry: BingoEditableEntry) => void),
 }
 
-export default class EditableBingoEntry extends React.Component<EditableBingoEntryProps, EditableBingoEntryState> {
-    state: EditableBingoEntryState = {
-        isEditing: false,
-        value: "",
-        editingValue: "",
-    }
-    editField: HTMLDivElement;
+export default function EditableBingoEntry(props: EditableBingoEntryProps) {
+    const { LL } = React.useContext(I18nContext)
+    
+    const [isEditing, setEditing] = React.useState(props.item.isNew)
+    const [value, setValue] = React.useState(props.item.text)
+    const [editingValue, setEditingValue] = React.useState(props.item.isNew ? props.item.text : "")
 
-    constructor(props: EditableBingoEntryProps){
-        super(props)
+    const editField = React.useRef<HTMLDivElement>(null)
 
-        this.state.isEditing = props.item.isNew;
-        this.state.value = props.item.text;
-        if (props.item.isNew)
-        {
-            this.state.editingValue = props.item.text;
+    React.useEffect(() => {
+        if (props.item.isNew){
+            editField.current.focus()
         }
+    }, [props.item])
+
+    const edit = (): void => {
+        setEditing(true)
+        setEditingValue(value)
     }
 
-    componentDidMount() {
-        if (this.props.item.isNew){
-            this.editField.focus();
-        }
-    }
+    const endEdit = (): void => {
+        setEditing(false)
+        setValue(editingValue)
 
-    edit = (): void => {
-        this.setState({
-            isEditing: true,
-            editingValue: this.state.value,
-        });
-    }
-
-    endEdit = (): void => {
-        this.setState({
-            isEditing: false,
-            value: this.state.editingValue,
-        });
-        this.props.onChange({
-            key: this.props.item.key,
+        props.onChange({
+            key: props.item.key,
             isNew: false,
-            text: this.state.editingValue,
+            text: editingValue,
         });
     }
 
-    delete = (): void => {
-        if (this.props.onDelete)
+    const deleteCallback = (): void => {
+        if (props.onDelete)
         {
-            this.props.onDelete(this.props.item);
+            props.onDelete(props.item);
         }
     }
 
-    onKeyDown = (e: React.KeyboardEvent<any>): void => {
+    const onKeyDown = (e: React.KeyboardEvent<any>): void => {
         if (e.key === "Enter")
         {
-            this.endEdit();
+            endEdit();
         }
     }
 
-    onChange = (e: React.ChangeEvent<any>): void => {
-        this.setState({
-            editingValue: e.target.value
-        });
+    const onChange = (e: React.ChangeEvent<any>): void => {
+        setEditingValue(e.target.value)
     }
 
-    onClick = (_e: React.MouseEvent<any>): void => {
-        this.edit();
+    const onClick = (_e: React.MouseEvent<any>): void => {
+        edit();
     }
 
-    render(){
-        if (this.state.isEditing)
-        {
-            return (
-                <ListItem>
-                    <IconButton onClick={this.delete}>
-                        <Icon>
-                            <Delete />
-                        </Icon>
-                    </IconButton>
-                    <TextField
-                        fullWidth={true}
-                        ref={(input) => { this.editField = input; }} 
-                        label="Bingo proposition"
-                        placeholder="Proposition"
-                        defaultValue={this.state.value}
-                        onChange={this.onChange}
-                        onKeyUp={this.onKeyDown}
-                    />
-                    <IconButton onClick={this.endEdit}>
-                        <Icon>
-                            <Check />
-                        </Icon>
-                    </IconButton>
-                </ListItem>
-            )
-        }
-        else
-        {
-            return (
-                <ListItem button>
-                    <ListItemText
-                        primary={this.state.value}
-                        onClick={() => this.props.onSelect(this.props.item)}
-                        onDoubleClick={this.onClick}
-                    />
-                    {
-                        this.props.selected ? null : 
-                            <IconButton onClick={() => {
-                                    this.props.onSelect(this.props.item);
-                                    return false;
-                                }
-                            }>
-                                <Icon>
-                                    <AddCircleOutline />
-                                </Icon>
-                            </IconButton>
-                    }
-                </ListItem>
-            )
-        }
-
+    if (isEditing)
+    {
+        return (
+            <ListItem>
+                <IconButton onClick={deleteCallback}>
+                    <Icon>
+                        <Delete />
+                    </Icon>
+                </IconButton>
+                <TextField
+                    fullWidth={true}
+                    ref={editField}
+                    label={LL.Config.EditableBingoEntry.TextFieldLabel()}
+                    placeholder={LL.Config.EditableBingoEntry.TextFieldPlaceholder()}
+                    defaultValue={value}
+                    onChange={onChange}
+                    onKeyUp={onKeyDown}
+                />
+                <IconButton onClick={endEdit}>
+                    <Icon>
+                        <Check />
+                    </Icon>
+                </IconButton>
+            </ListItem>
+        )
+    }
+    else
+    {
+        return (
+            <ListItem button>
+                <ListItemText
+                    primary={value}
+                    onClick={() => props.onSelect(props.item)}
+                    onDoubleClick={onClick}
+                />
+                {
+                    props.selected ? null : 
+                        <IconButton onClick={() => {
+                                props.onSelect(props.item);
+                                return false;
+                            }
+                        }>
+                            <Icon>
+                                <AddCircleOutline />
+                            </Icon>
+                        </IconButton>
+                }
+            </ListItem>
+        )
     }
 }

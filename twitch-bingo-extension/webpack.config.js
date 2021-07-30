@@ -18,7 +18,10 @@ module.exports = (_env, argv) => {
             filename: '[name].css',
         }),
         new ForkTsCheckerWebpackPlugin(),
-        new TypesafeI18nPlugin({adapter: 'react'})
+        new TypesafeI18nPlugin({
+            adapter: 'react',
+            loadLocalesAsync: true,
+        })
     ];
 
     let entryPoints = {
