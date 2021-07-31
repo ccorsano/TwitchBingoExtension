@@ -12,9 +12,7 @@ export const ActiveGridContext = React.createContext<BingoGridContext>(null)
 
 type BingoGameComponentProps = {
     children?: React.ReactNode,
-    loadingComponent?: React.ReactNode,
-    moderationComponent?: React.ReactNode,
-    onRefreshGrid?: (grid: BingoGrid) => void,
+    onRefreshGrid?: (grid: BingoGrid, cells: BingoGridCell[]) => void,
     onReceiveGame?: (game: BingoGame) => void,
     onStop?: () => void,
 }
@@ -124,7 +122,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }
 
     React.useEffect(() => {
-        if (props.onRefreshGrid) props.onRefreshGrid(grid)
+        if (grid && props.onRefreshGrid) props.onRefreshGrid(grid, grid.cells.map(c => getCell(c.row, c.col)[0]))
     }, [grid])
 
     const onStart = (payload: BingoGame) => {
