@@ -10,11 +10,13 @@ import { initFormatters } from './formatters'
 export const baseLocale: Locales = 'en'
 
 export const locales: Locales[] = [
-	'en'
+	'en',
+	'fr'
 ]
 
 const localeTranslationLoaders = {
 	en: () => import('./en'),
+	fr: () => import('./fr'),
 }
 
 export const getTranslationForLocale = async (locale: Locales) => (await (localeTranslationLoaders[locale] || localeTranslationLoaders[baseLocale])()).default as Translation
