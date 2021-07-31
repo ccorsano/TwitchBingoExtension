@@ -59,7 +59,10 @@ export default function ModerationPane(props: ModerationPaneProps)
     {
         console.log("Entry expired: " + entry.text + " Active tentatives: " + props.tentatives.length)
         const tentative = props.tentatives.find(t => t.key === entry.key)
-        props.onTentativeExpire(tentative)
+        if (props.onTentativeExpire)
+        {
+            props.onTentativeExpire(tentative)
+        }
     }
 
     const onTestTentative = (entry: BingoEntry) => {
