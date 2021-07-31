@@ -1,127 +1,115 @@
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
 import { Suspense } from 'react';
+import BingoGameComponent, { ActiveGameContext } from '../../common/BingoGameComponent';
+import BingoGameModerationComponent, { ActiveGameModerationContext } from '../../common/BingoGameModerationComponent';
 import { TwitchExtHelper } from '../../common/TwitchExtension';
-import ViewerBingoComponentBase from '../../common/ViewerBingoComponentBase';
-import { ViewerBingoComponentBaseState, ViewerBingoComponentBaseProps } from '../../common/ViewerBingoComponentBase';
-import { BingoConfirmationNotification, BingoGame, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoTentativeNotification, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
+import OverlayBingoGrid from './OverlayBingoGrid';
 const ModerationPane = React.lazy(() => import('./ModerationPane'));
 import VideoOverlayTabWidget from './TabWidget';
 require('./VideoOverlay.scss');
 
-interface VideoOverlayState extends ViewerBingoComponentBaseState {
-    hasModNotifications: boolean;
-    widgetShown: boolean;
-}
+export default function VideoOverlay()
+{
+    const [isCollapsed, setCollapsed] = React.useState(true)
+    const [moderationDrawerOpen, setModerationDrawerOpen] = React.useState(false)
+    const [isWidgetShown, setWidgetShown] = React.useState(true)
+    const [hasModNotifications, setHasModNotifications] = React.useState(false)
+    const [isModDrawerAutoOpened, setModDrawerAutoOpened] = React.useState(false)
 
-interface VideoOverlayProps extends ViewerBingoComponentBaseProps {
+    React.useEffect(() => {
+        const onContext = (context, _) => {
+            setWidgetShown(context.arePlayerControlsVisible !== false)
+        }
+        TwitchExtHelper.onContext(onContext)
+        return () => {
+            TwitchExtHelper.onContext(null)
+        }
+    }, [])
+    
 
-}
-
-export default class VideoOverlay extends ViewerBingoComponentBase<VideoOverlayProps, VideoOverlayState> {
-    state: VideoOverlayState = {
-        isCollapsed: true,
-        entries: new Array(0),
-        rows: 0,
-        columns: 0,
-        canModerate: false,
-        canVote: false,
-        isStarted: false,
-        pendingResults: new Array(0),
-        moderationDrawerOpen: false,
-        hasModNotifications: false,
-        widgetShown: true,
+    const onTentativeNotification = (_tentative: BingoTentativeNotification) => {
+        if (!moderationDrawerOpen)
+        {
+            setModDrawerAutoOpened(true)
+            setModerationDrawerOpen(true)
+        }
+        setHasModNotifications(true)
     }
 
-    constructor(props: VideoOverlayProps){
-        super(props)
+    const onNotificationsEmpty = () => {
+        if (isModDrawerAutoOpened)
+        {
+            setModerationDrawerOpen(false)
+        }
+        setHasModNotifications(false)
     }
 
-    componentDidMount() {
-        super.componentDidMount();
-        TwitchExtHelper.onContext((context, _) => {
-            this.setState({
-                widgetShown: context.arePlayerControlsVisible !== false
-            })
-        })
-    }
-
-    onStart(payload: BingoGame) {
-        super.onStart(payload);
-        this.setState({entries : payload.entries});
-    };
-
-    onTentativeNotification = () => {
-        this.setState({
-            moderationDrawerOpen: true,
-            hasModNotifications: true,
-        })
-    }
-
-    onConfirmationNotification = (confirmation: BingoConfirmationNotification) => {
-        this.setState({
-            entries: this.state.entries.map(entry => {
-                if (entry.key == confirmation.key)
+    return (
+        <BingoGameComponent>
+            <ActiveGameContext.Consumer>
                 {
-                    return {
-                        key: confirmation.key,
-                        text: entry.text,
-                        confirmedAt: confirmation.confirmationTime,
-                        confirmedBy: confirmation.confirmedBy,
+                    gameContext => {
+                        var moderationDrawer: JSX.Element = null;
+                        if (gameContext.canModerate)
+                        {
+                            moderationDrawer = (
+                                <Suspense fallback={<LinearProgress variant="indeterminate" />}>
+                                    <BingoGameModerationComponent
+                                        activeGame={gameContext.game}
+                                        onReceiveTentative={onTentativeNotification}
+                                        onNotificationsEmpty={onNotificationsEmpty} >
+                                        <ActiveGameModerationContext.Consumer>
+                                            {
+                                                moderationContext => {
+                                                    return (
+                                                        <ModerationPane
+                                                            entries={gameContext.game.entries}
+                                                            tentatives={moderationContext.tentatives}
+                                                            isOpen={moderationDrawerOpen}
+                                                            isStarted={gameContext.isStarted}
+                                                            onOpen={() => {setModerationDrawerOpen(true)}}
+                                                            onClose={(_) => {setModerationDrawerOpen(false)}}
+                                                            gameId={gameContext.game?.gameId}
+                                                            confirmationTimeout={ParseTimespan(gameContext.game?.confirmationThreshold ?? "00:00:00")}
+                                                            onReceiveTentative={onTentativeNotification}
+                                                            onNotificationsEmpty={onNotificationsEmpty} />
+                                                    )
+                                                }
+                                            }
+                                        </ActiveGameModerationContext.Consumer>
+                                    </BingoGameModerationComponent>
+                                </Suspense>
+                            )
+                        }
+                
+                        return [
+                            <div id="bingoRenderingArea">
+                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }}></div>
+                                <div style={{ gridColumn: 1, gridRow: 2 }}>
+                                    <VideoOverlayTabWidget
+                                        shown={isWidgetShown}
+                                        collapsed={isCollapsed}
+                                        canModerate={gameContext.canModerate}
+                                        hasModNotifications={hasModNotifications}
+                                        onToggleGrid={(_) => { setCollapsed(!isCollapsed)}}
+                                        onToggleModerationPane={(_) => {setModerationDrawerOpen(!moderationDrawerOpen)}} />
+                                    { gameContext.canModerate ? moderationDrawer : null }
+                                </div>
+                                <div style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
+                                    <OverlayBingoGrid
+                                        isCollapsed={isCollapsed}
+                                    />
+                                </div>
+                                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }}>
+                                </div>
+                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '6rem', width: '100%' }}></div>
+                            </div>
+                        ];
                     }
                 }
-                return entry
-            })
-        })
-    }
-
-    onNotificationsEmpty = () => {
-        this.setState({
-            moderationDrawerOpen: false,
-            hasModNotifications: false,
-        })
-    }
-
-    render(){
-        var moderationDrawer: JSX.Element = null;
-        if (this.state.canModerate)
-        {
-            moderationDrawer = (
-                <Suspense fallback={<LinearProgress variant="indeterminate" />}>
-                    <ModerationPane
-                        isOpen={this.state.moderationDrawerOpen}
-                        isStarted={this.state.isStarted}
-                        onOpen={() => {this.setState({moderationDrawerOpen: true})}}
-                        onClose={(_) => {this.setState({moderationDrawerOpen: false})}}
-                        gameId={this.state.activeGame?.gameId}
-                        confirmationTimeout={ParseTimespan(this.state.activeGame?.confirmationThreshold ?? "00:00:00")}
-                        onReceiveTentative={this.onTentativeNotification}
-                        onReceiveConfirmation={this.onConfirmationNotification}
-                        onNotificationsEmpty={this.onNotificationsEmpty} />
-                </Suspense>
-            )
-        }
-
-        return [
-            <div id="bingoRenderingArea">
-                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }}></div>
-                <div style={{ gridColumn: 1, gridRow: 2 }}>
-                    <VideoOverlayTabWidget
-                        shown={this.state.widgetShown}
-                        collapsed={this.state.isCollapsed}
-                        canModerate={this.state.canModerate}
-                        hasModNotifications={this.state.hasModNotifications}
-                        onToggleGrid={(_) => {this.setState({isCollapsed: !this.state.isCollapsed});}}
-                        onToggleModerationPane={(_) => {this.setState({moderationDrawerOpen: !this.state.moderationDrawerOpen})}} />
-                    { this.state.canModerate ? moderationDrawer : null }
-                </div>
-                <div style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
-                    { super.render() }
-                </div>
-                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }}>
-                </div>
-                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '6rem', width: '100%' }}></div>
-            </div>
-        ];
-    }
+            </ActiveGameContext.Consumer>
+        </BingoGameComponent>
+    )
 }

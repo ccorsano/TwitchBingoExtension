@@ -5,6 +5,7 @@ import { bingoStyles } from '../../common/BingoStyles';
 import { useRef } from 'react';
 import CheckRounded from '@material-ui/icons/CheckRounded';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
+import { I18nContext } from '../../i18n/i18n-react';
 
 type BingoMobileEntryListProps = {
     entries: BingoGridCell[],
@@ -87,6 +88,8 @@ const mobileEntryStyle = makeStyles({
 
 export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
 {
+    const { LL } = React.useContext(I18nContext)
+    
     const styles = mobileEntryStyle()
     const bStyles = bingoStyles()
 
@@ -158,13 +161,13 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                                                 style={{gridRow:2, gridColumn:1, textAlign: 'center'}}
                                                 className={clsx(bStyles.cancel, 'cancel')}
                                                 onClickCapture={(_) => setPrompting(false)}>
-                                                    Cancel
+                                                    {LL.Mobile.CancelButton()}
                                             </div>
                                             <div
                                                 style={{gridRow:2, gridColumn:2, textAlign: 'center'}}
                                                 className={clsx(bStyles.confirm, 'confirm')}
                                                 onClickCapture={(_) => confirmKey(cell.key)}>
-                                                    Confirm
+                                                {LL.Mobile.ConfirmButton()}
                                             </div>
                                         </div>
                                      )

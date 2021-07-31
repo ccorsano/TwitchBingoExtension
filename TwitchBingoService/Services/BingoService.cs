@@ -360,6 +360,21 @@ namespace TwitchBingoService.Services
             {
                 throw new ArgumentOutOfRangeException("gameId");
             }
+
+            var confirmedEntry = game.entries.First(e => e.key == key);
+
+            var confirmationTask = _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+            {
+                type = "confirm",
+                payload = new
+                {
+                    gameId = gameId,
+                    key = key,
+                    confirmationTime = confirmedEntry.confirmedAt,
+                    confirmedBy = confirmedEntry.confirmedBy,
+                }
+            }));
+
             var notifications = await _storage.UnqueueNotifications(gameId, key);
 
             var colComplete = notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId))
@@ -382,6 +397,7 @@ namespace TwitchBingoService.Services
                     gridComplete = (await Task.WhenAll(gridComplete)),
                 }
             }));
+            await confirmationTask;
 
             var messageBuilder = new StringBuilder(140, 280);
             messageBuilder.Append($"{game.entries.First(e => e.key == key).text} confirmed !");

@@ -9,6 +9,7 @@ import ListItemText from "@material-ui/core/ListItemText"
 import Paper from "@material-ui/core/Paper"
 import React from "react"
 import { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
+import { I18nContext } from "../i18n/i18n-react"
 import { bingoStyles } from "./BingoStyles"
 import TentativeNotificationComponent from "./TentativeNotificationComponent"
 
@@ -26,6 +27,8 @@ type ModerationBingoComponentProps = {
 
 export default function ModerationBingoComponent(props: ModerationBingoComponentProps)
 {
+    const { LL } = React.useContext(I18nContext)
+    
     const classes = bingoStyles();
 
     return (
@@ -71,7 +74,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                     <ListItemText primary={entry.text} />
                                     <ListItemSecondaryAction>
                                         <ButtonGroup size="small">
-                                            <Button aria-label="Confirm" onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>Confirm</Button>
+                                            <Button aria-label={LL.BingoModeration.ConfirmButtonLabel()} onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>{LL.BingoModeration.ConfirmButton()}</Button>
                                             {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
                                         </ButtonGroup>
                                     </ListItemSecondaryAction>
@@ -80,7 +83,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                         })
                     :<Box style={{ margin: '1vw' }}>
                         <LinearProgress variant="indeterminate" />
-                        No entries configured.
+                        {LL.BingoModeration.NoEntriesMessage()}
                     </Box>
                 }
             </List>

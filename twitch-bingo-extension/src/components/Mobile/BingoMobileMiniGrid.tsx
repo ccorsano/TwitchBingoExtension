@@ -53,7 +53,7 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                         let cell = getCell(row, col);
                         if (! cell)
                         {
-                            var key = 1000 + col + (row * this.state.columns);
+                            var key = 1000 + col + (row * props.columns);
                             return <rect key={key} x={col+0.025} y={row+0.025} width="0.9" height="0.45" rx="0.01" ry="0.01" />
                         }
                         else

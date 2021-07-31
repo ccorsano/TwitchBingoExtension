@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TypesafeI18nPlugin = require('typesafe-i18n/webpack/webpack-plugin-typesafe-i18n').default;
 const { config } = require('webpack');
 
 module.exports = (_env, argv) => {
@@ -17,6 +18,10 @@ module.exports = (_env, argv) => {
             filename: '[name].css',
         }),
         new ForkTsCheckerWebpackPlugin(),
+        new TypesafeI18nPlugin({
+            adapter: 'react',
+            loadLocalesAsync: true,
+        })
     ];
 
     let entryPoints = {
