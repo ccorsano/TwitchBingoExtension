@@ -46,23 +46,35 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }
     };
 
-    const receiveBroadcast = (_target, _contentType, messageStr) => {
+    React.useEffect(() => {
+        Twitch.onConfiguration.push(loadConfig);
+        return () => {
+            var index = Twitch.onConfiguration.indexOf(loadConfig)
+            if (index !== -1)
+            {
+                Twitch.onConfiguration.splice(index, 1)
+            }
+        }
+    }, [])
+
+    const receiveBroadcast = React.useCallback((_target, _contentType, messageStr) => {
         let message = JSON.parse(messageStr);
         switch (message.type) {
             case 'set-config':
                 setEntries(message.payload.entries)
                 setActiveGame(message.payload.activeGame)
+                console.log(message.payload.activeGame);
                 break;
             case 'start':
                 onStart(message.payload);
                 break;
             case 'bingo':
-                console.log(messageStr);
                 refreshGrid(activeGame, entries);
                 break;
             case 'stop':
                 setEntries(new Array(0))
                 setActiveGame(null)
+                console.log("Stopped game");
                 setPendingResults(new Array(0))
                 if (props.onStop)
                 {
@@ -75,24 +87,14 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             default:
                 break;
         }
-    }
+    }, [activeGame, entries])
 
-    React.useEffect(() => {
-        Twitch.onConfiguration.push(loadConfig);
-        return () => {
-            var index = Twitch.onConfiguration.indexOf(loadConfig)
-            if (index !== -1)
-            {
-                Twitch.onConfiguration.splice(index, 1)
-            }
-        }
-    }, [])
     React.useEffect(() => {
         TwitchExtHelper.listen('broadcast', receiveBroadcast);
         return () => {
             TwitchExtHelper.unlisten('broadcast', receiveBroadcast)
         }
-    }, [])
+    }, [activeGame])
 
     const onAuthorized = (_context) => {
         setCanModerate(TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator')
@@ -152,11 +154,11 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         setPendingResults(pendingResultsRefreshed)
 
         setTimeout(() => {
-            // console.log("onTentative, refreshing grid after timeout");
+            console.log("onTentative, refreshing grid after timeout");
             setPendingResults(pendingResults.filter(p => p.key != entry.key))
             refreshGrid(activeGame, entries);
         }, confirmationTimeout);
-        // console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
+        console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
     };
 
     const getCell = (row: number, col: number): [BingoGridCell,BingoEntry] => {
@@ -206,6 +208,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }
     
     const onConfirmationNotification = (confirmation: BingoConfirmationNotification) => {
+        console.log(confirmation)
         setEntries(entries.map(entry => {
             if (entry.key == confirmation.key)
             {
