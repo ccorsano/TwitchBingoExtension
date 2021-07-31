@@ -111,6 +111,11 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }, [])
 
     const refreshGrid = (game: BingoGame, entries: BingoEntry[]) => {
+        if (! game)
+        {
+            console.error("No game provided to refreshGrid")
+            return
+        }
         BingoEBS.getGrid(game.gameId).then(grid => {
             setGameId(game.gameId)
             setEntries(entries)
