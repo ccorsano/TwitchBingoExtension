@@ -68,7 +68,7 @@ export default function Mobile()
                                                     entries={sortedEntries}
                                                     selectedKey={selectedCell}
                                                     onSelectKey={ key => onSelectFromList(gridContext.grid, key)}
-                                                    onTentative={(key) => this.onTentative(gameContext.game.entries.find(e => e.key === key))}
+                                                    onTentative={(key) => gameContext.onTentative(gameContext.game.entries.find(e => e.key === key))}
                                                     />
                                             </div>
                                         </div>

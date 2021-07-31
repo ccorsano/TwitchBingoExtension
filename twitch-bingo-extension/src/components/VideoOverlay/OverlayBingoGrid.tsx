@@ -52,7 +52,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
                                         canConfirm={false}
                                         isColCompleted={isColComplete}
                                         isRowCompleted={isRowComplete}
-                                        onTentative={this.onTentative}
+                                        onTentative={gameContext.onTentative}
                                         fontSize="16px"
                                         isShown={!props.isCollapsed}
                                     />

@@ -47,9 +47,9 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
             </defs>
             {
                 [...Array(props.rows).keys()].map(row => {
-                    // let isRowComplete = this.isRowComplete(row);
+                    // let isRowComplete = gridContext.isRowComplete(row);
                     return [...Array(props.columns).keys()].map(col => {
-                        // let isColComplete = this.isColComplete(col);
+                        // let isColComplete = gridContext.isColComplete(col);
                         let cell = getCell(row, col);
                         if (! cell)
                         {
