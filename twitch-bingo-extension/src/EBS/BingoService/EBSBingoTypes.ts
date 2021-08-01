@@ -21,6 +21,7 @@ export interface BingoGameCreationParams {
     columns: number;
     entries: BingoEntry[];
     confirmationThreshold: string;
+    enableChatIntegration: boolean;
 }
 
 export interface BingoTentative {

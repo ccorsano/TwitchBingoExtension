@@ -113,7 +113,8 @@ export default function Config() {
                     text: entry.text,
                 };
             }),
-            confirmationThreshold: EBSBingo.FormatTimespan(confirmationThresholdSeconds)
+            confirmationThreshold: EBSBingo.FormatTimespan(confirmationThresholdSeconds),
+            enableChatIntegration: TwitchExtHelper.features.isChatEnabled,
         }).then((game)=> {
             console.log("Started game " + game.gameId);
 

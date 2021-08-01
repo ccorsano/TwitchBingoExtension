@@ -109,6 +109,7 @@ export interface TwitchExtensionHelper {
     configuration: TwitchExtensionConfigurationHelper;
     viewer: TwitchExtensionViewerHelper;
     rig: TwitchExtensionRigHelper;
+    features: TwitchExtensionFeaturesHelper;
 }
 
 type TwitchExtensionQueryParameters = {
