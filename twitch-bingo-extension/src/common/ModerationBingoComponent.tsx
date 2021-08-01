@@ -59,7 +59,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
             </List>
             <List>
                 {
-                    props.entries.length > 0 ?
+                    props.entries?.length > 0 ?
                         props.entries.map((entry) => {
                             const tentative = props.tentatives.find(t => t.key == entry.key)
                             if (tentative)

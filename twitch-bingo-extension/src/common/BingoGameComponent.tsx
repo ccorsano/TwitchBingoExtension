@@ -138,13 +138,19 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         setStarted(true)
     };
 
-    const onTentative = (entry: BingoEntry) => {  
+    const onTentativeRefresh = React.useCallback((entry: BingoEntry) => {
+        console.log("onTentative, refreshing grid after timeout");
+        setPendingResults(pendingResults.filter(p => p.key != entry.key))
+        refreshGrid(activeGame, entries);
+    }, [activeGame, entries, pendingResults])
+
+    const onTentative = React.useCallback((entry: BingoEntry) => {  
         BingoEBS.tentative(gameId, entry.key.toString());
         var cellIndex = grid.cells.findIndex(c => c.key == entry.key);
         grid.cells[cellIndex].state = BingoEntryState.Pending;
         var pendingResultsRefreshed:BingoPendingResult[] = pendingResults.filter(p => p.key != entry.key);
 
-        var confirmationTimeout = ParseTimespan(activeGame.confirmationThreshold) + 1
+        var confirmationTimeout = ParseTimespan(activeGame.confirmationThreshold) + 500
 
         pendingResultsRefreshed.push({
             key: entry.key,
@@ -153,15 +159,11 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         setGrid(grid)
         setPendingResults(pendingResultsRefreshed)
 
-        setTimeout(() => {
-            console.log("onTentative, refreshing grid after timeout");
-            setPendingResults(pendingResults.filter(p => p.key != entry.key))
-            refreshGrid(activeGame, entries);
-        }, confirmationTimeout);
-        console.log("onTentative, updated cell state, set countdown to " + pendingResults[pendingResults.length - 1].expireAt);
-    };
+        setTimeout(() => onTentativeRefresh(entry), confirmationTimeout);
+        console.log("onTentative, updated cell state, set countdown to " + pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt);
+    }, [gameId, grid, pendingResults, activeGame, entries]);
 
-    const getCell = (row: number, col: number): [BingoGridCell,BingoEntry] => {
+    const getCell = React.useCallback((row: number, col: number): [BingoGridCell,BingoEntry] => {
         var cellResult = grid.cells.filter(c => c.row == row && c.col == col);
         if (cellResult.length == 1)
         {
@@ -196,18 +198,18 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             },
             null
         ];
-    };
+    }, [grid, entries, pendingResults]);
 
-    const isColComplete = (col: number): boolean =>
+    const isColComplete = React.useCallback((col: number): boolean =>
     {
         return grid.cells.filter(c => c.col == col).every(c => c.state == BingoEntryState.Confirmed);
-    }
+    }, [grid])
 
-    const isRowComplete = (row: number): boolean => {
+    const isRowComplete = React.useCallback((row: number): boolean => {
         return grid.cells.filter(c => c.row == row).every(c => c.state == BingoEntryState.Confirmed);
-    }
+    }, [grid])
     
-    const onConfirmationNotification = (confirmation: BingoConfirmationNotification) => {
+    const onConfirmationNotification = React.useCallback((confirmation: BingoConfirmationNotification) => {
         console.log(confirmation)
         setEntries(entries.map(entry => {
             if (entry.key == confirmation.key)
@@ -221,7 +223,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             }
             return entry
         }))
-    }
+    }, [entries])
 
     return (
         <ActiveGameContext.Provider value={
