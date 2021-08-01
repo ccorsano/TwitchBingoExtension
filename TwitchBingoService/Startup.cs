@@ -1,5 +1,6 @@
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
+using Conceptoire.Twitch.IRC;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -117,7 +118,12 @@ namespace TwitchBingoService
                         s.GetService<IOptions<TwitchOptions>>().Value.ClientSecret)
                     .Build()
             );
+            services.Configure<TwitchChatClientOptions>(Configuration.GetSection("twitch").GetSection("IrcOptions"));
+            services.AddTransient(s => TwitchChatClientBuilder.Create()
+                .WithOAuthToken(s.GetService<IOptions<TwitchChatClientOptions>>().Value.OAuthToken)
+                .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
             services.AddTransient<TwitchAPIClient>();
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

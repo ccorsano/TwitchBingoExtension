@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Conceptoire.Twitch.IRC;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TwitchBingoService.Configuration;
 using TwitchBingoService.Model;
@@ -16,14 +19,29 @@ namespace TwitchBingoService.Services
         private readonly IGameStorage _storage;
         private readonly TwitchEBSService _ebsService;
         private readonly BingoServiceOptions _options;
+        private readonly ITwitchChatClientBuilder _chatBuilder;
+        private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public BingoService(IGameStorage gameStorage, TwitchEBSService ebsService, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
+        public BingoService(IGameStorage gameStorage, TwitchEBSService ebsService, ITwitchChatClientBuilder chatBuilder, IMemoryCache memoryCache, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
         {
             _storage = gameStorage;
             _ebsService = ebsService;
+            _chatBuilder = chatBuilder;
+            _memoryCache = memoryCache;
             _options = options.Value;
             _logger = logger;
+        }
+
+        private async Task<ITwitchChatClient> ConnectBot(string channelId, CancellationToken cancelationToken)
+        {
+            return await _memoryCache.GetOrCreateAsync<ITwitchChatClient>($"chatclient:{channelId}", async (entry) =>
+            {
+                var chatClient = _chatBuilder.Build();
+                await chatClient.ConnectAsync(cancelationToken);
+                await chatClient.JoinAsync(channelId, cancelationToken);
+                return chatClient;
+            });
         }
 
         public async Task<BingoGame> CreateGame(string channelId, BingoGameCreationParams gameParams)
@@ -448,6 +466,18 @@ namespace TwitchBingoService.Services
             }
 
             await _ebsService.TrySendChatMessage(game.channelId, messageBuilder.ToString(), _options.Version);
+            try
+            {
+                var chatClient = await ConnectBot(game.channelId, CancellationToken.None);
+                await chatClient.SendMessageAsync(new OutgoingMessage
+                {
+                    Message = messageBuilder.ToString(),
+                }, CancellationToken.None);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error sending chat message to channel {channelId} using bot account", game.channelId);
+            }
         }
 
     }

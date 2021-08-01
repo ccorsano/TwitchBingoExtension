@@ -15,5 +15,6 @@ namespace TwitchBingoService.Model
 
         [JsonConverter(typeof(TimeSpanConverter))]
         public TimeSpan? confirmationThreshold { get; set; }
+        public bool enableChatIntegration { get; set; }
     }
 }
