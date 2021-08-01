@@ -1,7 +1,7 @@
-import LinearProgress from "@material-ui/core/LinearProgress";
 import React from "react";
 import { ActiveGameContext, ActiveGridContext } from "../../common/BingoGameComponent";
 import BingoViewerEntry from "../../common/BingoViewerEntry";
+import LinearIndeterminateLoader from "../../common/LinearIndeterminateLoader";
 import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
@@ -89,9 +89,12 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
                     paddingBottom: '1vw',
                     borderRadius: '0.25vw',
                     opacity: props.isCollapsed ? '0%' : '100%',
+                    transition: 'opacity 0.5s'
                 }}>
-                <LinearProgress style={{marginBottom: '1vw', marginTop: '1vw'}} />
-                {LL.OverlayBingoGrid.WaitingMessage()}
+                <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
+                <div style={{marginTop: '2rem'}}>
+                    {LL.OverlayBingoGrid.WaitingMessage()}
+                </div>
             </div>
         )
 }

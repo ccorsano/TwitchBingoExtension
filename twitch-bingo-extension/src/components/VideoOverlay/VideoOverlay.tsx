@@ -1,8 +1,8 @@
-import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
 import { Suspense } from 'react';
 import BingoGameComponent, { ActiveGameContext } from '../../common/BingoGameComponent';
 import BingoGameModerationComponent, { ActiveGameModerationContext } from '../../common/BingoGameModerationComponent';
+import LinearIndeterminateLoader from '../../common/LinearIndeterminateLoader';
 import { TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoTentativeNotification, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
 import OverlayBingoGrid from './OverlayBingoGrid';
@@ -55,7 +55,7 @@ export default function VideoOverlay()
                         if (gameContext.canModerate)
                         {
                             moderationDrawer = (
-                                <Suspense fallback={<LinearProgress variant="indeterminate" />}>
+                                <Suspense fallback={<LinearIndeterminateLoader />}>
                                     <BingoGameModerationComponent
                                         activeGame={gameContext.game}
                                         onReceiveTentative={onTentativeNotification}
