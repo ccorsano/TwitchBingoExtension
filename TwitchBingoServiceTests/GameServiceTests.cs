@@ -1,3 +1,5 @@
+using Conceptoire.Twitch.IRC;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -75,8 +77,12 @@ namespace TwitchBingoServiceTests
             var storage = new InMemoryGameStore();
             var mockEBS = GetEBSService();
             var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions());
+            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
+            var chatClientBuilder = TwitchChatClientBuilder.Create()
+                .WithOAuthToken("")
+                .WithLoggerFactory(loggerFactory);
+            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(3, 4);
@@ -94,8 +100,12 @@ namespace TwitchBingoServiceTests
             var storage = new InMemoryGameStore();
             var mockEBS = GetEBSService();
             var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions());
+            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
+            var chatClientBuilder = TwitchChatClientBuilder.Create()
+                .WithOAuthToken("")
+                .WithLoggerFactory(loggerFactory);
+            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(2, 3);
@@ -144,8 +154,12 @@ namespace TwitchBingoServiceTests
             {
                 DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(2)
             });
+            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
+            var chatClientBuilder = TwitchChatClientBuilder.Create()
+                .WithOAuthToken("")
+                .WithLoggerFactory(loggerFactory);
+            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(2, 3);
@@ -198,8 +212,12 @@ namespace TwitchBingoServiceTests
             {
                 DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(100),
             });
+            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
+            var chatClientBuilder = TwitchChatClientBuilder.Create()
+                .WithOAuthToken("")
+                .WithLoggerFactory(loggerFactory);
+            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(2, 3);
