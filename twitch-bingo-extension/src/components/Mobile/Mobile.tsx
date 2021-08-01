@@ -15,17 +15,35 @@ export default function Mobile()
 
     const onSelectFromGrid = (context: BingoGridContext, x: number, y: number) => {
         const [cell,entry] = context.getCell(y, x)
-        if (cell)
+        if (!cell)
+        {
+            console.error(`Could not find cell from minigrid at row ${y}, column ${x}`)
+            return
+        }
+        if (cell.key != selectedCell)
         {
             setSelectedCell(entry.key)
+        }
+        else
+        {
+            setSelectedCell(null)
         }
     }
 
     const onSelectFromList = (grid: BingoGrid, key: number) => {
         const cell = grid.cells.find(c => c.key == key)
-        if (cell)
+        if (!cell)
         {
-            setSelectedCell(key)
+            console.error(`Could not find cell from list for key ${key}`)
+            return
+        }
+        if (cell.key != selectedCell)
+        {
+            setSelectedCell(cell.key)
+        }
+        else
+        {
+            setSelectedCell(null)
         }
     }
 
