@@ -1,8 +1,12 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+// Current palette
+// https://coolors.co/fbf7ef-fff3d6-fae8bf-fae7b0-ffe6a7-ffe39d-ffe194
+
+
 export const bingoStyles = makeStyles({
     paper: {
-        background: 'whitesmoke',
+        background: '#FBF7EF',
         height: '100%',
         borderRadius: '0.25rem',
         userSelect: 'none',
@@ -11,21 +15,21 @@ export const bingoStyles = makeStyles({
     idle: {
         "&:hover": {
             cursor: 'pointer',
-            background: 'ghostwhite'
+            background: '#FFF3D6'
         }
     },
     prompt: {
-        background: 'lightblue',
+        background: '#FAE8BF',
         "&:hover": {
             cursor: 'pointer',
-            background: 'lightsteelblue'
+            background: '#FAE7B0'
         }
     },
     pending: {
-        background: 'lightskyblue'
+        background: '#FFE6A7'
     },
     confirmed: {
-        background: 'palegoldenrod',
+        background: '#FFE194',
     },
     missed: {
         background: 'lightgray',
@@ -61,6 +65,34 @@ export const bingoStyles = makeStyles({
     },
     bingoCell: {
         transition: 'opacity 0.3s',
+        position: 'relative',
+        zIndex: 1,
+        overflow: 'hidden',
+    },
+    bingoCellPrompt: {
+        transition: 'all 0.5s',
+        width: '100%',
+        backgroundColor: 'rgba(255,243,214,0.9)', // #fff3d6
+        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)',
+        color: '#000',
+        paddingTop: '0.5rem',
+        paddingBottom: '0.5rem',
+        zIndex: 10,
+        position: 'absolute',
+        bottom: '1rem',
+    },
+    bingoCellPromptVisible: {
+        height: 'unset',
+        opacity: 1.0,
+        "&:hover": {
+            cursor: 'pointer',
+            backgroundColor: 'rgba(251,247,239,0.8)', // #fbf7ef
+            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.4)',
+        }
+    },
+    bingoCellPromptHidden: {
+        opacity: 0.0,
+        bottom: '-2rem',
     },
     hiddenCell: {
         opacity: '0%',

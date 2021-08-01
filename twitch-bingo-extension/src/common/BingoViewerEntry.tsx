@@ -1,12 +1,9 @@
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Check from "@material-ui/icons/Check";
 import React from "react";
 import clsx from 'clsx';
 import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { bingoStyles } from "./BingoStyles";
-import Button from "@material-ui/core/Button";
 import { I18nContext } from "../i18n/i18n-react";
 
 type BingoViewerEntryProps = {
@@ -43,20 +40,19 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         if (duration > 0)
         {
             timerComponent = 
-            <div style={{ display: 'inline-block' }}>
-                <CountdownCircleTimer
-                    isPlaying
-                    size={50}
-                    strokeWidth={3}
-                    colors="#FFFFFF"
-                    duration={duration}
-                    children={renderTime}
-                />
+            <div style={{ position: 'absolute', bottom: '1rem', width:'100%' }}>
+                <div style={{ display: 'inline-block' }}>
+                    <CountdownCircleTimer
+                        isPlaying
+                        size={50}
+                        strokeWidth={3}
+                        colors="#000"
+                        isLinearGradient={true}
+                        duration={duration}
+                        children={renderTime}
+                    />
+                </div>
             </div>
-        }
-        else
-        {
-            timerComponent = <CircularProgress />
         }
     }
 
@@ -105,12 +101,12 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                     {props.config.text}
                 </div>
             </div>
-            {
-                confirmationPrompt ?
-                    <Button aria-label={LL.BingoViewerEntry.ConfirmButtonLabel()} onClickCapture={handleTentative} variant="outlined" color="primary" size="large">
-                        <Check color="action" />
-                    </Button> : null
-            }
+            <div
+                className={clsx(classes.bingoCellPrompt, confirmationPrompt ? classes.bingoCellPromptVisible : classes.bingoCellPromptHidden)}
+                onClickCapture={confirmationPrompt ? handleTentative : null}
+                style={{fontSize: props.fontSize}} >
+                {LL.BingoViewerEntry.ConfirmButtonLabel()}
+            </div>
             { timerComponent }
         </div>
     )
