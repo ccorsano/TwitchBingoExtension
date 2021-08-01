@@ -65,7 +65,7 @@ export default function VideoOverlay()
                                                 moderationContext => {
                                                     return (
                                                         <ModerationPane
-                                                            entries={gameContext.game.entries}
+                                                            entries={gameContext.game?.entries}
                                                             tentatives={moderationContext.tentatives}
                                                             isOpen={moderationDrawerOpen}
                                                             isStarted={gameContext.isStarted}
