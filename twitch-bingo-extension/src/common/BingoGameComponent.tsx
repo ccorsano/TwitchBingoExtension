@@ -191,7 +191,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             {
                 row: row,
                 col: col,
-                key: -(col + (row * activeGame.columns)) - 1,
+                key: -(col + (row * grid.cols)) - 1,
                 text: "",
                 state: BingoEntryState.Idle,
                 timer: null,
