@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { bingoStyles } from '../../common/BingoStyles';
 import { useRef } from 'react';
-import CheckRounded from '@material-ui/icons/CheckRounded';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import { I18nContext } from '../../i18n/i18n-react';
 
@@ -17,7 +16,7 @@ type BingoMobileEntryListProps = {
 const mobileEntryStyle = makeStyles({
     bingoEntry: {
         display: 'grid',
-        gridTemplateColumns: 'auto 1fr auto',
+        gridTemplateColumns: 'auto 1fr',
         paddingTop: '5px',
         paddingBottom: '5px',
         paddingLeft: '5px',
@@ -40,12 +39,6 @@ const mobileEntryStyle = makeStyles({
             gridColumnStart: 1,
             gridColumnEnd: 3,
         },
-        '& .action': {
-            height: '0px',
-            width: '0px',
-            opacity: '0',
-            transition: 'all 0.5s',
-        },
     },
     highlighted: {
         height: 'unset',
@@ -60,12 +53,6 @@ const mobileEntryStyle = makeStyles({
         '& .text': {
             textOverflow: 'unset',
             gridColumn: 2,
-        },
-        '& .action': {
-            height: 'unset',
-            width: 'fit-content',
-            opacity: 1,
-            gridColumn: 3,
         },
     },
     prompting: {
@@ -175,11 +162,6 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                                         <span>{cell.text}</span>
                                      )
                                  }
-                             </div>
-                             <div className={clsx('action')} onClickCapture={() => setPrompting(true)}>
-                                {isCurrentElementActive ? (
-                                    <CheckRounded />
-                                ) : '' }
                              </div>
                         </div>
                     )
