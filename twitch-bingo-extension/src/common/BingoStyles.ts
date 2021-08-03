@@ -1,12 +1,9 @@
 import makeStyles from "@material-ui/core/styles/makeStyles";
-
-// Current palette
-// https://coolors.co/fbf7ef-fff3d6-fae8bf-fae7b0-ffe6a7-ffe39d-ffe194
-
+import { getHex, jasminePalette } from "./BingoThemes";
 
 export const bingoStyles = makeStyles({
     paper: {
-        background: '#FBF7EF',
+        background: getHex(jasminePalette.base),
         height: '100%',
         borderRadius: '0.25rem',
         userSelect: 'none',
@@ -15,24 +12,24 @@ export const bingoStyles = makeStyles({
     idle: {
         "&:hover": {
             cursor: 'pointer',
-            background: '#FFF3D6'
+            background: getHex(jasminePalette.baseHover)
         }
     },
     prompt: {
-        background: '#FAE8BF',
+        background: getHex(jasminePalette.prompt),
         "&:hover": {
             cursor: 'pointer',
-            background: '#FAE7B0'
+            background: getHex(jasminePalette.promptHover),
         }
     },
     pending: {
-        background: '#FFE6A7'
+        background: getHex(jasminePalette.pending)
     },
     confirmed: {
-        background: '#FFE194',
+        background: getHex(jasminePalette.confirmed),
     },
     missed: {
-        background: 'lightgray',
+        background: getHex(jasminePalette.missed),
         color: '#666',
     },
     cancel: {
@@ -42,7 +39,7 @@ export const bingoStyles = makeStyles({
         background: 'rgba(128,220,128,0.8)',
     },
     rejected: {
-        background: 'lightgray',
+        background: getHex(jasminePalette.missed),
         color: '#666',
     },
     colConfirmed: {

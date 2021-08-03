@@ -1,0 +1,92 @@
+@import './BingoTheme.scss';
+
+.paper {
+    background: $baby-powder;
+    height: 100%;
+    border-radius: 0.25rem;
+    user-select: none;
+    text-align: center;
+};
+.idle {
+    :hover {
+        cursor: pointer;
+        background: $cornsilk;
+    }
+};
+.prompt {
+    background: $dutch-white;
+    :hover {
+        cursor: pointer;
+        background: $banana-mania;
+    }
+};
+.pending {
+    background: $banana-mania-2;
+};
+.confirmed {
+    background: $jasmine;
+};
+.missed {
+    background: $lightgray;
+    color: #666;
+};
+.rejected {
+    background: $lightgray;
+    color: #666;
+};
+.colConfirmed {
+    border-left-style: solid;
+    border-left-color: black;
+    border-right-style: solid;
+    border-right-color: black;
+};
+.rowConfirmed {
+    border-top-style: solid;
+    border-top-color: black;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+};
+.bingoEntry {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
+};
+.bingoCell {
+    transition: opacity 0.3s;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+};
+.bingoCellPrompt {
+    transition: all 0.5s;
+    width: 100%;
+    background-color: rgba(255,243,214,0.9); // #fff3d6
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    color: #000;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    z-index: 10;
+    position: absolute;
+    bottom: 1rem;
+};
+.bingoCellPromptVisible {
+    height: unset;
+    opacity: 1.0;
+    :hover {
+        cursor: pointer;
+        background-color: rgba(251,247,239,0.8); // #fbf7ef
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    }
+};
+.bingoCellPromptHidden {
+    opacity: 0.0;
+    bottom: -2rem;
+};
+.hiddenCell {
+    opacity: 0%;
+};
+.visibleCell {
+    opacity: 100%;
+    box-shadow: 0px 0px 0.4vw 0 rgb(0 0 0 / 50%);
+}

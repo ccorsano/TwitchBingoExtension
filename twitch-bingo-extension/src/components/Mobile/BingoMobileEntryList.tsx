@@ -1,10 +1,9 @@
 import React from 'react'
 import clsx from 'clsx';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { bingoStyles } from '../../common/BingoStyles';
 import { useRef } from 'react';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import { I18nContext } from '../../i18n/i18n-react';
+require('./BingoMobileEntryList.scss');
 
 type BingoMobileEntryListProps = {
     entries: BingoGridCell[],
@@ -13,73 +12,9 @@ type BingoMobileEntryListProps = {
     onTentative: (key: number) => void,
 }
 
-const mobileEntryStyle = makeStyles({
-    bingoEntry: {
-        display: 'grid',
-        gridTemplateColumns: 'auto 1fr',
-        paddingTop: '5px',
-        paddingBottom: '5px',
-        paddingLeft: '5px',
-        paddingRight: '5px',
-        height: '36px',
-        overflow: 'hidden',
-        borderRadius: '0.25rem',
-        '& > div': {
-            alignSelf: 'center'
-        },
-        transition: 'all 0.5s',
-        '& .timer': {
-            height: '0px',
-            width: '0px',
-            opacity: '0',
-            transition: 'all 0.5s'
-        },
-        '& .text': {
-            textOverflow: 'ellipsis',
-            gridColumnStart: 1,
-            gridColumnEnd: 3,
-        },
-    },
-    highlighted: {
-        height: 'unset',
-        minHeight: '36px',
-        overflowY: 'unset',
-        '& .timer': {
-            height: 'unset',
-            width: 'fit-content',
-            opacity: 1,
-            gridColumn: 1,
-        },
-        '& .text': {
-            textOverflow: 'unset',
-            gridColumn: 2,
-        },
-    },
-    prompting: {
-        height: 'unset',
-        minHeight: '64px',
-        overflowY: 'unset',
-        '& .text': {
-            textAlign: 'center',
-        },
-        '& .confirm': {
-            borderTopRightRadius: '0.25rem',
-            borderBottomRightRadius: '0.25rem',
-        },
-        '& .cancel': {
-            borderTopLeftRadius: '0.25rem',
-            borderBottomLeftRadius: '0.25rem',  
-        },
-    }
-});
-
 export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
 {
     const { LL } = React.useContext(I18nContext)
-    
-    const styles = mobileEntryStyle()
-    const bStyles = bingoStyles()
-
     const [isPrompting, setPrompting] = React.useState(false)
 
     const listRef = useRef<HTMLDivElement>(null)
@@ -113,19 +48,19 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                     const isCurrentElementSelected = props.selectedKey == cell.key
                     const isCurrentElementActive = isCurrentElementSelected && cell.state === BingoEntryState.Idle
                     
-                    var bClass = bStyles.idle
+                    var bClass = "idle"
                     switch (cell.state) {
                         case BingoEntryState.Pending:
-                            bClass = bStyles.pending
+                            bClass = "pending"
                             break;
                         case BingoEntryState.Confirmed:
-                            bClass = bStyles.confirmed
+                            bClass = "confirmed"
                             break;
                         case BingoEntryState.Missed:
-                            bClass = bStyles.missed
+                            bClass = "missed"
                             break;
                         case BingoEntryState.Rejected:
-                            bClass = bStyles.rejected
+                            bClass = "rejected"
                             break;
                         default:
                             break;
@@ -133,35 +68,17 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
 
                     return (
                         <div key={cell.key} ref={(ref) => { entriesRefs.current.set(cell.key, ref) } }
-                             className={clsx(styles.bingoEntry, bClass, isCurrentElementSelected ? [isPrompting ? styles.prompting : styles.highlighted, bStyles.prompt] : '')}
-                             onClickCapture={(_) => isCurrentElementActive ? setPrompting(true) : props.onSelectKey(cell.key) }
-                             onTouchEndCapture={(_) => isCurrentElementActive ? setPrompting(true) : props.onSelectKey(cell.key) }>
-                             <div className={clsx('timer')}>
-                                &nbsp;
+                             className={clsx("bingoEntry", bClass, isCurrentElementSelected ? [isPrompting ? "prompting" : "highlighted", "prompt"] : '')}
+                             onClickCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelectKey(cell.key) }
+                             onTouchEndCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelectKey(cell.key) }
+                             style={{ position: 'relative' }}>
+                             <div className={clsx("bingoEntry")}>
+                                     {cell.text}
                              </div>
-                             <div className={clsx('text')}>
-                                 {
-                                     (isCurrentElementActive && isPrompting) ? (
-                                        <div style={{display:'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 24px'}}>
-                                            <div style={{gridRow:1, gridColumnStart:1, gridColumnEnd: 3}}>{cell.text}</div>
-                                            <div
-                                                style={{gridRow:2, gridColumn:1, textAlign: 'center'}}
-                                                className={clsx(bStyles.cancel, 'cancel')}
-                                                onClickCapture={(_) => setPrompting(false)}>
-                                                    {LL.Mobile.CancelButton()}
-                                            </div>
-                                            <div
-                                                style={{gridRow:2, gridColumn:2, textAlign: 'center'}}
-                                                className={clsx(bStyles.confirm, 'confirm')}
-                                                onClickCapture={(_) => confirmKey(cell.key)}>
-                                                {LL.Mobile.ConfirmButton()}
-                                            </div>
-                                        </div>
-                                     )
-                                     :(
-                                        <span>{cell.text}</span>
-                                     )
-                                 }
+                             <div
+                                 className={clsx("bingoCellPrompt", isCurrentElementActive && isPrompting ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
+                                 onClickCapture={isPrompting ? (_) => confirmKey(cell.key) : null} >
+                                 {LL.Mobile.ConfirmButton()}
                              </div>
                         </div>
                     )
