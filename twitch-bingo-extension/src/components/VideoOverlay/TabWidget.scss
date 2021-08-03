@@ -22,3 +22,22 @@ div.tabWidget > img
     height: 3rem;
     width: 3rem;
 }
+
+div.tabWidget.pending
+{
+    background: linear-gradient(45deg, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);
+}
+
+div.tabWidget.hidden
+{
+    width: 0px;
+    left: -3rem;
+    opacity: 0;
+}
+
+div.tabWidget.shown
+{
+    width: unset;
+    left: 0px;
+    opacity: 1.0;
+}

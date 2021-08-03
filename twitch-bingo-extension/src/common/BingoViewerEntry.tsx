@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
-import { bingoStyles } from "./BingoStyles";
 import { I18nContext } from "../i18n/i18n-react";
+require('./BingoStyles.scss')
 
 type BingoViewerEntryProps = {
     config: BingoEntry,
@@ -26,7 +26,6 @@ const renderTime = ({remainingTime}) => {
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     const { LL } = React.useContext(I18nContext)
     
-    const classes = bingoStyles();
     const [confirmationPrompt, setConfirmationPrompt] = React.useState(false);
 
     // console.log("BingoViewerEntry " +  props.config.key + " countdown: " + props.countdown?.getTime() + " now: " + Date.now());
@@ -68,20 +67,20 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         setConfirmationPrompt(false)
     };
 
-    let stateClass = confirmationPrompt ? classes.prompt : classes.idle;
+    let stateClass = confirmationPrompt ? "prompt" : "idle";
     switch(props.state)
     {
         case BingoEntryState.Confirmed:
-            stateClass = classes.confirmed;
+            stateClass = "confirmed";
             break;
         case BingoEntryState.Missed:
-            stateClass = classes.missed;
+            stateClass = "missed";
             break;
         case BingoEntryState.Pending:
-            stateClass = classes.pending;
+            stateClass = "pending";
             break;
         case BingoEntryState.Rejected:
-            stateClass = classes.rejected;
+            stateClass = "rejected";
             break;
         default:
             break;
@@ -89,20 +88,20 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
 
     return (
         <div className={clsx(
-                            classes.bingoCell,
-                            props.isShown ? classes.visibleCell : classes.hiddenCell,
-                            classes.paper,
+                            "bingoCell",
+                            props.isShown ? "visibleCell" : "hiddenCell",
+                            "paper",
                             stateClass,
-                            props.isColCompleted ? classes.colConfirmed : '',
-                            props.isRowCompleted ? classes.rowConfirmed : '')}
+                            props.isColCompleted ? "colConfirmed" : '',
+                            props.isRowCompleted ? "rowConfirmed" : '')}
              onClick={handlePrompt}>
-            <div className={clsx(classes.bingoEntry)}>
+            <div className={clsx("bingoEntry")}>
                 <div style={{fontSize: props.fontSize}}>
                     {props.config.text}
                 </div>
             </div>
             <div
-                className={clsx(classes.bingoCellPrompt, confirmationPrompt ? classes.bingoCellPromptVisible : classes.bingoCellPromptHidden)}
+                className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
                 onClickCapture={confirmationPrompt ? handleTentative : null}
                 style={{fontSize: props.fontSize}} >
                 {LL.BingoViewerEntry.ConfirmButtonLabel()}
