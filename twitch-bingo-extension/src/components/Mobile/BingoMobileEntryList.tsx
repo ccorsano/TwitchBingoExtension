@@ -72,7 +72,7 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                              onClickCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelectKey(cell.key) }
                              onTouchEndCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelectKey(cell.key) }
                              style={{ position: 'relative' }}>
-                             <div className={clsx("bingoEntry")}>
+                             <div>
                                      {cell.text}
                              </div>
                              <div
