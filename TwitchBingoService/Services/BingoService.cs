@@ -438,7 +438,7 @@ namespace TwitchBingoService.Services
             }
 
             var confirmationMessage = $"{game.entries.First(e => e.key == key).text} confirmed !";
-            SendChatMessage(confirmationMessage, game.channelId);
+            await SendChatMessage(confirmationMessage, game.channelId);
 
             var messageBuilder = new StringBuilder(140, 280);
             if (gridComplete.Result.Count() > 0 && messageBuilder.Length < 200)
@@ -487,27 +487,24 @@ namespace TwitchBingoService.Services
                 messageBuilder.Append(bingoStr);
             }
 
-            SendChatMessage(messageBuilder.ToString(), game.channelId);
+            await SendChatMessage(messageBuilder.ToString(), game.channelId);
         }
 
-        private void SendChatMessage(string message, string channelId)
+        private async Task SendChatMessage(string message, string channelId)
         {
-            Task.Run(async () =>
+            await _ebsService.TrySendChatMessage(channelId, message, _options.Version);
+            try
             {
-                await _ebsService.TrySendChatMessage(channelId, message, _options.Version);
-                try
+                var chatClient = await ConnectBot(channelId, CancellationToken.None);
+                await chatClient.SendMessageAsync(new OutgoingMessage
                 {
-                    var chatClient = await ConnectBot(channelId, CancellationToken.None);
-                    await chatClient.SendMessageAsync(new OutgoingMessage
-                    {
-                        Message = message.ToString(),
-                    }, CancellationToken.None);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error sending chat message to channel {channelId} using bot account", channelId);
-                }
-            });
+                    Message = message.ToString(),
+                }, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending chat message to channel {channelId} using bot account", channelId);
+            }
         }
 
     }
