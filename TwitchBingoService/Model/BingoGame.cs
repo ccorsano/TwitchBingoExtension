@@ -33,5 +33,8 @@ namespace TwitchBingoService.Model
         [ProtoMember(7)]
         [JsonIgnore]
         public string[] moderators { get; set; }
+
+        [ProtoMember(8)]
+        public bool hasChatIntegration { get; set; } = false;
     }
 }

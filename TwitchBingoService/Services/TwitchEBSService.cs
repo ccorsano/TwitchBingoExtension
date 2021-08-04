@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using TwitchAchievementTrackerBackend.Configuration;
@@ -37,6 +38,11 @@ namespace TwitchBingoService.Services
 
             var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_options.ExtensionSecret));
             _jwtSigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        }
+
+        public async Task<HelixChannelInfo> GetChannelInfo(string channelId)
+        {
+            return await _apiClient.GetChannelInfoAsync(channelId, CancellationToken.None);
         }
 
         public class TwitchExtError

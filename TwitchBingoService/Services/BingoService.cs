@@ -1,4 +1,5 @@
-﻿using Conceptoire.Twitch.IRC;
+﻿using Conceptoire.Twitch.API;
+using Conceptoire.Twitch.IRC;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,11 +36,17 @@ namespace TwitchBingoService.Services
 
         private async Task<ITwitchChatClient> ConnectBot(string channelId, CancellationToken cancelationToken)
         {
+            var channelName = await _memoryCache.GetOrCreateAsync<string>($"channelname:{channelId}", async (entry) =>
+            {
+                return (await _ebsService.GetChannelInfo(channelId)).BroadcasterName;
+            });
             return await _memoryCache.GetOrCreateAsync<ITwitchChatClient>($"chatclient:{channelId}", async (entry) =>
             {
+                entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+
                 var chatClient = _chatBuilder.Build();
                 await chatClient.ConnectAsync(cancelationToken);
-                await chatClient.JoinAsync(channelId, cancelationToken);
+                await chatClient.JoinAsync(channelName.ToLowerInvariant(), cancelationToken);
                 return chatClient;
             });
         }
@@ -54,9 +61,16 @@ namespace TwitchBingoService.Services
                 rows = gameParams.rows,
                 columns = gameParams.columns,
                 confirmationThreshold = gameParams.confirmationThreshold ?? _options.DefaultConfirmationThreshold,
+                hasChatIntegration = gameParams.enableChatIntegration,
             };
 
             await _storage.WriteGame(game);
+
+            if (game.hasChatIntegration)
+            {
+                var chatBot = await ConnectBot(channelId, CancellationToken.None);
+                await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
+            }
 
             return game;
         }
@@ -417,6 +431,12 @@ namespace TwitchBingoService.Services
             }));
             await confirmationTask;
 
+            if (!game.hasChatIntegration)
+            {
+                _logger.LogInformation("No chat integration for this game {gameId} on channel {channelId}, skipping.", game.gameId, game.channelId);
+                return;
+            }
+
             var messageBuilder = new StringBuilder(140, 280);
             messageBuilder.Append($"{game.entries.First(e => e.key == key).text} confirmed !");
             if (gridComplete.Count() > 0 && messageBuilder.Length < 200)
@@ -474,7 +494,7 @@ namespace TwitchBingoService.Services
                     Message = messageBuilder.ToString(),
                 }, CancellationToken.None);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending chat message to channel {channelId} using bot account", game.channelId);
             }
