@@ -441,7 +441,7 @@ namespace TwitchBingoService.Services
             messageBuilder.Append($"{game.entries.First(e => e.key == key).text} confirmed !");
             if (gridComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
-                var playerIds = string.Join(",", gridComplete);
+                var playerIds = string.Join(",", gridComplete.Result);
                 var bingoStr = gridComplete.Result.Count() == 1 ? " has a bingo !" : " have a bingo !";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
@@ -456,7 +456,7 @@ namespace TwitchBingoService.Services
             }
             if (rowComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
-                var playerIds = string.Join(",", rowComplete);
+                var playerIds = string.Join(",", rowComplete.Result);
                 var bingoStr = rowComplete.Result.Count() == 1 ? " has completed a row !" : " have completed a row !";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
@@ -471,7 +471,7 @@ namespace TwitchBingoService.Services
             }
             if (colComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
-                var playerIds = string.Join(",", colComplete);
+                var playerIds = string.Join(",", colComplete.Result);
                 var bingoStr = colComplete.Result.Count() == 1 ? " has completed a column !" : " have completed a column !";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
