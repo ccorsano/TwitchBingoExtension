@@ -24,7 +24,7 @@ export default function VideoOverlayTabWidget(props: VideoOverlayTabWidgetProps)
     }
 
     return (
-        <div>
+        <div className={clsx("tabWidgetContainer")}>
             <div className={clsx("tabWidget", props.shown ? "shown" : "hidden")} onClickCapture={props.onToggleGrid}>
                 <img src={BingoLogo} alt="Bingo Logo" />
             </div>
