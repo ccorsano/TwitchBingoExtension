@@ -1,4 +1,4 @@
-name: Publish Frontend Docker Image
+name: Publish EBS Docker Image
 
 on:
   push:
