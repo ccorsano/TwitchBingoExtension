@@ -409,12 +409,12 @@ namespace TwitchBingoService.Services
 
             var notifications = await _storage.UnqueueNotifications(gameId, key);
 
-            var colComplete = notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous"));
-            var rowComplete = notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous"));
-            var gridComplete = notifications.Where(n => n.type == NotificationType.CompletedGrid && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous"));
+            var colComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId))
+                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var rowComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId))
+                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var gridComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedGrid && !string.IsNullOrEmpty(n.playerId))
+                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
 
             _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colComplete), string.Join(',', rowComplete), string.Join(',', gridComplete));
             await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
@@ -424,9 +424,9 @@ namespace TwitchBingoService.Services
                 {
                     gameId = gameId,
                     key = key,
-                    colComplete = (await Task.WhenAll(colComplete)),
-                    rowComplete = (await Task.WhenAll(rowComplete)),
-                    gridComplete = (await Task.WhenAll(gridComplete)),
+                    colComplete = (await colComplete),
+                    rowComplete = (await rowComplete),
+                    gridComplete = (await gridComplete),
                 }
             }));
             await confirmationTask;
@@ -439,48 +439,48 @@ namespace TwitchBingoService.Services
 
             var messageBuilder = new StringBuilder(140, 280);
             messageBuilder.Append($"{game.entries.First(e => e.key == key).text} confirmed !");
-            if (gridComplete.Count() > 0 && messageBuilder.Length < 200)
+            if (gridComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
                 var playerIds = string.Join(",", gridComplete);
-                var bingoStr = gridComplete.Count() == 1 ? " has a bingo !" : " have a bingo !";
+                var bingoStr = gridComplete.Result.Count() == 1 ? " has a bingo !" : " have a bingo !";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
                     messageBuilder.Append(playerIds);
                 }
                 else
                 {
-                    messageBuilder.Append(gridComplete.Count());
-                    messageBuilder.Append(gridComplete.Count() == 1 ? " player" : " players");
+                    messageBuilder.Append(gridComplete.Result.Count());
+                    messageBuilder.Append(gridComplete.Result.Count() == 1 ? " player" : " players");
                 }
                 messageBuilder.Append(bingoStr);
             }
-            if (rowComplete.Count() > 0 && messageBuilder.Length < 200)
+            if (rowComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
                 var playerIds = string.Join(",", rowComplete);
-                var bingoStr = gridComplete.Count() == 1 ? " has completed a row !" : " have completed a row !";
+                var bingoStr = rowComplete.Result.Count() == 1 ? " has completed a row !" : " have completed a row !";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
                     messageBuilder.Append(playerIds);
                 }
                 else
                 {
-                    messageBuilder.Append(rowComplete.Count());
-                    messageBuilder.Append(gridComplete.Count() == 1 ? " player" : " players");
+                    messageBuilder.Append(rowComplete.Result.Count());
+                    messageBuilder.Append(rowComplete.Result.Count() == 1 ? " player" : " players");
                 }
                 messageBuilder.Append(bingoStr);
             }
-            if (colComplete.Count() > 0 && messageBuilder.Length < 200)
+            if (colComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
                 var playerIds = string.Join(",", colComplete);
-                var bingoStr = gridComplete.Count() == 1 ? " has completed a column !" : " have completed a column !";
+                var bingoStr = colComplete.Result.Count() == 1 ? " has completed a column !" : " have completed a column !";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
                     messageBuilder.Append(playerIds);
                 }
                 else
                 {
-                    messageBuilder.Append(colComplete.Count());
-                    messageBuilder.Append(gridComplete.Count() == 1 ? " player" : " players");
+                    messageBuilder.Append(colComplete.Result.Count());
+                    messageBuilder.Append(colComplete.Result.Count() == 1 ? " player" : " players");
                 }
                 messageBuilder.Append(bingoStr);
             }
