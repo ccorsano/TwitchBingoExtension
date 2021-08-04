@@ -444,7 +444,7 @@ namespace TwitchBingoService.Services
             if (gridComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
                 var playerIds = string.Join(",", gridComplete.Result);
-                var bingoStr = gridComplete.Result.Count() == 1 ? " has a bingo !" : " have a bingo !";
+                var bingoStr = gridComplete.Result.Count() == 1 ? " has a bingo ! " : " have a bingo ! ";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
                     messageBuilder.Append(playerIds);
@@ -459,7 +459,7 @@ namespace TwitchBingoService.Services
             if (rowComplete.Result.Count() > 0 && messageBuilder.Length < 200)
             {
                 var playerIds = string.Join(",", rowComplete.Result);
-                var bingoStr = rowComplete.Result.Count() == 1 ? " has completed a row !" : " have completed a row !";
+                var bingoStr = rowComplete.Result.Count() == 1 ? " has completed a row ! " : " have completed a row ! ";
                 if (playerIds.Length < (280 - messageBuilder.Length - bingoStr.Length))
                 {
                     messageBuilder.Append(playerIds);
@@ -487,7 +487,10 @@ namespace TwitchBingoService.Services
                 messageBuilder.Append(bingoStr);
             }
 
-            await SendChatMessage(messageBuilder.ToString(), game.channelId);
+            if (messageBuilder.Length > 0)
+            {
+                await SendChatMessage(messageBuilder.ToString(), game.channelId);
+            }
         }
 
         private async Task SendChatMessage(string message, string channelId)
