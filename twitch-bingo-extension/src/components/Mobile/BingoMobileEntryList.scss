@@ -25,6 +25,7 @@
         grid-column-start: 1;
         grid-column-end: 3;
     }
+    cursor: pointer;
 }
 
 .idle {
@@ -85,6 +86,7 @@
     position: relative;
     z-index: 1;
     overflow: hidden;
+    cursor: pointer;
 };
 
 .bingoCellPrompt {
@@ -103,6 +105,7 @@
     padding: 0.5rem;
     align-items: center;
     display: grid;
+    cursor: pointer;
 };
 
 .bingoCellPromptVisible {

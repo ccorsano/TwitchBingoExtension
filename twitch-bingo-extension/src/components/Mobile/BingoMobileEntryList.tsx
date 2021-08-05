@@ -77,7 +77,8 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                              </div>
                              <div
                                  className={clsx("bingoCellPrompt", isCurrentElementActive && isPrompting ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                                 onClickCapture={isPrompting ? (_) => confirmKey(cell.key) : null} >
+                                 onClickCapture={ isPrompting ? (_) => confirmKey(cell.key) : null}
+                                 onTouchEndCapture={ isPrompting ? (_) => confirmKey(cell.key) : null } >
                                  {LL.Mobile.ConfirmButton()}
                              </div>
                         </div>
