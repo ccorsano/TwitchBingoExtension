@@ -13,7 +13,7 @@ export default function Mobile()
     const [selectedCell, setSelectedCell] = React.useState(null)
     const [sortedEntries, setSortedEntries] = React.useState<BingoGridCell[]>()
 
-    const onSelectFromGrid = (context: BingoGridContext, x: number, y: number) => {
+    const onSelectFromGrid = React.useCallback((context: BingoGridContext, x: number, y: number) => {
         const [cell,entry] = context.getCell(y, x)
         if (!cell)
         {
@@ -28,9 +28,9 @@ export default function Mobile()
         {
             setSelectedCell(null)
         }
-    }
+    }, [selectedCell])
 
-    const onSelectFromList = (grid: BingoGrid, key: number) => {
+    const onSelectFromList = React.useCallback((grid: BingoGrid, key: number) => {
         const cell = grid.cells.find(c => c.key == key)
         if (!cell)
         {
@@ -45,7 +45,7 @@ export default function Mobile()
         {
             setSelectedCell(null)
         }
-    }
+    }, [selectedCell])
 
     const onRefreshGrid = (grid: BingoGrid, cells: BingoGridCell[]) => {
         const stateMultiplierBase = grid.rows * grid.cols * 10

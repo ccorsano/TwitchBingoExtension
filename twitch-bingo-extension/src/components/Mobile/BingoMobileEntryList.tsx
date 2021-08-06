@@ -32,6 +32,7 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
             {
                 entryElement.scrollIntoView()
             }
+            console.log("Set prompting false")
             setPrompting(false)
         }
     }, [props.selectedKey])
@@ -70,15 +71,13 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                         <div key={cell.key} ref={(ref) => { entriesRefs.current.set(cell.key, ref) } }
                              className={clsx("bingoEntry", bClass, isCurrentElementSelected ? [isPrompting ? "prompting" : "highlighted", "prompt"] : '')}
                              onClickCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelectKey(cell.key) }
-                             onTouchEndCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelectKey(cell.key) }
                              style={{ position: 'relative' }}>
                              <div>
                                      {cell.text}
                              </div>
                              <div
                                  className={clsx("bingoCellPrompt", isCurrentElementActive && isPrompting ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                                 onClickCapture={ isPrompting ? (_) => confirmKey(cell.key) : null}
-                                 onTouchEndCapture={ isPrompting ? (_) => confirmKey(cell.key) : null } >
+                                 onClickCapture={ isPrompting ? (_) => confirmKey(cell.key) : null} >
                                  {LL.Mobile.ConfirmButton()}
                              </div>
                         </div>
