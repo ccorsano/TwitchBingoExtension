@@ -1,6 +1,6 @@
-import type { BaseTranslation } from 'typesafe-i18n'
+import type { Translation } from '../i18n-types'
 
-const fr: BaseTranslation = {
+const fr: Translation = {
 	Mobile:{
 		ConfirmButton: "Confirmer",
 		CancelButton: "Annuler",
