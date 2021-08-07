@@ -42,9 +42,9 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                 <Slider
                     defaultValue={3}
                     step={1}
-                    min={1}
+                    min={2}
                     marks
-                    max={9}
+                    max={5}
                     valueLabelDisplay="auto"
                     value={props.columns}
                     onChange={(_, value) => props.onColumnsChange(value as number)}
@@ -55,9 +55,9 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                 <Slider
                     defaultValue={3}
                     step={1}
-                    min={1}
+                    min={2}
                     marks
-                    max={9}
+                    max={5}
                     valueLabelDisplay="auto"
                     value={props.rows}
                     onChange={(_, value) => props.onRowsChange(value as number)}

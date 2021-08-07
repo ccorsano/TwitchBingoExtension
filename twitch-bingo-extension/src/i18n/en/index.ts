@@ -25,7 +25,7 @@ const en: BaseTranslation = {
 		Rows: 'Rows',
 		AlertNotEnoughEntriesToFillTheGrid: 'Not enough entries to fill the grid !',
 		AddEntriesOrReduceGridDimensionsToStartTheGame: 'Add entries or reduce grid dimensions to start the game.',
-		ConfirmationTime: 'Confirmation time (in minutes)',
+		ConfirmationTime: 'Confirmation time',
 		SaveGame: 'Save',
 		StartGame: 'Start',
 		LibraryEditor:{

@@ -80,7 +80,7 @@ export type Translation = {
 		 */
 		'AddEntriesOrReduceGridDimensionsToStartTheGame': string
 		/**
-		 * Confirmation time (in minutes)
+		 * Confirmation time
 		 */
 		'ConfirmationTime': string
 		/**
@@ -241,7 +241,7 @@ export type TranslationFunctions = {
 		 */
 		'AddEntriesOrReduceGridDimensionsToStartTheGame': () => LocalizedString
 		/**
-		 * Confirmation time (in minutes)
+		 * Confirmation time
 		 */
 		'ConfirmationTime': () => LocalizedString
 		/**

@@ -25,7 +25,7 @@ const fr: Translation = {
 		Rows: 'Lignes',
 		AlertNotEnoughEntriesToFillTheGrid: 'Pas assez d\'entrées pour remplir la grille !',
 		AddEntriesOrReduceGridDimensionsToStartTheGame: 'Ajoutez des entrées ou réduisez les dimensions pour pouvoir démarrer la partie.',
-		ConfirmationTime: 'Délai de confirmation (en minutes)',
+		ConfirmationTime: 'Délai de confirmation',
 		SaveGame: 'Sauvegarder',
 		StartGame: 'Démarrer',
 		LibraryEditor:{
