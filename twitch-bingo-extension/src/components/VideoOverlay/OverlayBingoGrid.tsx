@@ -5,6 +5,7 @@ import LinearIndeterminateLoader from "../../common/LinearIndeterminateLoader";
 import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
+import { jasminePalette, getRGB } from "../../common/BingoThemes";
 
 export type OverlayBingoGridProps = {
     isCollapsed: boolean
@@ -82,7 +83,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
         )
         : (<div style={
                 {
-                    backgroundColor:'rgba(245,245,245, 0.8)',
+                    backgroundColor: getRGB(jasminePalette.base),
                     width: '100%',
                     textAlign: 'center',
                     paddingTop: '1vw',

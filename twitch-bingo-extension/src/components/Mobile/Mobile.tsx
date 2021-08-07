@@ -1,7 +1,10 @@
 import React from 'react';
 import BingoGameComponent, { ActiveGameContext, ActiveGridContext } from '../../common/BingoGameComponent';
 import { BingoGridContext } from '../../common/BingoGridContext';
+import { getRGB, jasminePalette } from '../../common/BingoThemes';
+import LinearIndeterminateLoader from '../../common/LinearIndeterminateLoader';
 import { BingoGrid } from '../../EBS/BingoService/EBSBingoTypes';
+import { I18nContext } from '../../i18n/i18n-react';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import BingoMobileEntryList from './BingoMobileEntryList';
 import BingoMobileMiniGrid from './BingoMobileMiniGrid';
@@ -10,6 +13,8 @@ require('./Mobile.scss');
 
 export default function Mobile()
 {
+    const { LL } = React.useContext(I18nContext)
+    
     const [selectedCell, setSelectedCell] = React.useState(null)
     const [sortedEntries, setSortedEntries] = React.useState<BingoGridCell[]>()
 
@@ -90,7 +95,14 @@ export default function Mobile()
                                                     />
                                             </div>
                                         </div>
-                                    ): null
+                                    ): <div  style={{backgroundColor: getRGB(jasminePalette.base), width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                        <div>
+                                            <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
+                                            <div style={{marginTop: '2rem', textAlign: 'center'}}>
+                                                {LL.OverlayBingoGrid.WaitingMessage()}
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
                                 
                         }
