@@ -437,7 +437,7 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            var confirmationMessage = $"{game.entries.First(e => e.key == key).text} confirmed !";
+            var confirmationMessage = $"✅ {game.entries.First(e => e.key == key).text}";
             await SendChatMessage(confirmationMessage, game.channelId);
 
             var messageBuilder = new StringBuilder(140, 280);
