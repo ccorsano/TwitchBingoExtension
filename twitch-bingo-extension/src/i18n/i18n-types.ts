@@ -19,6 +19,14 @@ export type Translation = {
 		 * Cancel
 		 */
 		'CancelButton': string
+		/**
+		 * Missed
+		 */
+		'MissedLabel': string
+		/**
+		 * Pending
+		 */
+		'PendingLabel': string
 	}
 	'OverlayBingoGrid': {	
 		/**
@@ -31,6 +39,10 @@ export type Translation = {
 		 * Confirm
 		 */
 		'ConfirmButtonLabel': string
+		/**
+		 * Missed
+		 */
+		'MissedRibbonLabel': string
 	}
 	'BingoModeration': {	
 		/**
@@ -168,6 +180,14 @@ export type TranslationFunctions = {
 		 * Cancel
 		 */
 		'CancelButton': () => LocalizedString
+		/**
+		 * Missed
+		 */
+		'MissedLabel': () => LocalizedString
+		/**
+		 * Pending
+		 */
+		'PendingLabel': () => LocalizedString
 	}
 	'OverlayBingoGrid': {	
 		/**
@@ -180,6 +200,10 @@ export type TranslationFunctions = {
 		 * Confirm
 		 */
 		'ConfirmButtonLabel': () => LocalizedString
+		/**
+		 * Missed
+		 */
+		'MissedRibbonLabel': () => LocalizedString
 	}
 	'BingoModeration': {	
 		/**

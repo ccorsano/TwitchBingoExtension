@@ -49,13 +49,13 @@ export default function Mobile()
 
     const onRefreshGrid = (grid: BingoGrid, cells: BingoGridCell[]) => {
         const stateMultiplierBase = grid.rows * grid.cols * 10
-        const pendingMultiplier = 1
+        const pendingMultiplier = stateMultiplierBase
         const confirmedMultiplier = stateMultiplierBase * 10
         const missedMultiplier = stateMultiplierBase * 100
         const sortedEntries = cells.sort((cellA, cellB) => {
-            const cellAMult = cellA.state === BingoEntryState.Idle ? pendingMultiplier : (cellA.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
-            const cellBMult = cellB.state === BingoEntryState.Idle ? pendingMultiplier : (cellB.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
-            return ((cellA.row*grid.cols  + cellA.col) * cellAMult) - ((cellB.row*grid.cols  + cellB.col) * cellBMult)
+            const cellAMult = (cellA.state === BingoEntryState.Idle || cellA.state === BingoEntryState.Pending) ? pendingMultiplier : (cellA.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
+            const cellBMult = (cellB.state === BingoEntryState.Idle || cellB.state === BingoEntryState.Pending) ? pendingMultiplier : (cellB.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
+            return (((cellA.row+1)*grid.cols  + cellA.col + 1) * cellAMult) - (((cellB.row + 1)*grid.cols  + cellB.col + 1) * cellBMult)
         })
         setSortedEntries(sortedEntries)
     }

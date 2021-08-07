@@ -163,6 +163,17 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         console.log("onTentative, updated cell state, set countdown to " + pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt);
     }, [gameId, grid, pendingResults, activeGame, entries]);
 
+    if (props.onRefreshGrid)
+    {
+        React.useEffect(() => {
+            if (grid?.cells)
+            {
+                console.log("onRefreshGrid");
+                props.onRefreshGrid(grid, grid.cells.map(c => getCell(c.row, c.col)[0]))
+            }
+        }, [grid, pendingResults])
+    }
+
     const getCell = React.useCallback((row: number, col: number): [BingoGridCell,BingoEntry] => {
         var cellResult = grid.cells.filter(c => c.row == row && c.col == col);
         if (cellResult.length == 1)

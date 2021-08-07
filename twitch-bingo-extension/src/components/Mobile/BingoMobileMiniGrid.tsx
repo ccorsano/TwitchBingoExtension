@@ -1,5 +1,6 @@
 import React from 'react'
 import { getRGB, jasminePalette } from '../../common/BingoThemes';
+import { I18nContext } from '../../i18n/i18n-react';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 
 type BingoMobileMiniGridProps = {
@@ -13,6 +14,8 @@ type BingoMobileMiniGridProps = {
 
 export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
 {
+    const { LL } = React.useContext(I18nContext)
+
     function getCell(row: number, col: number)
     {
         return props.cells.find(c => c.row == row && c.col == col)
@@ -84,22 +87,27 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                             {
                                 gradient = "url(#prompt)"
                             }
+
+                            const text = (cell.state === BingoEntryState.Missed || cell.state === BingoEntryState.Rejected) ? LL.Mobile.MissedLabel() : (cell.state === BingoEntryState.Pending) ? LL.Mobile.PendingLabel() : ""
+
                             return (
-                                <rect
-                                    key={cell.key}
-                                    x={col+0.025}
-                                    y={(row/2.0)+0.025}
-                                    width="0.95"
-                                    height="0.45"
-                                    fill={gradient}
-                                    filter="url(#dropShadow)"
-                                    strokeWidth="0.01"
-                                    strokeOpacity={isSelected ? "1.0" : "0.5"}
-                                    stroke="black"
-                                    rx="0.01"
-                                    ry="0.01"
-                                    onClickCapture={(_) => props.onSelectCell(col, row)}
-                                />)
+                                <g key={cell.key}>
+                                    <rect
+                                        x={col+0.025}
+                                        y={(row/2.0)+0.025}
+                                        width="0.95"
+                                        height="0.45"
+                                        fill={gradient}
+                                        filter="url(#dropShadow)"
+                                        strokeWidth="0.01"
+                                        strokeOpacity={isSelected ? "1.0" : "0.5"}
+                                        stroke="black"
+                                        rx="0.01"
+                                        ry="0.01"
+                                        onClickCapture={(_) => props.onSelectCell(col, row)}
+                                    />
+                                    <text x={col + 0.5} y={(row/2.0) + 0.3} fontSize="0.125" textAnchor="middle" fill="#333">{text}</text>
+                                </g>)
                         }
                     })
                 })

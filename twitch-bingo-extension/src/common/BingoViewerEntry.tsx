@@ -4,6 +4,8 @@ import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../i18n/i18n-react";
+import BingoCellRibbon from "./BingoCellRibbon";
+import { getRGB, jasminePalette } from "./BingoThemes";
 require('./BingoStyles.scss')
 
 type BingoViewerEntryProps = {
@@ -86,6 +88,16 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
             break;
     }
 
+    var ribbon = null;
+    if (props.state == BingoEntryState.Missed || props.state == BingoEntryState.Rejected)
+    {
+        ribbon = (
+            <div style={{ position: "absolute", top: "0px", right:"0px", maxWidth:"25%", maxHeight: "25%" }}>
+                <BingoCellRibbon fillColor={getRGB(jasminePalette.missed)} width="100%" height="100%" text={LL.BingoViewerEntry.MissedRibbonLabel()} />
+            </div>
+        )
+    }
+
     return (
         <div className={clsx(
                             "bingoCell",
@@ -107,6 +119,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 {LL.BingoViewerEntry.ConfirmButtonLabel()}
             </div>
             { timerComponent }
+            { ribbon }
         </div>
     )
 }

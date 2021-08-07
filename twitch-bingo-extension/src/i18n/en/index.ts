@@ -4,12 +4,15 @@ const en: BaseTranslation = {
 	Mobile:{
 		ConfirmButton: "Confirm",
 		CancelButton: "Cancel",
+		MissedLabel: "Missed",
+		PendingLabel: "Pending",
 	},
 	OverlayBingoGrid: {
 		WaitingMessage: "Waiting for the game to start !"
 	},
 	BingoViewerEntry:{
 		ConfirmButtonLabel: "Confirm",
+		MissedRibbonLabel: "Missed",
 	},
 	BingoModeration:{
 		ConfirmButtonLabel: "Confirm",

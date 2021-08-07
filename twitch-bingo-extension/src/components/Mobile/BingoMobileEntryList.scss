@@ -36,6 +36,7 @@
 };
 .pending {
     background: $banana-mania-2;
+    min-height: 50px !important;
 };
 .confirmed {
     background: $jasmine;
