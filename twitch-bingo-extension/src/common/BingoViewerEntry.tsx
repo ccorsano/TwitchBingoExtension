@@ -30,14 +30,11 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     
     const [confirmationPrompt, setConfirmationPrompt] = React.useState(false);
 
-    // console.log("BingoViewerEntry " +  props.config.key + " countdown: " + props.countdown?.getTime() + " now: " + Date.now());
-
     var showTimer: boolean = props.countdown != null;
     var timerComponent: React.ReactElement = null;
     if (showTimer)
     {
         var duration = (props.countdown.getTime() - Date.now()) / 1000;
-        // console.log("Updating cell " + props.config.key + " with timer: " + duration)
         if (duration > 0)
         {
             timerComponent = 
@@ -93,7 +90,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     {
         ribbon = (
             <div style={{ position: "absolute", top: "0px", right:"0px", maxWidth:"25%", maxHeight: "25%" }}>
-                <BingoCellRibbon fillColor={getRGB(jasminePalette.missed)} width="100%" height="100%" text={LL.BingoViewerEntry.MissedRibbonLabel()} />
+                <BingoCellRibbon fillColor={getRGB(jasminePalette.base)} width="100%" height="100%" text={LL.BingoViewerEntry.MissedRibbonLabel()} />
             </div>
         )
     }
