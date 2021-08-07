@@ -9,6 +9,7 @@ import { I18nContext } from "../i18n/i18n-react"
 import { ActiveGameModerationContext } from "./BingoGameModerationComponent"
 import { bingoStyles } from "./BingoStyles"
 import TentativeNotificationComponent from "./TentativeNotificationComponent"
+import { TwitchExtQuery } from "./TwitchExtension"
 
 
 type ModerationBingoComponentProps = {
@@ -79,7 +80,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                     <div style={{gridColumn: 2, display: 'inline-grid', paddingLeft: '0.5rem'}}>
                                         <ButtonGroup size="small" style={{display:'inline-block'}}>
                                             <Button aria-label={LL.BingoModeration.ConfirmButtonLabel()} onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>{LL.BingoModeration.ConfirmButton()}</Button>
-                                            {/* <Button aria-label="Test" onClick={(_) => onTest(entry)}>Test</Button> */}
+                                            { TwitchExtQuery.state === "testing" ? <Button aria-label="Test" onClick={(_) => onTest(entry)}>Test</Button> : null }
                                         </ButtonGroup>
                                     </div>
                                 </div>
