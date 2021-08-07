@@ -33,6 +33,7 @@
 };
 .prompt {
     background: $dutch-white;
+    border-left: solid 3px #666;
 };
 .pending {
     background: $banana-mania-2;
@@ -41,13 +42,23 @@
 .confirmed {
     background: $jasmine;
 };
+
 .missed {
     background: $lightgray;
     color: #666;
 };
+
+.missed.highlighted {
+    background: $baby-powder;
+};
+
 .rejected {
     background: $lightgray;
     color: #666;
+};
+
+.rejected.highlighted {
+    background: $baby-powder;
 };
 
 .highlighted {
