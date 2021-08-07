@@ -106,7 +106,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                             stateClass,
                             props.isColCompleted ? "colConfirmed" : '',
                             props.isRowCompleted ? "rowConfirmed" : '')}
-             onClick={handlePrompt}>
+             onClickCapture={handlePrompt}>
             <div className={clsx("bingoEntry")}>
                 <div style={{fontSize: props.fontSize}}>
                     {props.config.text}

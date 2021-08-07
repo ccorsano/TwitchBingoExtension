@@ -11,6 +11,17 @@
     }
 }
 
+@media screen and (min-height: 50em) {
+    #bingoGridArea
+    {
+        margin-top: 30vh;
+    }
+    .bingoGrid
+    {
+        max-height: 40vh;
+    }
+}
+
 #root
 {
     width: 100%;

@@ -46,6 +46,13 @@ export default function VideoOverlay()
         setHasModNotifications(false)
     }
 
+    const drawingAreaClick = React.useCallback((_) => {
+        if (! isCollapsed)
+        {
+            setCollapsed(true);
+        }
+    }, [isCollapsed])
+
     return (
         <BingoGameComponent>
             <ActiveGameContext.Consumer>
@@ -86,8 +93,8 @@ export default function VideoOverlay()
                 
                         return [
                             <div id="bingoRenderingArea">
-                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }}></div>
-                                <div style={{ gridColumn: 1, gridRow: 2 }}>
+                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }} onClickCapture={drawingAreaClick}></div>
+                                <div style={{ gridColumn: 1, gridRow: 2 }} onClickCapture={drawingAreaClick}>
                                     <VideoOverlayTabWidget
                                         shown={isWidgetShown}
                                         collapsed={isCollapsed}
@@ -97,14 +104,14 @@ export default function VideoOverlay()
                                         onToggleModerationPane={(_) => {setModerationDrawerOpen(!moderationDrawerOpen)}} />
                                     { gameContext.canModerate ? moderationDrawer : null }
                                 </div>
-                                <div style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
+                                <div id="bingoGridArea" style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
                                     <OverlayBingoGrid
                                         isCollapsed={isCollapsed}
                                     />
                                 </div>
-                                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }}>
+                                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }} onClickCapture={drawingAreaClick}>
                                 </div>
-                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '6rem', width: '100%' }}></div>
+                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '6rem', width: '100%' }} onClickCapture={drawingAreaClick}></div>
                             </div>
                         ];
                     }
