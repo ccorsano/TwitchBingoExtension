@@ -1,0 +1,43 @@
+.bingoCellPrompt {
+    transition: all 0.5s;
+    width: 100%;
+    background-color: rgba(255,243,214,0.9); // #fff3d6
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    color: #000;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    z-index: 10;
+    position: absolute;
+    bottom: 1rem;
+};
+
+.bingoCellPromptVisible {
+    height: unset;
+    opacity: 1.0;
+    &:hover {
+        cursor: pointer;
+        background-color: rgba(251,247,239,0.8); // #fbf7ef
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    }
+};
+
+.bingoCellPromptHidden {
+    opacity: 0.0;
+    bottom: -2rem;
+};
+
+.bingoCell {
+    transition: opacity 0.3s;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+};
+
+.hiddenCell {
+    opacity: 0%;
+};
+
+.visibleCell {
+    opacity: 100%;
+    box-shadow: 0px 0px 0.4vw 0 rgb(0 0 0 / 50%);
+}

@@ -21,7 +21,7 @@ export default function StatusCard(props: StatusCardProps)
             <CardHeader title={LL.Config.StatusCard.Title()} />
             <CardContent>
                 {
-                    props.isActive != null ?
+                    props.isActive === true ?
                     <Typography>{LL.Config.StatusCard.StatusActive()}</Typography> :
                     <Typography>{LL.Config.StatusCard.StatusInactive()}</Typography>
                 }

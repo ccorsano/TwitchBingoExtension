@@ -2,14 +2,11 @@ import Box from "@material-ui/core/Box"
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import LinearProgress from "@material-ui/core/LinearProgress"
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
-import ListItemText from "@material-ui/core/ListItemText"
 import Paper from "@material-ui/core/Paper"
 import React from "react"
 import { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
 import { I18nContext } from "../i18n/i18n-react"
+import { ActiveGameModerationContext } from "./BingoGameModerationComponent"
 import { bingoStyles } from "./BingoStyles"
 import TentativeNotificationComponent from "./TentativeNotificationComponent"
 
@@ -28,18 +25,23 @@ type ModerationBingoComponentProps = {
 export default function ModerationBingoComponent(props: ModerationBingoComponentProps)
 {
     const { LL } = React.useContext(I18nContext)
+    const moderationContext = React.useContext(ActiveGameModerationContext)
     
     const classes = bingoStyles();
 
+    const onTest = (entry: BingoEntry) => {
+        moderationContext.onTestTentative(entry)
+        if (props.onTest) props.onTest(entry)
+    }
+
     return (
         <Paper elevation={3}>
-            <List>
+            <div>
                 {
                     props.tentatives.map((tentative) => {
                         if (tentative)
                         {
                             var entry: BingoEntry = props.entries.find(e => e.key == tentative.key);
-                            // console.log("ModerationBingoComponent tentative key: " + tentative.key)
 
                             return (
                                 <TentativeNotificationComponent
@@ -56,8 +58,8 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                         }
                     })
                 }
-            </List>
-            <List>
+            </div>
+            <div>
                 {
                     props.entries?.length > 0 ?
                         props.entries.map((entry) => {
@@ -70,15 +72,17 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                             const isConfirmed = entry.confirmedAt != null;
                             
                             return (
-                                <ListItem key={entry.key} className={isConfirmed ? classes.confirmed : classes.idle }>
-                                    <ListItemText primary={entry.text} />
-                                    <ListItemSecondaryAction>
-                                        <ButtonGroup size="small">
+                                <div key={entry.key} className={isConfirmed ? classes.confirmed : classes.idle } style={{display: 'grid', gridAutoColumns: '1fr auto', padding: '0.5rem'}}>
+                                    <div style={{gridColumn: 1, display: 'inline-grid'}}>
+                                        {entry.text}
+                                    </div>
+                                    <div style={{gridColumn: 2, display: 'inline-grid', paddingLeft: '0.5rem'}}>
+                                        <ButtonGroup size="small" style={{display:'inline-block'}}>
                                             <Button aria-label={LL.BingoModeration.ConfirmButtonLabel()} onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>{LL.BingoModeration.ConfirmButton()}</Button>
-                                            {/* <Button aria-label="Test" onClick={(_) => {if (props.onTest) props.onTest(entry)}}>Test</Button> */}
+                                            {/* <Button aria-label="Test" onClick={(_) => onTest(entry)}>Test</Button> */}
                                         </ButtonGroup>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
+                                    </div>
+                                </div>
                             );
                         })
                     :<Box style={{ margin: '1vw' }}>
@@ -86,7 +90,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                         {LL.BingoModeration.NoEntriesMessage()}
                     </Box>
                 }
-            </List>
+            </div>
         </Paper>
     )
 }

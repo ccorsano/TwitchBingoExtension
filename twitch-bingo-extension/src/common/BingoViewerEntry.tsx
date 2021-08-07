@@ -7,6 +7,7 @@ import { I18nContext } from "../i18n/i18n-react";
 import BingoCellRibbon from "./BingoCellRibbon";
 import { getRGB, jasminePalette } from "./BingoThemes";
 require('./BingoStyles.scss')
+require('./BingoViewerEntry.scss')
 
 type BingoViewerEntryProps = {
     config: BingoEntry,
@@ -38,7 +39,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         if (duration > 0)
         {
             timerComponent = 
-            <div style={{ position: 'absolute', bottom: '1rem', width:'100%' }}>
+            <div className={clsx("bingoCellPrompt", "bingoCellPromptVisible")} style={{cursor: "unset"}}>
                 <div style={{ display: 'inline-block' }}>
                     <CountdownCircleTimer
                         isPlaying

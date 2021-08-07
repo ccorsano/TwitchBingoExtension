@@ -1,8 +1,4 @@
 import Button from "@material-ui/core/Button"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
-import ListItemText from "@material-ui/core/ListItemText"
 import React from "react"
 import clsx from 'clsx'
 import { CountdownCircleTimer } from "react-countdown-circle-timer"
@@ -34,14 +30,14 @@ export default function TentativeNotificationComponent(props: TentativeNotificat
     var duration: number = (referenceTime.getTime() - Date.now()) + props.confirmationTimeout;
     
     return (
-        <ListItem key={props.entry.key} className={clsx(isConfirmed ? classes.confirmed : classes.pending)}>
-            <ListItemIcon>
+        <div key={props.entry.key} className={clsx(isConfirmed ? classes.confirmed : classes.pending)} style={{display: 'grid', gridAutoColumns: 'auto 1fr auto', padding: '0.5rem'}}>
+            <div style={{gridColumn: 1, display: 'inline-grid', paddingRight: '1rem'}}>
                 <CountdownCircleTimer
                     isPlaying
                     key={isConfirmed ? "pre-confirmation" : "post-confirmation" }
                     size={40}
                     strokeWidth={2}
-                    colors={ isConfirmed ? "#000" : "#FFF" }
+                    colors="#000"
                     duration={duration/1000}
                     children={renderTime}
                     onComplete={ (_elapsed) => {
@@ -55,12 +51,14 @@ export default function TentativeNotificationComponent(props: TentativeNotificat
                         }
                     }}
                 />
-            </ListItemIcon>
-            <ListItemText primary={props.entry.text}  />
-            <ListItemSecondaryAction>
+            </div>
+            <div style={{gridColumn: 2, display: 'inline-grid', alignSelf: 'center'}}>
+                {props.entry.text}
+            </div>
+            <div style={{gridColumn: 3, display: 'inline-grid'}}>
                 <Button onClick={handleConfirm} disabled={isConfirmed}>Confirm</Button>
-            </ListItemSecondaryAction>
-        </ListItem>
+            </div>
+        </div>
     )
 }
 
