@@ -143,14 +143,14 @@
     "canInstall": true,
     "configUrl": "https://localhost:8180/config.html",
     "configurationLocation": "hosted",
-    "description": "First release !\nPlease consider this as a minimum viable version of this extension, and check regularly for updates.\nNote: This extension is dependent on an extension service, which for this initial release is not scaled for a large viewing audience.\n\nCustomizable & interactive bingo games for streamers communities:\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have a the same configurable grace period to report it\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
+    "description": "First update !\nMany things to come, check regularly for updates.\nNote: This extension is dependent on an extension service, which for this initial release is not scaled for a large viewing audience.\n\nCustomizable & interactive bingo games for streamers communities:\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have a the same configurable grace period to report it\n- Mobile support\n\nNew in 0.0.2:\n- Redesign: reduced general ugliness, small touches of animations\n- Mobile support\n- Less intrusive: auto-hiding of widget, reduced screen occupation when full-screen\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
     "eulaTosUrl": "",
     "hasChatSupport": true,
-    "iconUrl": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.1/logo8358959e-9f1f-4e93-aa61-6036d33a1878",
+    "iconUrl": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.2/logo13f03742-63bd-4a86-a673-0f37063a9934",
     "iconUrls": {
-      "100x100": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.1/logo8358959e-9f1f-4e93-aa61-6036d33a1878",
-      "24x24": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.1/taskbarfbcef622-0512-460e-8bb3-6ceead718513",
-      "300x200": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.1/discoveryc79e69b8-a9c3-4799-88d7-2aecc5c2463c"
+      "100x100": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.2/logo13f03742-63bd-4a86-a673-0f37063a9934",
+      "24x24": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.2/taskbar0a054b66-29a1-4681-97ea-e04c0ef792fb",
+      "300x200": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/0.0.2/discovery22e77a6f-f081-4569-9685-44f69bf927ad"
     },
     "id": "sbx8c4432ntycy25vv256341lp1ug3",
     "installationCount": -42,
