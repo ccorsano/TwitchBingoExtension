@@ -12,9 +12,9 @@
 }
 
 @media screen and (min-height: 50em) {
-    #bingoGridArea
+    #safeAreaTop
     {
-        margin-top: 30vh;
+        height: 30vh !important;
     }
     .bingoGrid
     {

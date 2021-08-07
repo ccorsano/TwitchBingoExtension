@@ -93,7 +93,7 @@ export default function VideoOverlay()
                 
                         return [
                             <div id="bingoRenderingArea">
-                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }} onClickCapture={drawingAreaClick}></div>
+                                <div id="safeAreaTop" style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }} onClickCapture={drawingAreaClick}></div>
                                 <div style={{ gridColumn: 1, gridRow: 2 }} onClickCapture={drawingAreaClick}>
                                     <VideoOverlayTabWidget
                                         shown={isWidgetShown}
