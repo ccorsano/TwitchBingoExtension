@@ -23,7 +23,7 @@ export default function Config() {
     const isSelected = (entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key);
 
     const loadConfig = (broadcasterConfig: TwitchExtensionConfiguration) => {
-        if (! broadcasterConfig)
+        if (! broadcasterConfig?.content)
         {
             return;
         }
@@ -181,19 +181,19 @@ export default function Config() {
 
             var entries:BingoEditableEntry[] = new Array(0);
 
-            content.split('\n').forEach(line => {
+            content.split('\n').forEach((line, index) => {
                 if(! line) return;
 
                 var newEntry = new BingoEditableEntry();
                 newEntry.text = line;
                 newEntry.isNew = false;
-                newEntry.key = nextKey;
+                newEntry.key = index;
                 console.log("Entry: " + newEntry.key + " - " + newEntry.text)
                 entries.push(newEntry);
             });
-            setNextKey(nextKey + 1)
-            setEntries(entries)
             setSelectedEntries(new Array(0))
+            setNextKey(entries.length + 1)
+            setEntries(entries)
         };
         reader.readAsText(file);
     }

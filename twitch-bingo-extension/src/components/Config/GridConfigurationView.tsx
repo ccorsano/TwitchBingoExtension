@@ -68,13 +68,13 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                         {LL.Config.AddEntriesOrReduceGridDimensionsToStartTheGame()}
                     </Alert>
                      : null }
-                <Grid container xs={12}>
+                <Grid container>
                 {
                     [...Array(props.rows).keys()].map(r => {
-                        return <Grid container item xs={12} spacing={1}>
+                        return <Grid container item xs={12} spacing={1} key={r}>
                             {
                                 [...Array(props.columns).keys()].map(c => {
-                                    return <Grid item xs>
+                                    return <Grid item xs key={c}>
                                         <Paper className="paper" elevation={3}>
                                             <Box py={2} my={0.5} bgcolor={ (r * props.columns + c) < props.selectedEntriesLength ? "primary.main" : "error.main" }>
                                                 <Typography>

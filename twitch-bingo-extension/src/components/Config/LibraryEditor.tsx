@@ -35,7 +35,7 @@ export default function LibraryEditor(props: LibraryEditorProps)
 
     const isSelected = (entry: BingoEntry): boolean => props.selectedEntries.some(b => b == entry.key);
     
-    const onEntriesCopy = (_evt: React.MouseEvent<HTMLButtonElement>): void => {
+    const onEntriesCopy = React.useCallback((_evt: React.MouseEvent<HTMLButtonElement>): void => {
         if (! navigator.clipboard){
             console.error("Copy to clipboard not supported on this browser");
             return;
@@ -46,7 +46,7 @@ export default function LibraryEditor(props: LibraryEditorProps)
         }, (error: string) => {
             console.error("Could not copy text to clipboard", error);
         });
-    }
+    }, [props.entries])
     
     var sourceListElement: JSX.Element = null;
     if (props.entries.length == 0)

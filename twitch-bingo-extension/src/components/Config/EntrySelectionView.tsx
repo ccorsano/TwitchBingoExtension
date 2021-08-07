@@ -34,7 +34,7 @@ export default function EntrySelectionView(props:EntrySelectionViewProps)
             {
                 props.selectedEntries.map(key => {
                     var entry:BingoEditableEntry = props.entries.find(b => b.key == key);
-                    return <ListItem button onClick={() => props.onRemoveFromSelection(entry)}>
+                    return <ListItem button onClick={() => props.onRemoveFromSelection(entry)} key={key}>
                         <ListItemText
                             primary={entry.text}
                         />

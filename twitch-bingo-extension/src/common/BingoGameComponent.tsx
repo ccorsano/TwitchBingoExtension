@@ -29,7 +29,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
 
     const loadConfig = (_broadcasterConfig: any) => {
         var extensionConfig = Twitch.configuration;
-        if (! extensionConfig)
+        if (! extensionConfig?.content)
         {
             return;
         }
