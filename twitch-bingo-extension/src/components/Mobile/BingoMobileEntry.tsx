@@ -85,7 +85,7 @@ const BingoMobileEntry = React.forwardRef<HTMLDivElement, BingoMobileEntryProps>
              onClickCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelect(props.cell.key) }
              style={{ position: 'relative' }}>
              <div>
-                     {props.cell.text}
+                    {props.cell.text}
              </div>
              <div
                  className={clsx("bingoCellPrompt", (isCurrentElementActive && isPrompting) ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}

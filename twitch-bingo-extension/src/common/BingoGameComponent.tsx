@@ -22,7 +22,6 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [canModerate, setCanModerate] = React.useState(false)
     const [canVote, setCanVote] = React.useState(false)
     const [pendingResults, setPendingResults] = React.useState<BingoPendingResult[]>(new Array(0))
-    const [gameId, setGameId] = React.useState<string>(null)
     const [activeGame, setActiveGame] = React.useState<BingoGame>(null)
     const [isStarted, setStarted] = React.useState(false)
     const [grid, setGrid] = React.useState<BingoGrid>(null)
@@ -72,10 +71,11 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                 refreshGrid(activeGame, entries);
                 break;
             case 'stop':
+                setPendingResults(new Array(0))
+                setGrid(null)
                 setEntries(new Array(0))
                 setActiveGame(null)
                 console.log("Stopped game");
-                setPendingResults(new Array(0))
                 if (props.onStop)
                 {
                     props.onStop()
@@ -119,7 +119,6 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
-            setGameId(game.gameId)
             setEntries(entries)
             setGrid(grid)
             setActiveGame(game)
@@ -145,7 +144,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }, [activeGame, entries, pendingResults])
 
     const onTentative = React.useCallback((entry: BingoEntry) => {  
-        BingoEBS.tentative(gameId, entry.key.toString());
+        BingoEBS.tentative(activeGame.gameId, entry.key.toString());
         var cellIndex = grid.cells.findIndex(c => c.key == entry.key);
         grid.cells[cellIndex].state = BingoEntryState.Pending;
         var pendingResultsRefreshed:BingoPendingResult[] = pendingResults.filter(p => p.key != entry.key);
@@ -161,7 +160,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
 
         setTimeout(() => onTentativeRefresh(entry), confirmationTimeout);
         console.log("onTentative, updated cell state, set countdown to " + pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt);
-    }, [gameId, grid, pendingResults, activeGame, entries]);
+    }, [grid, pendingResults, activeGame, entries]);
 
     if (props.onRefreshGrid)
     {
