@@ -24,13 +24,15 @@ type GridConfigurationViewProps = {
     onConfirmationTimeoutChange: (value: number) => void;
     onSave: () => void;
     onStart: () => void;
+    isStarting: boolean;
 }
 
 export default function GridConfigurationView(props:GridConfigurationViewProps)
 {
     const { LL } = React.useContext(I18nContext)
 
-    const canStart = (): boolean => props.selectedEntriesLength >= props.rows * props.columns;
+    const hasEnoughEntries = (): boolean => props.selectedEntriesLength >= props.rows * props.columns
+    const canStart = (): boolean => !props.isStarting && hasEnoughEntries()
 
     return (
         <Card>
@@ -62,7 +64,7 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                     value={props.rows}
                     onChange={(_, value) => props.onRowsChange(value as number)}
                 />
-                { !canStart() ? 
+                { !hasEnoughEntries() ? 
                     <Alert severity="error">
                         <AlertTitle>{LL.Config.AlertNotEnoughEntriesToFillTheGrid()}</AlertTitle>
                         {LL.Config.AddEntriesOrReduceGridDimensionsToStartTheGame()}

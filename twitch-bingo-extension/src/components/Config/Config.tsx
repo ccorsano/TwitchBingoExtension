@@ -19,6 +19,7 @@ export default function Config() {
     const [selectedEntries, setSelectedEntries] = React.useState<number[]>(new Array(0))
     const [confirmationThresholdSeconds, setConfirmationThresholdSeconds] = React.useState(120)
     const [activeGame, setActiveGame] = React.useState<BingoGame>(null)
+    const [isStarting, setStarting] = React.useState(false)
 
     const isSelected = (entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key);
 
@@ -99,6 +100,7 @@ export default function Config() {
     }
 
     const onStart = (): void => {
+        setStarting(true);
         BingoEBS.createGame({
             rows: rows,
             columns: columns,
@@ -135,6 +137,8 @@ export default function Config() {
                 type: "start",
                 payload: game
             });
+        }).finally(() => {
+            setStarting(false);
         });
     }
 
@@ -230,6 +234,7 @@ export default function Config() {
                         onConfirmationTimeoutChange={(timeout) => setConfirmationThresholdSeconds(timeout)}
                         onSave={onSave}
                         onStart={onStart}
+                        isStarting={isStarting}
                     />
                 ]
             }
