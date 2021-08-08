@@ -153,7 +153,7 @@ export default function VideoOverlay()
                                                 <div
                                                     className={clsx("bingoCellPrompt", "bingoCellPromptVisible")}
                                                     style={{position: 'unset'}}
-                                                    onClickCapture={(_) => gameContext.promptIdentity}>
+                                                    onClickCapture={(_) => gameContext.promptIdentity()}>
                                                     {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                                                 </div>
                                             </div>
