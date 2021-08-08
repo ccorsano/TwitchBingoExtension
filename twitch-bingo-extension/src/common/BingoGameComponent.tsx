@@ -134,6 +134,14 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
         });
+        if (canModerate)
+        {
+            BingoEBS.getGame(game.gameId).then(refreshedGame => {
+                setActiveGame(refreshedGame)
+            }).catch(error => {
+                console.error("Error loading game from EBS: " + error);
+            });
+        }
     }
 
     React.useEffect(() => {
