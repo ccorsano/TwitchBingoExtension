@@ -1,22 +1,31 @@
 import React from 'react';
 import { Suspense } from 'react';
+import clsx from 'clsx';
 import BingoGameComponent, { ActiveGameContext } from '../../common/BingoGameComponent';
+import { BingoGameContext } from '../../common/BingoGameContext';
 import BingoGameModerationComponent, { ActiveGameModerationContext } from '../../common/BingoGameModerationComponent';
+import { getRGB, jasminePalette } from '../../common/BingoThemes';
 import LinearIndeterminateLoader from '../../common/LinearIndeterminateLoader';
 import { TwitchExtHelper } from '../../common/TwitchExtension';
 import { BingoTentativeNotification, ParseTimespan } from '../../EBS/BingoService/EBSBingoTypes';
+import { I18nContext } from '../../i18n/i18n-react';
 import OverlayBingoGrid from './OverlayBingoGrid';
 const ModerationPane = React.lazy(() => import('./ModerationPane'));
 import VideoOverlayTabWidget from './TabWidget';
 require('./VideoOverlay.scss');
+require('../../common/BingoStyles.scss');
+require('../../common/BingoViewerEntry.scss');
 
 export default function VideoOverlay()
 {
+    const { LL } = React.useContext(I18nContext)
+    
     const [isCollapsed, setCollapsed] = React.useState(true)
     const [moderationDrawerOpen, setModerationDrawerOpen] = React.useState(false)
     const [isWidgetShown, setWidgetShown] = React.useState(true)
     const [hasModNotifications, setHasModNotifications] = React.useState(false)
     const [isModDrawerAutoOpened, setModDrawerAutoOpened] = React.useState(false)
+    const [isShowingIdentityPrompt, setShowingIdentityPrompt] = React.useState(false)
 
     React.useEffect(() => {
         const onContext = (context, _) => {
@@ -53,8 +62,28 @@ export default function VideoOverlay()
         }
     }, [isCollapsed])
 
+    const onToggleGrid = React.useCallback((gameContext: BingoGameContext) => {
+        if (!gameContext.hasSharedIdentity){
+            setShowingIdentityPrompt(!isShowingIdentityPrompt)
+            return
+        }
+        setShowingIdentityPrompt(false);
+        setCollapsed(!isCollapsed)
+    }, [isCollapsed, isShowingIdentityPrompt])
+
+    const onSharedIdentityChange = React.useCallback((isShared: boolean) => {
+        if (isShared && isShowingIdentityPrompt)
+        {
+            setShowingIdentityPrompt(false)
+        }
+        if (!isShared && !isCollapsed)
+        {
+            setCollapsed(true)
+        }
+    }, [isShowingIdentityPrompt, isCollapsed])
+
     return (
-        <BingoGameComponent>
+        <BingoGameComponent onSharedIdentity={onSharedIdentityChange}>
             <ActiveGameContext.Consumer>
                 {
                     gameContext => {
@@ -101,11 +130,35 @@ export default function VideoOverlay()
                                         collapsed={isCollapsed}
                                         canModerate={gameContext.canModerate}
                                         hasModNotifications={hasModNotifications}
-                                        onToggleGrid={(_) => { setCollapsed(!isCollapsed)}}
+                                        onToggleGrid={() => onToggleGrid(gameContext)}
                                         onToggleModerationPane={(_) => {setModerationDrawerOpen(!moderationDrawerOpen)}} />
                                     { gameContext.canModerate ? moderationDrawer : null }
                                 </div>
                                 <div id="bingoGridArea" style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
+                                    {
+                                        isShowingIdentityPrompt ? (
+                                            <div style={
+                                                {
+                                                    backgroundColor: getRGB(jasminePalette.base),
+                                                    width: '100%',
+                                                    textAlign: 'center',
+                                                    paddingTop: '1vw',
+                                                    paddingBottom: '1vw',
+                                                    borderRadius: '0.25vw',
+                                                    transition: 'opacity 0.5s',
+                                                }}>
+                                                <div style={{marginBottom: '2rem', marginTop: '1rem'}}>
+                                                    {LL.OverlayBingoGrid.IdentityPromptMessage()}
+                                                </div>
+                                                <div
+                                                    className={clsx("bingoCellPrompt", "bingoCellPromptVisible")}
+                                                    style={{position: 'unset'}}
+                                                    onClickCapture={(_) => gameContext.promptIdentity}>
+                                                    {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
+                                                </div>
+                                            </div>
+                                        ) : null
+                                    }
                                     <OverlayBingoGrid
                                         isCollapsed={isCollapsed}
                                     />

@@ -33,6 +33,14 @@ export type Translation = {
 		 * Waiting for the game to start !
 		 */
 		'WaitingMessage': string
+		/**
+		 * In order to join the game and get your own Bingo grid, you need to share your Twitch username with the extension.
+		 */
+		'IdentityPromptMessage': string
+		/**
+		 * Share
+		 */
+		'ShareIdentityButtonLabel': string
 	}
 	'BingoViewerEntry': {	
 		/**
@@ -194,6 +202,14 @@ export type TranslationFunctions = {
 		 * Waiting for the game to start !
 		 */
 		'WaitingMessage': () => LocalizedString
+		/**
+		 * In order to join the game and get your own Bingo grid, you need to share your Twitch username with the extension.
+		 */
+		'IdentityPromptMessage': () => LocalizedString
+		/**
+		 * Share
+		 */
+		'ShareIdentityButtonLabel': () => LocalizedString
 	}
 	'BingoViewerEntry': {	
 		/**

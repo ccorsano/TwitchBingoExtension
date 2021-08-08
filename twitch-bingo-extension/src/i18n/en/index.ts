@@ -8,7 +8,9 @@ const en: BaseTranslation = {
 		PendingLabel: "Pending",
 	},
 	OverlayBingoGrid: {
-		WaitingMessage: "Waiting for the game to start !"
+		WaitingMessage: "Waiting for the game to start !",
+		IdentityPromptMessage: "In order to join the game and get your own Bingo grid, you need to share your Twitch username with the extension.",
+		ShareIdentityButtonLabel: "Share"
 	},
 	BingoViewerEntry:{
 		ConfirmButtonLabel: "Confirm",

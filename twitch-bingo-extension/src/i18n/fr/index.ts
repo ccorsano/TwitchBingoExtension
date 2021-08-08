@@ -8,7 +8,9 @@ const fr: Translation = {
 		PendingLabel: "En Attente",
 	},
 	OverlayBingoGrid: {
-		WaitingMessage: "En attente du début de partie !"
+		WaitingMessage: "En attente du début de partie !",
+		IdentityPromptMessage: "Pour rejoindre la partie et obtenir votre propre grille de Bingo, vous devez partager votre nom d'utilisateur Twitch avec l'extension.",
+		ShareIdentityButtonLabel: "Partager"
 	},
 	BingoViewerEntry:{
 		ConfirmButtonLabel: "Confirmer",

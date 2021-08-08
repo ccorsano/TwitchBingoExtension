@@ -15,6 +15,7 @@ type BingoGameComponentProps = {
     onRefreshGrid?: (grid: BingoGrid, cells: BingoGridCell[]) => void,
     onReceiveGame?: (game: BingoGame) => void,
     onStop?: () => void,
+    onSharedIdentity?: (isShared: boolean) => void,
 }
 
 export default function BingoGameComponent(props: BingoGameComponentProps) {
@@ -25,6 +26,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [activeGame, setActiveGame] = React.useState<BingoGame>(null)
     const [isStarted, setStarted] = React.useState(false)
     const [grid, setGrid] = React.useState<BingoGrid>(null)
+    const [hasSharedIdentity, setSharedIdentity] = React.useState(false)
 
     const loadConfig = (_broadcasterConfig: any) => {
         var extensionConfig = Twitch.configuration;
@@ -99,6 +101,11 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const onAuthorized = (_context) => {
         setCanModerate(TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator')
         setCanVote(TwitchExtHelper.viewer.role != 'external')
+        setSharedIdentity(TwitchExtHelper.viewer.isLinked)
+        if (props.onSharedIdentity)
+        {
+            props.onSharedIdentity(TwitchExtHelper.viewer.isLinked)
+        }
     }
 
     React.useEffect(() => {
@@ -239,6 +246,8 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         <ActiveGameContext.Provider value={
                 {
                     isStarted: isStarted,
+                    hasSharedIdentity: hasSharedIdentity,
+                    promptIdentity: TwitchExtHelper.actions.requestIdShare,
                     game: activeGame,
                     onTentative: onTentative,
                     canModerate: canModerate,
