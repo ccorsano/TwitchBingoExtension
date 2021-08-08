@@ -242,12 +242,17 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }))
     }, [entries])
 
+    const promptIdentity = (): void => {
+        console.log("Prompting identity")
+        TwitchExtHelper.actions.requestIdShare()
+    }
+
     return (
         <ActiveGameContext.Provider value={
                 {
                     isStarted: isStarted,
                     hasSharedIdentity: hasSharedIdentity,
-                    promptIdentity: TwitchExtHelper.actions.requestIdShare,
+                    promptIdentity: promptIdentity,
                     game: activeGame,
                     onTentative: onTentative,
                     canModerate: canModerate,
