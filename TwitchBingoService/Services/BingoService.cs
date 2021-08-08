@@ -1,10 +1,12 @@
 ﻿using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,26 +23,40 @@ namespace TwitchBingoService.Services
         private readonly TwitchEBSService _ebsService;
         private readonly BingoServiceOptions _options;
         private readonly ITwitchChatClientBuilder _chatBuilder;
+        private readonly IStringLocalizer<BingoService> _localizer;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public BingoService(IGameStorage gameStorage, TwitchEBSService ebsService, ITwitchChatClientBuilder chatBuilder, IMemoryCache memoryCache, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
+        public BingoService(IGameStorage gameStorage, TwitchEBSService ebsService, ITwitchChatClientBuilder chatBuilder, IStringLocalizer<BingoService> localizer, IMemoryCache memoryCache, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
         {
             _storage = gameStorage;
             _ebsService = ebsService;
             _chatBuilder = chatBuilder;
+            _localizer = localizer;
             _memoryCache = memoryCache;
             _options = options.Value;
             _logger = logger;
         }
 
+        private static void SetCurrentLocale(BingoGame game)
+        {
+            var gameCulture = CultureInfo.GetCultureInfoByIetfLanguageTag(game?.locale ?? "en-US");
+            CultureInfo.CurrentCulture = gameCulture;
+            CultureInfo.CurrentUICulture = gameCulture;
+        }
+
+        private async Task<HelixChannelInfo> GetChannelInfo(string channelId, CancellationToken cancellationToken)
+        {
+            return await _memoryCache.GetOrCreateAsync($"channelinfo:{channelId}", async (entry) =>
+            {
+                return await _ebsService.GetChannelInfo(channelId);
+            });
+        }
+
         private async Task<ITwitchChatClient> ConnectBot(string channelId, CancellationToken cancelationToken)
         {
-            var channelName = await _memoryCache.GetOrCreateAsync<string>($"channelname:{channelId}", async (entry) =>
-            {
-                return (await _ebsService.GetChannelInfo(channelId)).BroadcasterName;
-            });
-            return await _memoryCache.GetOrCreateAsync<ITwitchChatClient>($"chatclient:{channelId}", async (entry) =>
+            var channelName = (await GetChannelInfo(channelId, cancelationToken)).BroadcasterName;
+            return await _memoryCache.GetOrCreateAsync($"chatclient:{channelId}", async (entry) =>
             {
                 entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
@@ -53,6 +69,8 @@ namespace TwitchBingoService.Services
 
         public async Task<BingoGame> CreateGame(string channelId, BingoGameCreationParams gameParams)
         {
+            var channelInfo = (await GetChannelInfo(channelId, CancellationToken.None));
+
             var game = new BingoGame
             {
                 gameId = Guid.NewGuid(),
@@ -62,14 +80,16 @@ namespace TwitchBingoService.Services
                 columns = gameParams.columns,
                 confirmationThreshold = gameParams.confirmationThreshold ?? _options.DefaultConfirmationThreshold,
                 hasChatIntegration = gameParams.enableChatIntegration,
+                locale = channelInfo.BroadcasterLanguage,
             };
 
             await _storage.WriteGame(game);
 
             if (game.hasChatIntegration)
             {
+                SetCurrentLocale(game);
                 var chatBot = await ConnectBot(channelId, CancellationToken.None);
-                await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
+                await chatBot.SendMessageAsync(new OutgoingMessage { Message = _localizer.GetString("Bingo game started !") }, CancellationToken.None);
             }
 
             return game;
@@ -392,6 +412,8 @@ namespace TwitchBingoService.Services
             {
                 throw new ArgumentOutOfRangeException("gameId");
             }
+
+            SetCurrentLocale(game);
 
             var confirmedEntry = game.entries.First(e => e.key == key);
 

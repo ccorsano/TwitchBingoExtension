@@ -124,6 +124,7 @@ namespace TwitchBingoService
                 .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
             services.AddTransient<TwitchAPIClient>();
             services.AddMemoryCache();
+            services.AddLocalization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

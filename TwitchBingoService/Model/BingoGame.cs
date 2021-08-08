@@ -36,5 +36,8 @@ namespace TwitchBingoService.Model
 
         [ProtoMember(8)]
         public bool hasChatIntegration { get; set; } = false;
+
+        [ProtoMember(9)]
+        public string locale { get; set; } = "en-US";
     }
 }
