@@ -5,11 +5,11 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import React from 'react';
 import ModerationBingoComponent from '../../common/ModerationBingoComponent';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
-import { BingoConfirmationNotification, BingoEntry, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
+import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification } from '../../EBS/BingoService/EBSBingoTypes';
 import { EBSError } from '../../EBS/EBSBase';
 
 type ModerationPaneProps = {
-    entries: BingoEntry[],
+    game: BingoGame,
     tentatives: BingoTentativeNotification[],
     isOpen: boolean,
     onOpen: () => void,
@@ -26,6 +26,7 @@ type ModerationPaneProps = {
 export default function ModerationPane(props: ModerationPaneProps)
 {
     const [autoOpened, setAutoOpened] = React.useState(false);
+    const [entries, setEntries] = React.useState<BingoEntry[]>(new Array(0))
 
     React.useEffect(() => {
         if (autoOpened && props.tentatives.length == 0)
@@ -33,6 +34,13 @@ export default function ModerationPane(props: ModerationPaneProps)
             props.onNotificationsEmpty();
         }
     }, [props.tentatives, autoOpened])
+
+    React.useEffect(() => {
+        if (props.game?.entries)
+        {
+            setEntries(props.game.entries)
+        }
+    }, [props.game])
 
     const processTentative = (entry: BingoEntry) =>
     {
@@ -93,7 +101,7 @@ export default function ModerationPane(props: ModerationPaneProps)
                 </div>
                 <Divider />
                 <ModerationBingoComponent
-                    entries={props.entries}
+                    entries={entries}
                     tentatives={props.tentatives}
                     isStarted={props.isStarted}
                     gameId={props.gameId}
