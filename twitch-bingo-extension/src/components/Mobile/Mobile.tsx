@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 import BingoGameComponent, { ActiveGameContext, ActiveGridContext } from '../../common/BingoGameComponent';
 import { BingoGridContext } from '../../common/BingoGridContext';
 import { getRGB, jasminePalette } from '../../common/BingoThemes';
@@ -9,6 +10,7 @@ import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import BingoMobileEntryList from './BingoMobileEntryList';
 import BingoMobileMiniGrid from './BingoMobileMiniGrid';
 require('./Mobile.scss');
+require('./BingoMobileEntryList.scss');
 
 
 export default function Mobile()
@@ -73,6 +75,34 @@ export default function Mobile()
                         {
                             gridContext => 
                                 {
+                                    if (! gameContext.isAuthorized)
+                                    {
+                                        return (
+                                            <div  style={{backgroundColor: getRGB(jasminePalette.base), width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                                <div>
+                                                    <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+
+                                    if (! gameContext.hasSharedIdentity)
+                                    {
+                                        return (
+                                        <div  style={{backgroundColor: getRGB(jasminePalette.base), width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                            <div style={{marginBottom: '2rem', marginTop: '1rem', padding: '1rem'}}>
+                                                    {LL.OverlayBingoGrid.IdentityPromptMessage()}
+                                                </div>
+                                                <div
+                                                    className={clsx("bingoCellPrompt", "bingoCellPromptVisible")}
+                                                    style={{position: 'unset', maxWidth: 'unset', textAlign: 'center', height: 'fit-content'}}
+                                                    onClickCapture={(_) => gameContext.promptIdentity()}>
+                                                    {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
+                                                </div>
+                                        </div>
+                                        )
+                                    }
+
                                     const shouldRender = gameContext.isStarted && gridContext.grid && sortedEntries
                                     return shouldRender ? (
                                         <div style={{backgroundColor: '#FFF', width: '100vw', height: '100vh', display: 'grid', gridTemplateRows: 'auto 1fr'}}>

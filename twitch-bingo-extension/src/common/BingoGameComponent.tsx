@@ -27,6 +27,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [isStarted, setStarted] = React.useState(false)
     const [grid, setGrid] = React.useState<BingoGrid>(null)
     const [hasSharedIdentity, setSharedIdentity] = React.useState(false)
+    const [isAuthorized, setAuthorized] = React.useState(false)
 
     const loadConfig = (_broadcasterConfig: any) => {
         var extensionConfig = Twitch.configuration;
@@ -102,6 +103,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         setCanModerate(TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator')
         setCanVote(TwitchExtHelper.viewer.role != 'external')
         setSharedIdentity(TwitchExtHelper.viewer.isLinked)
+        setAuthorized(true)
         if (props.onSharedIdentity)
         {
             props.onSharedIdentity(TwitchExtHelper.viewer.isLinked)
@@ -250,6 +252,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     return (
         <ActiveGameContext.Provider value={
                 {
+                    isAuthorized: isAuthorized,
                     isStarted: isStarted,
                     hasSharedIdentity: hasSharedIdentity,
                     promptIdentity: promptIdentity,
