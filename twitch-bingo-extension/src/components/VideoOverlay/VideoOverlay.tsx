@@ -81,7 +81,8 @@ export default function VideoOverlay()
                                                             gameId={gameContext.game?.gameId}
                                                             confirmationTimeout={ParseTimespan(gameContext.game?.confirmationThreshold ?? "00:00:00")}
                                                             onReceiveTentative={onTentativeNotification}
-                                                            onNotificationsEmpty={onNotificationsEmpty} />
+                                                            onNotificationsEmpty={onNotificationsEmpty}
+                                                            onTentativeExpire={moderationContext.onTentativeExpire} />
                                                     )
                                                 }
                                             }

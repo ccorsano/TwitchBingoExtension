@@ -120,11 +120,11 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         })
     }
 
-    const onTentativeExpire = (entry: BingoEntry) =>
+    const onTentativeExpire = React.useCallback((notification: BingoTentativeNotification) =>
     {
-        console.log("Entry expired: " + entry.text + " Active tentatives: " + tentatives.length)
-        setTentatives(tentatives.filter(t => t.key != entry.key));
-    }
+        console.log("Entry expired: " + notification.key + " Active tentatives: " + tentatives.length)
+        setTentatives(tentatives.filter(t => t.key != notification.key));
+    }, [tentatives])
 
     const onTestTentative = (game: BingoGame, entry: BingoEntry) => {
         var notification: BingoTentativeNotification = {

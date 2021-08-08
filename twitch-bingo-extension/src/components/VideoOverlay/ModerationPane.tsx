@@ -55,7 +55,7 @@ export default function ModerationPane(props: ModerationPaneProps)
         })
     }
 
-    const onTentativeExpire = (entry: BingoEntry) =>
+    const onTentativeExpire = React.useCallback((entry: BingoEntry) =>
     {
         console.log("Entry expired: " + entry.text + " Active tentatives: " + props.tentatives.length)
         const tentative = props.tentatives.find(t => t.key === entry.key)
@@ -63,7 +63,7 @@ export default function ModerationPane(props: ModerationPaneProps)
         {
             props.onTentativeExpire(tentative)
         }
-    }
+    }, [props.tentatives])
 
     const onTestTentative = (entry: BingoEntry) => {
         var notification: BingoTentativeNotification = {
