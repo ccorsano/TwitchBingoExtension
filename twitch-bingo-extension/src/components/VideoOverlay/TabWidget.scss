@@ -1,3 +1,5 @@
+@import '../../common/BingoTheme.scss';
+
 div.tabWidgetContainer
 {
     width: 4rem;
@@ -30,7 +32,7 @@ div.tabWidget > img
 
 div.tabWidget.pending
 {
-    background: linear-gradient(45deg, rgba(122,196,255,1) 33%, rgba(38,214,255,0.8) 90%);
+    background: $jasmine;
 }
 
 div.tabWidget.hidden

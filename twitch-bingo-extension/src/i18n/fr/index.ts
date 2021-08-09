@@ -33,11 +33,10 @@ const fr: Translation = {
 		LibraryEditor:{
 			Title: "Bibliothèque",
 			TitleSubHeader: "Chargez ou ajoutez toutes vos entrées de bingo ici.",
+			MessageNoItems: "Aucune entrée dans le Bingo, ajoutez-en !",
 			UploadButtonLabel: "Charger une liste d'entrées",
 			UploadButtonTitle: "Remplacer les entrées en uploadant un fichier .txt",
-			CopyEntriesButtonLabel: "Copier les entrées vers le presse-papier",
-			CopyEntriesButtonTitle: "Copier les entrées vers le presse-papier",
-			AddEntryButtonLabel: "Ajouter une nouvelle entrée à la liste",
+			AddEntryButtonLabel: "Ajouter une entrée",
 			AddEntryButtonTitle: "Ajouter une nouvelle entrée à la liste",
 		},
 		StatusCard: {
@@ -54,6 +53,10 @@ const fr: Translation = {
 		EditableBingoEntry: {
 			TextFieldLabel: "Proposition de Bingo",
 			TextFieldPlaceholder: "Proposition",
+			DeleteLabel: "Supprimer la proposition",
+			DeleteLabelCantRemove: "Impossible de supprimer une proposition sélectionnée",
+			AddSelectionLabel: "Ajouter à la sélection",
+			EditLabel: "Editer la proposition",
 		}
 	},
 }

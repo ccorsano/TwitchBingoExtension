@@ -21,7 +21,7 @@ export default function Config() {
     const [activeGame, setActiveGame] = React.useState<BingoGame>(null)
     const [isStarting, setStarting] = React.useState(false)
 
-    const isSelected = (entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key);
+    const isSelected = React.useCallback((entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key), [selectedEntries])
 
     const loadConfig = (broadcasterConfig: TwitchExtensionConfiguration) => {
         if (! broadcasterConfig?.content)
@@ -51,16 +51,16 @@ export default function Config() {
         }
     }, [])
 
-    const onAdd = (): void => {
+    const onAdd = React.useCallback((): void => {
         var newEntry = new BingoEditableEntry();
         newEntry.text = "";
         newEntry.isNew = true;
         newEntry.key = nextKey;
         setNextKey(nextKey + 1);
         setEntries(entries.concat([newEntry]));
-    }
+    }, [nextKey, entries])
 
-    const onSave = (): void => {
+    const onSave = React.useCallback((): void => {
         const serializedConfig = JSON.stringify({
             nextKey: nextKey,
             entries: entries,
@@ -82,24 +82,25 @@ export default function Config() {
                 confirmationThreshold: confirmationThresholdSeconds,
             }
         });
-    }
+    }, [nextKey, entries, selectedEntries, rows, columns, confirmationThresholdSeconds, activeGame])
 
-    const onAddToSelection = (entry: BingoEditableEntry): void => {
+    const onAddToSelection = React.useCallback((entry: BingoEditableEntry): void => {
         if (! isSelected(entry))
         {
             setSelectedEntries(selectedEntries.concat(entry.key))
         }
-    }
+    }, [selectedEntries])
 
-    const onRemoveFromSelection = (entry: BingoEditableEntry): void => {
+    const onRemoveFromSelection = React.useCallback((entry: BingoEditableEntry): void => {
+        console.log(`Removing entry ${entry.key} from selection`)
         if (entry && isSelected(entry))
         {
-            var index = selectedEntries.indexOf(entry.key);
-            setSelectedEntries(selectedEntries.splice(index, 1))
+            var newEntries = selectedEntries.filter(key => key !== entry.key);
+            setSelectedEntries(newEntries)
         }
-    }
+    }, [selectedEntries])
 
-    const onStart = (): void => {
+    const onStart = React.useCallback((): void => {
         setStarting(true);
         BingoEBS.createGame({
             rows: rows,
@@ -140,9 +141,9 @@ export default function Config() {
         }).finally(() => {
             setStarting(false);
         });
-    }
+    }, [selectedEntries, entries, rows, columns, confirmationThresholdSeconds])
 
-    const onStop = (): void => {
+    const onStop = React.useCallback((): void => {
         if (! activeGame)
         {
             return;
@@ -154,9 +155,9 @@ export default function Config() {
             })
             setActiveGame(null)
         })
-    }
+    }, [activeGame])
 
-    const onChangeEntry = (key: number, entry: BingoEditableEntry): void => {
+    const onChangeEntry = React.useCallback((key: number, entry: BingoEditableEntry): void => {
         var index = entries.findIndex((entry) => { return entry.key == key; });
         if (index == -1){
             console.error("Could not find changed key " + key);
@@ -164,9 +165,9 @@ export default function Config() {
         }
         entries[index] = entry;
         setEntries(entries)
-    }
+    }, [entries])
 
-    const onDeleteEntry = (key: number): void => {
+    const onDeleteEntry = React.useCallback((key: number): void => {
         var index = entries.findIndex((entry) => { return entry.key == key; });
         if (index == -1){
             console.error("Could not find key " + key + " to delete");
@@ -175,7 +176,7 @@ export default function Config() {
         entries.splice(index, 1);
         setEntries(entries)
         setSelectedEntries(selectedEntries.filter(s => s != key))
-    }
+    }, [entries, selectedEntries])
 
     const onEntriesUpload = (evt: React.ChangeEvent<HTMLInputElement>): void => {
         var file = evt.target.files[0];

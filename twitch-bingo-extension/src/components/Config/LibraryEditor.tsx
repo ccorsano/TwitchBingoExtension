@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
@@ -6,8 +7,7 @@ import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
 import List from '@material-ui/core/List'
 import Typography from '@material-ui/core/Typography'
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
-import AssignmentReturned from '@material-ui/icons/AssignmentReturned'
+import { LibraryAdd } from '@material-ui/icons'
 import CloudUploadOutlined from '@material-ui/icons/CloudUploadOutlined'
 import React from 'react'
 import { useRef } from 'react'
@@ -31,27 +31,20 @@ export default function LibraryEditor(props: LibraryEditorProps)
     const { LL } = React.useContext(I18nContext)
     
     const textInputRef = useRef<HTMLInputElement>(null)
-    const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
     const isSelected = (entry: BingoEntry): boolean => props.selectedEntries.some(b => b == entry.key);
-    
-    const onEntriesCopy = React.useCallback((_evt: React.MouseEvent<HTMLButtonElement>): void => {
-        if (! navigator.clipboard){
-            console.error("Copy to clipboard not supported on this browser");
-            return;
-        }
-        const content = props.entries.map(e => e.text).join('\n');
-        navigator.clipboard.writeText(content).then(() => {
-            console.log("Text copied to clipboard")
-        }, (error: string) => {
-            console.error("Could not copy text to clipboard", error);
-        });
-    }, [props.entries])
     
     var sourceListElement: JSX.Element = null;
     if (props.entries.length == 0)
     {
-        sourceListElement = <Typography><em>No items in Bingo, go add some !</em></Typography>
+        sourceListElement = (
+            <React.Fragment>
+                <Typography><em>{LL.Config.LibraryEditor.MessageNoItems()}</em></Typography>
+                <Button variant="outlined" color="primary" onClick={props.onAdd} size="small" startIcon={<LibraryAdd />}>
+                    {LL.Config.LibraryEditor.AddEntryButtonLabel()}
+                </Button>
+            </React.Fragment>
+        )
     }
     else
     {
@@ -85,15 +78,9 @@ export default function LibraryEditor(props: LibraryEditorProps)
                         <CloudUploadOutlined />
                     </Icon> 
                 </IconButton>
-                <textarea ref={textAreaRef} style={{display: 'none'}}/>
-                <IconButton onClick={onEntriesCopy} aria-label={LL.Config.LibraryEditor.CopyEntriesButtonLabel()} title={LL.Config.LibraryEditor.CopyEntriesButtonTitle()}>
-                    <Icon>
-                        <AssignmentReturned />
-                    </Icon>
-                </IconButton>
                 <IconButton onClick={props.onAdd} aria-label={LL.Config.LibraryEditor.AddEntryButtonLabel()} title={LL.Config.LibraryEditor.AddEntryButtonTitle()}>
                     <Icon>
-                        <AddCircleOutline />
+                        <LibraryAdd />
                     </Icon>
                 </IconButton>
             </CardActions>

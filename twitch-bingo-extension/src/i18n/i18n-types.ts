@@ -109,6 +109,10 @@ export type Translation = {
 			 */
 			'TitleSubHeader': string
 			/**
+			 * No items in Bingo, go add some !
+			 */
+			'MessageNoItems': string
+			/**
 			 * Upload entry list
 			 */
 			'UploadButtonLabel': string
@@ -117,15 +121,7 @@ export type Translation = {
 			 */
 			'UploadButtonTitle': string
 			/**
-			 * Copy current entries to your pasteboard
-			 */
-			'CopyEntriesButtonLabel': string
-			/**
-			 * Copy current entries to your pasteboard
-			 */
-			'CopyEntriesButtonTitle': string
-			/**
-			 * Add a new entry to the list
+			 * Add a new entry
 			 */
 			'AddEntryButtonLabel': string
 			/**
@@ -174,6 +170,22 @@ export type Translation = {
 			 * Proposition
 			 */
 			'TextFieldPlaceholder': string
+			/**
+			 * Delete this entry
+			 */
+			'DeleteLabel': string
+			/**
+			 * Cannot delete a selected entry
+			 */
+			'DeleteLabelCantRemove': string
+			/**
+			 * Add to selection
+			 */
+			'AddSelectionLabel': string
+			/**
+			 * Edit this entry
+			 */
+			'EditLabel': string
 		}
 	}
 }
@@ -278,6 +290,10 @@ export type TranslationFunctions = {
 			 */
 			'TitleSubHeader': () => LocalizedString
 			/**
+			 * No items in Bingo, go add some !
+			 */
+			'MessageNoItems': () => LocalizedString
+			/**
 			 * Upload entry list
 			 */
 			'UploadButtonLabel': () => LocalizedString
@@ -286,15 +302,7 @@ export type TranslationFunctions = {
 			 */
 			'UploadButtonTitle': () => LocalizedString
 			/**
-			 * Copy current entries to your pasteboard
-			 */
-			'CopyEntriesButtonLabel': () => LocalizedString
-			/**
-			 * Copy current entries to your pasteboard
-			 */
-			'CopyEntriesButtonTitle': () => LocalizedString
-			/**
-			 * Add a new entry to the list
+			 * Add a new entry
 			 */
 			'AddEntryButtonLabel': () => LocalizedString
 			/**
@@ -343,6 +351,22 @@ export type TranslationFunctions = {
 			 * Proposition
 			 */
 			'TextFieldPlaceholder': () => LocalizedString
+			/**
+			 * Delete this entry
+			 */
+			'DeleteLabel': () => LocalizedString
+			/**
+			 * Cannot delete a selected entry
+			 */
+			'DeleteLabelCantRemove': () => LocalizedString
+			/**
+			 * Add to selection
+			 */
+			'AddSelectionLabel': () => LocalizedString
+			/**
+			 * Edit this entry
+			 */
+			'EditLabel': () => LocalizedString
 		}
 	}
 }

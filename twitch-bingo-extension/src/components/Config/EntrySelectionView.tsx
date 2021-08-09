@@ -38,7 +38,7 @@ export default function EntrySelectionView(props:EntrySelectionViewProps)
                         <ListItemText
                             primary={entry.text}
                         />
-                        <IconButton onClick={() => props.onRemoveFromSelection(entry)}>
+                        <IconButton onClickCapture={() => props.onRemoveFromSelection(entry)} size="small">
                             <Icon>
                                 <RemoveCircleOutline />
                             </Icon>

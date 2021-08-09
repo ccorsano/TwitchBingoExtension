@@ -1,14 +1,15 @@
 import * as React from 'react';
 import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
+import PlaylistAdd from '@material-ui/icons/PlaylistAdd';
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import TextField from '@material-ui/core/TextField'
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline'
 import Check from '@material-ui/icons/Check'
 import Delete from '@material-ui/icons/Delete'
 import { BingoEditableEntry } from '../../model/BingoEntry';
 import { I18nContext } from '../../i18n/i18n-react';
+import { Edit } from '@material-ui/icons';
 
 type EditableBingoEntryProps = {
     item: BingoEditableEntry,
@@ -39,6 +40,10 @@ export default function EditableBingoEntry(props: EditableBingoEntryProps) {
     }
 
     const endEdit = (): void => {
+        if (editingValue === "")
+        {
+            return
+        }
         setEditing(false)
         setValue(editingValue)
 
@@ -60,6 +65,7 @@ export default function EditableBingoEntry(props: EditableBingoEntryProps) {
         if (e.key === "Enter")
         {
             endEdit();
+            e.stopPropagation();
         }
     }
 
@@ -71,15 +77,23 @@ export default function EditableBingoEntry(props: EditableBingoEntryProps) {
         edit();
     }
 
+    const deleteButton = (
+        <IconButton
+            onClick={deleteCallback}
+            disabled={props.selected}
+            title={props.selected ? LL.Config.EditableBingoEntry.DeleteLabelCantRemove() : LL.Config.EditableBingoEntry.DeleteLabel()}
+            size="small">
+            <Icon>
+                <Delete />
+            </Icon>
+        </IconButton>
+    )
+
     if (isEditing)
     {
         return (
             <ListItem>
-                <IconButton onClick={deleteCallback}>
-                    <Icon>
-                        <Delete />
-                    </Icon>
-                </IconButton>
+                {deleteButton}
                 <TextField
                     fullWidth={true}
                     ref={editField}
@@ -89,7 +103,7 @@ export default function EditableBingoEntry(props: EditableBingoEntryProps) {
                     onChange={onChange}
                     onKeyUp={onKeyDown}
                 />
-                <IconButton onClick={endEdit}>
+                <IconButton onClick={endEdit} size="small">
                     <Icon>
                         <Check />
                     </Icon>
@@ -101,6 +115,7 @@ export default function EditableBingoEntry(props: EditableBingoEntryProps) {
     {
         return (
             <ListItem button>
+                {deleteButton}
                 <ListItemText
                     primary={value}
                     onClick={() => props.onSelect(props.item)}
@@ -108,16 +123,22 @@ export default function EditableBingoEntry(props: EditableBingoEntryProps) {
                 />
                 {
                     props.selected ? null : 
-                        <IconButton onClick={() => {
+                        <IconButton onClick={() =>
+                            {
                                 props.onSelect(props.item);
                                 return false;
                             }
-                        }>
+                        } size="small" title={LL.Config.EditableBingoEntry.AddSelectionLabel()} >
                             <Icon>
-                                <AddCircleOutline />
+                                <PlaylistAdd />
                             </Icon>
                         </IconButton>
                 }
+                <IconButton onClick={onClick} size="small" title={LL.Config.EditableBingoEntry.EditLabel()} >
+                    <Icon>
+                        <Edit />
+                    </Icon>
+                </IconButton>
             </ListItem>
         )
     }
