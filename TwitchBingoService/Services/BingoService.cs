@@ -496,17 +496,21 @@ namespace TwitchBingoService.Services
         private async Task SendChatMessage(string message, string channelId)
         {
             await _ebsService.TrySendChatMessage(channelId, message, _options.Version);
-            try
+
+            if (_options.EnableChatBot)
             {
-                var chatClient = await ConnectBot(channelId, CancellationToken.None);
-                await chatClient.SendMessageAsync(new OutgoingMessage
+                try
                 {
-                    Message = message.ToString(),
-                }, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending chat message to channel {channelId} using bot account", channelId);
+                    var chatClient = await ConnectBot(channelId, CancellationToken.None);
+                    await chatClient.SendMessageAsync(new OutgoingMessage
+                    {
+                        Message = message.ToString(),
+                    }, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error sending chat message to channel {channelId} using bot account", channelId);
+                }
             }
         }
 
