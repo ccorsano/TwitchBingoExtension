@@ -99,16 +99,20 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }
     }, [activeGame])
 
-    const onAuthorized = (_context) => {
+    const onAuthorized = React.useCallback((_context) => {
         setCanModerate(TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator')
         setCanVote(TwitchExtHelper.viewer.role != 'external')
         setSharedIdentity(TwitchExtHelper.viewer.isLinked)
         setAuthorized(true)
+        if (activeGame)
+        {
+            refreshGame(activeGame)
+        }
         if (props.onSharedIdentity)
         {
             props.onSharedIdentity(TwitchExtHelper.viewer.isLinked)
         }
-    }
+    }, [activeGame])
 
     React.useEffect(() => {
         Twitch.onAuthorized.push(onAuthorized)
@@ -121,6 +125,25 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }
     }, [])
 
+    React.useEffect(() => {
+        if (canModerate && activeGame)
+        {
+            refreshGame(activeGame)
+        }
+    }, [canModerate])
+
+    const refreshGame = React.useCallback((game: BingoGame) => {
+        if (canModerate)
+        {
+            BingoEBS.getGame(game.gameId).then(refreshedGame => {
+                console.log("Refreshed game for moderation")
+                setActiveGame(refreshedGame)
+            }).catch(error => {
+                console.error("Error loading game from EBS: " + error);
+            });
+        }
+    }, [canModerate])
+
     const refreshGrid = (game: BingoGame, entries: BingoEntry[]) => {
         if (! game)
         {
@@ -130,18 +153,11 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         BingoEBS.getGrid(game.gameId).then(grid => {
             setEntries(entries)
             setGrid(grid)
-            setActiveGame(game)
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
         });
-        if (canModerate)
-        {
-            BingoEBS.getGame(game.gameId).then(refreshedGame => {
-                setActiveGame(refreshedGame)
-            }).catch(error => {
-                console.error("Error loading game from EBS: " + error);
-            });
-        }
+        setActiveGame(game)
+        refreshGame(game)
     }
 
     React.useEffect(() => {
@@ -184,7 +200,6 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         React.useEffect(() => {
             if (grid?.cells)
             {
-                console.log("onRefreshGrid");
                 props.onRefreshGrid(grid, grid.cells.map(c => getCell(c.row, c.col)[0]))
             }
         }, [grid, pendingResults])
