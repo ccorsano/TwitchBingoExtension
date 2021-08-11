@@ -2,36 +2,44 @@ Review channel: https://www.twitch.tv/blipbloopbot
 
 # Description
 
-First release !
-Please consider this as a minimum viable version of this extension, and check regularly for updates.
-Note: This extension is dependent on an extension service, which for this initial release is not scaled for a large viewing audience.
+First update !
+Many things to come, including a major visual revamp, check regularly for updates.
+Note: This extension is dependent on an extension service, which as of this update is not scaled for a large viewing audience.
 
-Customizable & interactive bingo games for streamers communities:
+Customizable & interactive bingo games for streamers communities
 - Have yourself or your moderation team come up with stream events viewers should pay attention to.
 - Let viewers spot and report the events as they appear on your stream
 - Moderators as well as yourself can confirm or reject reported events
 - When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened
 - After the event is confirmed, viewers have a the same configurable grace period to report it
 
+New in 0.0.2
+- Redesign: less ugly, small touches of animations
+- Mobile support
+- Less intrusive: auto-hiding of widget, reduced screen occupation when full-screen
+- More polished
+
 The extension will celebrate the most attentive viewers by posting messages on the chat.
 
 # Feature summary
 
-- Broadcaster can configure a number of bingo entries, meant to represent funny occurrences that happen regularly on his Stream
+- Broadcaster can configure a number of bingo entries, meant to represent funny occurrences that happen regularly on his stream
 - These entries will be presented (randomized) on a configurable Bingo grid, to each participating Viewer
-- Viewers must report the funny occurrences as they occur
-- Moderators and the broadcaster must then confirm the occurrence
-- Viewers must pay extra attention to the stream to complete their grid
+- Viewers will report the funny occurrences as they occur
+- Moderators and the broadcaster will then confirm the occurrence
+- Viewers should pay extra attention to the stream to complete their grid !
 - An EBS is used to keep track of the game and send notifications to moderators and viewers
 - A Live Configuration view is provided for convenience, and mirror the features of the static Configuration page.
+- Mobile is supported, with an adapted UI (developer account info submitted for iOS support)
 
 # Format of the archive
 
 This extension is built with React + Typescript and distributed with included Webpack sourcemaps.
 Source code for this release is also available on
-  https://github.com/ccorsano/TwitchBingoExtension/tree/415529eff977f7ff8ea2fdb1fdfb3b6fd4134823/twitch-bingo-extension, or upon request by email.
+  https://github.com/ccorsano/TwitchBingoExtension/tree/6bf976781a662399dd4357160f9b7399f257ebb0/twitch-bingo-extension, or upon request by email.
 
 # Changelog v0.0.2
+
 - Iterated on design
   - Auto-hide extension widget
   - Reworked color schemes and layout
@@ -40,6 +48,13 @@ Source code for this release is also available on
   - Added animations to smooth transitions
 - Mobile view
   - Added mobile support, composed of a mini-grid and entry list
+- Polish
+  - Added identity sharing prompt, as grid would reshuffle on reset if using opaque ids
+  - Fixed a good number of interaction issues
+- Localization
+  - Prepared localization system
+  - Added French localization
+- No longer requires configuration on a specific version tag
 
 # Testing walkthrough
 
@@ -47,8 +62,10 @@ Source code for this release is also available on
   1.1 - Populate entries, either:
     1.1.a - click the import button. Select a text file, one line per entry.
     1.1.b - click the + button, type-in the entry text.
+    1.1.c - you can also remove or edit entries using the corresponding icons
   1.2 - Select entries for the next game
     - Click the + button next to the entries you want to select for the next game.
+    - Remove entries you want to remove from the selected list, using the "-" button
   1.3 - Configure the Bingo grid
     - Configure the number of rows & columns you want for the game
     - Number of cells in the grid need to be lesser or equal to the number selected entries
@@ -63,6 +80,7 @@ Source code for this release is also available on
   
 2- Play as a viewer
   - On the stream, unfold the grid by clicking the widget on the top-left corner
+    - If prompted, allow identity sharing first to see the grid
   - If only a "Waiting to start the game" message appear, check that the game is active on the configuration panel.
   - Click one of the cell and confirm your observation with the tick button
   - Observe that a countdown is now ticking, waiting for a moderator confirmation
