@@ -6,6 +6,7 @@ import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
 import { jasminePalette, getRGB } from "../../common/BingoThemes";
+const BingoHeaderTitle = require('../../../assets/BingoHeaderTitle.svg');
 
 export type OverlayBingoGridProps = {
     isCollapsed: boolean
@@ -30,6 +31,44 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
     }
 
     return gameContext.isStarted && context.grid ? (
+    <div style={{
+        transition: 'opacity 0.5s',
+        opacity: props.isCollapsed ? 0.0 : 1.0,
+        width: '100%',
+        borderWidth: '0.3rem',
+        borderRadius: '2rem',
+        borderColor: '#FFF',
+        borderStyle: 'solid',
+        boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
+        paddingBottom: '1.2rem',
+    }}>
+        <div style={{
+            margin: '0.5rem',
+            borderWidth: '0.0645rem',
+            borderTopLeftRadius: '1.4rem',
+            borderTopRightRadius: '1.4rem',
+            borderColor: '#FFF',
+            borderStyle: 'solid',
+            padding: '1.2rem',
+            boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
+        }}>
+            <img src={BingoHeaderTitle} alt="Bingo Logo" style={{maxHeight: '4rem'}} />
+        </div>
+        <div style={{
+            borderTopWidth: '0.3rem',
+            borderColor: '#FFF',
+            borderTopStyle: 'solid',
+            boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
+            padding: '0px',
+            top: '0',
+            position: 'relative',
+            zIndex: -1, // Set it to be positioned behind the outer borders
+            width: '100.1%', // Extend out on the right to not see a black border
+        }}></div>
+        <div style={{
+            padding: '1.2rem',
+            paddingBottom: '0rem',
+        }}>
             <div 
                 className="bingoGrid"
                 style={{
@@ -80,22 +119,24 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
                     })
                 }
             </div>
-        )
-        : (<div style={
-                {
-                    backgroundColor: getRGB(jasminePalette.base),
-                    width: '100%',
-                    textAlign: 'center',
-                    paddingTop: '1vw',
-                    paddingBottom: '1vw',
-                    borderRadius: '0.25vw',
-                    opacity: props.isCollapsed ? '0%' : '100%',
-                    transition: 'opacity 0.5s'
-                }}>
-                <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
-                <div style={{marginTop: '2rem'}}>
-                    {LL.OverlayBingoGrid.WaitingMessage()}
-                </div>
+        </div>
+    </div>
+    )
+    : (<div style={
+            {
+                backgroundColor: getRGB(jasminePalette.base),
+                width: '100%',
+                textAlign: 'center',
+                paddingTop: '1vw',
+                paddingBottom: '1vw',
+                borderRadius: '0.25vw',
+                opacity: props.isCollapsed ? '0%' : '100%',
+                transition: 'opacity 0.5s'
+            }}>
+            <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
+            <div style={{marginTop: '2rem'}}>
+                {LL.OverlayBingoGrid.WaitingMessage()}
             </div>
-        )
+        </div>
+    )
 }
