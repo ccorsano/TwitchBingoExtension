@@ -34,7 +34,6 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
     <div style={{
         transition: 'opacity 0.5s',
         opacity: props.isCollapsed ? 0.0 : 1.0,
-        width: '100%',
         borderWidth: '0.3rem',
         borderRadius: '2rem',
         borderColor: '#FFF',
@@ -52,7 +51,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
             padding: '1.2rem',
             boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
         }}>
-            <img src={BingoHeaderTitle} alt="Bingo Logo" style={{maxHeight: '4rem'}} />
+            <img src={BingoHeaderTitle} alt="Bingo Logo" style={{maxHeight: '2rem'}} />
         </div>
         <div style={{
             borderTopWidth: '0.3rem',
