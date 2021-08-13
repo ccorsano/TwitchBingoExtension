@@ -5,7 +5,7 @@ name: Package Twitch Extension
 
 on:
   push:
-    branches: [ main, "features/*" ]
+    branches: [ main, "feature/*" ]
   pull_request:
     branches: [ main ]
 
