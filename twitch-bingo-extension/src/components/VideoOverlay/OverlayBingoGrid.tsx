@@ -6,7 +6,7 @@ import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
 import { jasminePalette, getRGB } from "../../common/BingoThemes";
-const BingoHeaderTitle = require('../../../assets/BingoHeaderTitle.svg');
+const BingoHeaderTitle = require('../../../assets/BingoHeader_Negative.svg');
 
 export type OverlayBingoGridProps = {
     isCollapsed: boolean
@@ -46,12 +46,18 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
             borderWidth: '0.0645rem',
             borderTopLeftRadius: '1.4rem',
             borderTopRightRadius: '1.4rem',
-            borderColor: '#FFF',
-            borderStyle: 'solid',
+            // borderColor: '#FFF',
+            // borderStyle: 'solid',
             padding: '1.2rem',
-            boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
+            // boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
+            textAlign: "center",
+            backgroundImage: `url(${BingoHeaderTitle})`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            minHeight: "4rem"
         }}>
-            <img src={BingoHeaderTitle} alt="Bingo Logo" style={{maxHeight: '2rem'}} />
+            {/* <img src={BingoHeaderTitle} alt="Bingo Logo" style={{height: '100%'}} /> */}
         </div>
         <div style={{
             borderTopWidth: '0.3rem',
