@@ -50,6 +50,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
             borderStyle: 'solid',
             padding: '1.2rem',
             boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
+            textAlign: "center",
         }}>
             <img src={BingoHeaderTitle} alt="Bingo Logo" style={{maxHeight: '2rem'}} />
         </div>
