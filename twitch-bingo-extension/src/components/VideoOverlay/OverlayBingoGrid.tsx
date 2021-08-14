@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from 'clsx';
 import { ActiveGameContext, ActiveGridContext } from "../../common/BingoGameComponent";
 import BingoViewerEntry from "../../common/BingoViewerEntry";
 import LinearIndeterminateLoader from "../../common/LinearIndeterminateLoader";
@@ -6,7 +7,7 @@ import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
 import { jasminePalette, getRGB } from "../../common/BingoThemes";
-const BingoHeaderTitle = require('../../../assets/BingoHeaderTitle.svg');
+require("./OverlayBingoGrid.scss")
 
 export type OverlayBingoGridProps = {
     isCollapsed: boolean
@@ -31,41 +32,12 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
     }
 
     return gameContext.isStarted && context.grid ? (
-    <div style={{
-        transition: 'opacity 0.5s',
-        opacity: props.isCollapsed ? 0.0 : 1.0,
-        borderWidth: '0.3rem',
-        borderRadius: '2rem',
-        borderColor: '#FFF',
-        borderStyle: 'solid',
-        boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
-        paddingBottom: '1.2rem',
-    }}>
-        <div style={{
-            margin: '0.5rem',
-            borderWidth: '0.0645rem',
-            borderTopLeftRadius: '1.4rem',
-            borderTopRightRadius: '1.4rem',
-            borderColor: '#FFF',
-            borderStyle: 'solid',
-            padding: '1.2rem',
-            boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
-            textAlign: "center",
-        }}>
-            <img src={BingoHeaderTitle} alt="Bingo Logo" style={{maxHeight: '2rem'}} />
+    <div className={clsx("gridOuterBox")} style={{opacity: props.isCollapsed ? 0.0 : 1.0}}>
+        <div className={clsx("gridHeaderBox")}>
+            {/* <img src={BingoHeaderTitle} alt="Bingo Logo" style={{height: '100%'}} /> */}
         </div>
-        <div style={{
-            borderTopWidth: '0.3rem',
-            borderColor: '#FFF',
-            borderTopStyle: 'solid',
-            boxShadow: '0px 0px 0.2rem 0px rgba(0,0,0,0.5)',
-            padding: '0px',
-            top: '0',
-            position: 'relative',
-            zIndex: -1, // Set it to be positioned behind the outer borders
-            width: '100.1%', // Extend out on the right to not see a black border
-        }}></div>
-        <div style={{
+        <div className={clsx("gridHeaderSeparator")}></div>
+        <div className={clsx("gridBodyBox")} style={{
             padding: '1.2rem',
             paddingBottom: '0rem',
         }}>

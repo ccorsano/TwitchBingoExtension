@@ -74,16 +74,7 @@ module.exports = (_env, argv) => {
                 },
                 {
                     test: /\.(png|jpe?g|svg|webp)$/i,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {
-                                emitFile:true,
-                                esModule: false,
-                                outputPath: 'dist'
-                            }
-                        }
-                    ],
+                    type: "asset/resource",
                     exclude: /node_module/,
                 },
                 {
@@ -92,7 +83,6 @@ module.exports = (_env, argv) => {
                         {
                             loader: MiniCssExtractPlugin.loader,
                             options:{
-                                publicPath: '/dist',
                             },
                         },
                         'css-loader'
@@ -104,10 +94,9 @@ module.exports = (_env, argv) => {
                         {
                             loader: MiniCssExtractPlugin.loader,
                             options:{
-                                publicPath: '/dist',
+                                publicPath: ""
                             },
                         },
-                        // "style-loader",
                         "css-loader",
                         {
                             loader: "sass-loader",
