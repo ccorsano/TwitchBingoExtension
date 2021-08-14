@@ -74,12 +74,16 @@ module.exports = (_env, argv) => {
                 },
                 {
                     test: /\.(png|jpe?g|svg|webp)$/i,
-                    use: {
-                        loader: 'file-loader',
-                        options: {
-                            esModule: false
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                emitFile:true,
+                                esModule: false,
+                                outputPath: 'dist'
+                            }
                         }
-                    },
+                    ],
                     exclude: /node_module/,
                 },
                 {
