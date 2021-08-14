@@ -38,10 +38,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
             <img src={BingoHeaderTitle} alt="Bingo Logo" style={{height: '100%'}} />
         </div>
         <div className={clsx("gridHeaderSeparator")}></div>
-        <div className={clsx("gridBodyBox")} style={{
-            padding: '1.2rem',
-            paddingBottom: '0rem',
-        }}>
+        <div className={clsx("gridBodyBox")}>
             <div 
                 className="bingoGrid"
                 style={{
