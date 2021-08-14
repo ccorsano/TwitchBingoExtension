@@ -7,6 +7,7 @@ import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
 import { jasminePalette, getRGB } from "../../common/BingoThemes";
+const BingoHeaderTitle = require('../../../assets/BingoHeaderTitle.svg');
 require("./OverlayBingoGrid.scss")
 
 export type OverlayBingoGridProps = {
@@ -34,7 +35,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
     return gameContext.isStarted && context.grid ? (
     <div className={clsx("gridOuterBox")} style={{opacity: props.isCollapsed ? 0.0 : 1.0}}>
         <div className={clsx("gridHeaderBox")}>
-            {/* <img src={BingoHeaderTitle} alt="Bingo Logo" style={{height: '100%'}} /> */}
+            <img src={BingoHeaderTitle} alt="Bingo Logo" style={{height: '100%'}} />
         </div>
         <div className={clsx("gridHeaderSeparator")}></div>
         <div className={clsx("gridBodyBox")} style={{
