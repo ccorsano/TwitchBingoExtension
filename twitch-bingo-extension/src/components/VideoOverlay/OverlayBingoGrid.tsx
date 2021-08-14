@@ -54,7 +54,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
                             if (! entry)
                             {
                                 var key = 1000 + col + (row * context.grid.cols);
-                                return <div key={key} style={{gridColumn: col + 1, gridRow: row + 1}}>
+                                return <div key={key} className={clsx("bingoCellArea")} style={{gridColumn: col + 1, gridRow: row + 1}}>
                                     <BingoViewerEntry
                                         config={{key: key, text: ""}}
                                         state={BingoEntryState.Idle}
@@ -70,7 +70,7 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
                             }
                             else
                             {
-                                return <div key={cell.key} style={{gridColumn: col + 1, gridRow: row + 1}}>
+                                return <div key={cell.key} className={clsx("bingoCellArea")} style={{gridColumn: col + 1, gridRow: row + 1}}>
                                     <BingoViewerEntry
                                         config={entry}
                                         state={cell.state}

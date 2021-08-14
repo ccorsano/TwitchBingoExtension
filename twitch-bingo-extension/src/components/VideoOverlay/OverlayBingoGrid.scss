@@ -41,3 +41,11 @@
     padding: 1.2rem;
     padding-bottom: 0;
 }
+
+.bingoCellArea {
+    position: relative;
+    z-index: 0;
+    &:hover {
+        z-index: 10;
+    }
+}

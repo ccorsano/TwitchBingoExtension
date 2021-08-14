@@ -97,27 +97,29 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     }
 
     return (
-        <div className={clsx(
-                            "bingoCell",
-                            props.isShown ? "visibleCell" : "hiddenCell",
-                            "paper",
-                            stateClass,
-                            props.isColCompleted ? "colConfirmed" : '',
-                            props.isRowCompleted ? "rowConfirmed" : '')}
-             onClickCapture={handlePrompt}>
-            <div className={clsx("bingoEntry")}>
-                <div style={{fontSize: props.fontSize}}>
-                    {props.config.text}
+        <div className={clsx("entryGridCell")}>
+            <div className={clsx(
+                                "bingoCell",
+                                props.isShown ? "visibleCell" : "hiddenCell",
+                                "paper",
+                                stateClass,
+                                props.isColCompleted ? "colConfirmed" : '',
+                                props.isRowCompleted ? "rowConfirmed" : '')}
+                onClickCapture={handlePrompt}>
+                <div className={clsx("bingoEntry")}>
+                    <div style={{fontSize: props.fontSize}}>
+                        {props.config.text}
+                    </div>
                 </div>
+                <div
+                    className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
+                    onClickCapture={confirmationPrompt ? handleTentative : null}
+                    style={{fontSize: props.fontSize}} >
+                    {LL.BingoViewerEntry.ConfirmButtonLabel()}
+                </div>
+                { timerComponent }
+                { ribbon }
             </div>
-            <div
-                className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                onClickCapture={confirmationPrompt ? handleTentative : null}
-                style={{fontSize: props.fontSize}} >
-                {LL.BingoViewerEntry.ConfirmButtonLabel()}
-            </div>
-            { timerComponent }
-            { ribbon }
         </div>
     )
 }
