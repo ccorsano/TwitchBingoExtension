@@ -170,6 +170,10 @@ namespace TwitchBingoService
                 else
                 {
                     config
+                        .WithOrigins("https://localhost:8180")
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .AllowAnyMethod();
+                    config
                         .WithOrigins("https://*.ext-twitch.tv")
                         .SetIsOriginAllowedToAllowWildcardSubdomains()
                         .AllowAnyMethod();
