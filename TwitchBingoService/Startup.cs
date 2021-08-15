@@ -72,10 +72,15 @@ namespace TwitchBingoService
                         {
                             var token = validationContext.SecurityToken as JwtSecurityToken;
 
-                            var claims = new Claim[]
+                            var claims = new List<Claim>
                             {
                                 new Claim(ClaimTypes.Role, token.Payload["role"].ToString())
                             };
+                            if (token.Payload.ContainsKey("user_id"))
+                            {
+                                claims.Add(new Claim(ClaimTypes.Role, "viewer"));
+                            }
+
                             var identity = new ClaimsIdentity(claims);
                             validationContext.Principal.AddIdentity(identity);
 

@@ -48,26 +48,32 @@ namespace TwitchBingoService.Controllers
         }
 
         [HttpGet("{gameId}/grid")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "viewer,broadcaster,moderator")]
         public async Task<BingoGrid> GetGrid(Guid gameId)
         {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
+            if (userId == null)
+            {
+                throw new ArgumentOutOfRangeException("Missing user id");
+            }
             var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
             if (User.IsInRole("moderator") || User.IsInRole("broadcaster"))
             {
                 await _gameService.RegisterModerator(gameId, opaqueId);
             }
-            var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
-            if (userId != null)
-            {
-                var userTask = _gameService.RegisterPlayer(userId);
-            }
-            return await _gameService.GetGrid(gameId, userId ?? opaqueId);
+            var userTask = _gameService.RegisterPlayer(userId);
+            return await _gameService.GetGrid(gameId, userId);
         }
 
         [HttpPost("{gameId}/{key}/tentative")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "viewer,broadcaster,moderator")]
         public Task<BingoTentative> PostTentative(Guid gameId, ushort key)
         {
-            var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
-            var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value ?? opaqueId;
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
+            if (userId == null)
+            {
+                throw new ArgumentOutOfRangeException("Missing user id");
+            }
             return _gameService.AddTentative(gameId, key, userId);
         }
 
