@@ -10,7 +10,6 @@
 
 .idle {
     &:hover {
-        cursor: pointer;
         background: $idle-hover;
     }
 };
@@ -18,7 +17,6 @@
 .prompt {
     background: $dutch-white;
     &:hover {
-        cursor: pointer;
         background: $banana-mania;
     }
 };

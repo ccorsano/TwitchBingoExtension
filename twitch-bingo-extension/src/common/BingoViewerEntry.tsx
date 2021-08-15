@@ -56,6 +56,10 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
     }
 
     const handlePrompt = (_event: React.MouseEvent<HTMLElement>) => {
+        if (! props.isShown)
+        {
+            return;
+        }
         if (confirmationPrompt || props.state == BingoEntryState.Idle)
         {
             setConfirmationPrompt(! confirmationPrompt)
@@ -113,7 +117,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 </div>
                 <div
                     className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                    onClickCapture={confirmationPrompt ? handleTentative : null}
+                    onClickCapture={(props.isShown && confirmationPrompt) ? handleTentative : null}
                     style={{fontSize: props.fontSize}} >
                     {LL.BingoViewerEntry.ConfirmButtonLabel()}
                 </div>

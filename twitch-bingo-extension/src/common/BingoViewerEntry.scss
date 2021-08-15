@@ -54,16 +54,29 @@
 
 .hiddenCell {
     opacity: 0%;
+    cursor: unset;
 };
 
 .visibleCell {
     opacity: 100%;
     box-shadow: 0px 0px 0.4vw 0 rgb(0 0 0 / 50%);
-}
+};
+
+.visibleCell.idle {
+    &:hover {
+        cursor: pointer;
+    }
+};
+
+.visibleCell.prompt {
+    &:hover {
+        cursor: pointer;
+    }
+};
 
 .entryGridCell {
     position: relative;
     height: 100%;
     width: 100%;
     z-index: 0;
-}
+};

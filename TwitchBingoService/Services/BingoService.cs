@@ -1,5 +1,6 @@
 ﻿using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
+using Force.Crc32;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Troschuetz.Random.Generators;
 using TwitchBingoService.Configuration;
 using TwitchBingoService.Model;
 using TwitchBingoService.Storage;
@@ -165,10 +167,11 @@ namespace TwitchBingoService.Services
         public async Task<BingoGrid> GetGrid(Guid gameId, string playerId)
         {
             var game = await _storage.ReadGame(gameId);
-            var seed = playerId.GetHashCode() ^ gameId.GetHashCode();
-            var random = new Random(seed);
 
-            _logger.LogInformation("Generating grid for game {gameId}, player {playerId} (seed: {seed})", gameId, playerId, seed);
+            var seed = Crc32Algorithm.Compute(Encoding.UTF8.GetBytes(playerId)) ^ Crc32Algorithm.Compute(gameId.ToByteArray());
+            var random = new ALFGenerator(seed);
+
+            _logger.LogWarning("Generating grid for game {gameId}, player {playerId} (seed: {seed}, random: {random})", gameId, playerId, seed, random);
 
             var user = await _storage.ReadTentatives(gameId, playerId);
 
