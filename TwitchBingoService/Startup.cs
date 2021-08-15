@@ -44,6 +44,7 @@ namespace TwitchBingoService
             services.AddSingleton<BingoService>();
             services.Configure<BingoServiceOptions>(Configuration.GetSection("bingo"));
             services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
+            services.Configure<AzureStorageOptions>(Configuration.GetSection("azure"));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -101,15 +102,24 @@ namespace TwitchBingoService
                         }
                     };
                 });
-            var redisUrl = Configuration.GetValue<string>("REDIS_URL");
-            if (string.IsNullOrEmpty(redisUrl))
+
+            var azureConnectionString = Configuration.GetValue<string>("azure:ConnectionString");
+            if (string.IsNullOrEmpty(azureConnectionString))
             {
-                services.AddSingleton<IGameStorage, InMemoryGameStore>();
+                var redisUrl = Configuration.GetValue<string>("REDIS_URL");
+                if (string.IsNullOrEmpty(redisUrl))
+                {
+                    services.AddSingleton<IGameStorage, InMemoryGameStore>();
+                }
+                else
+                {
+                    services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(services => StackExchange.Redis.ConnectionMultiplexer.Connect(redisUrl));
+                    services.AddSingleton<IGameStorage, RedisGameStore>();
+                }
             }
             else
             {
-                services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(services => StackExchange.Redis.ConnectionMultiplexer.Connect(redisUrl));
-                services.AddSingleton<IGameStorage, RedisGameStore>();
+                services.AddSingleton<IGameStorage, AzureGameStore>();
             }
             services.AddSingleton(s =>
                 Twitch.Authenticate()
