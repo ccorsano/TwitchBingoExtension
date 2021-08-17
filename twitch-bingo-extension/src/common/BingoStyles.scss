@@ -21,24 +21,6 @@
     }
 };
 
-.pending {
-    background: $banana-mania-2;
-};
-
-.confirmed {
-    background: $jasmine;
-};
-
-.missed {
-    background: $lightgray;
-    color: #666;
-};
-
-.rejected {
-    background: $lightgray;
-    color: #666;
-};
-
 .colConfirmed {
     border-left-style: solid;
     border-left-color: black;
