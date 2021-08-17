@@ -4,8 +4,6 @@ import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../i18n/i18n-react";
-import BingoCellRibbon from "./BingoCellRibbon";
-import { getRGB, jasminePalette } from "./BingoThemes";
 require('./BingoStyles.scss')
 require('./BingoViewerEntry.scss')
 
@@ -89,19 +87,10 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         default:
             break;
     }
-
-    var ribbon = null;
-    if (props.state == BingoEntryState.Missed || props.state == BingoEntryState.Rejected)
-    {
-        ribbon = (
-            <div style={{ position: "absolute", top: "0px", right:"0px", maxWidth:"25%", maxHeight: "25%" }}>
-                <BingoCellRibbon fillColor={getRGB(jasminePalette.base)} width="100%" height="100%" text={LL.BingoViewerEntry.MissedRibbonLabel()} />
-            </div>
-        )
-    }
+    const entryVariantType = `type${props.config.key % 10}`;
 
     return (
-        <div className={clsx("entryGridCell")}>
+        <div className={clsx("entryGridCell", entryVariantType)}>
             <div className={clsx(
                                 "bingoCell",
                                 props.isShown ? "visibleCell" : "hiddenCell",
@@ -110,6 +99,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                                 props.isColCompleted ? "colConfirmed" : '',
                                 props.isRowCompleted ? "rowConfirmed" : '')}
                 onClickCapture={handlePrompt}>
+                <div className={clsx("bingoCellOverlay")}></div>
                 <div className={clsx("bingoEntry")}>
                     <div style={{fontSize: props.fontSize}}>
                         {props.config.text}
@@ -122,7 +112,6 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                     {LL.BingoViewerEntry.ConfirmButtonLabel()}
                 </div>
                 { timerComponent }
-                { ribbon }
             </div>
         </div>
     )

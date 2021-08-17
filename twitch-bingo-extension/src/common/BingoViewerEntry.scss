@@ -42,6 +42,9 @@
     height: 100%;
     z-index: 1;
     overflow: hidden;
+};
+
+.bingoCell.idle {
     &:hover {
         position: relative;
         top: -5%;
@@ -79,4 +82,98 @@
     height: 100%;
     width: 100%;
     z-index: 0;
+};
+
+.bingoCellOverlay {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+};
+
+.confirmed > .bingoCellOverlay {
+    background-image: url("/assets/stamp.png");
+    opacity: 80%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    z-index: 50;
+};
+
+.type0 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 66%;
+    background-position-y: 62%;
+}
+
+.type1 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 20%;
+    background-position-y: 70%;
+}
+
+.type2 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 50%;
+    background-position-y: 10%;
+}
+
+.type3 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 30%;
+    background-position-y: 10%;
+}
+
+.type4 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 80%;
+    background-position-y: 60%;
+}
+
+.type5 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 90%;
+    background-position-y: 50%;
+}
+
+.type6 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 25%;
+    background-position-y: 40%;
+}
+
+.type7 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 10%;
+    background-position-y: 76%;
+}
+
+.type8 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 33%;
+    background-position-y: 76%;
+}
+
+.type9 .bingoCellOverlay {
+    background-size: 13vh;
+    background-position-x: 42%;
+    background-position-y: 42%;
+}
+
+.pending {
+    background: unset;
+};
+
+.confirmed {
+    background-color: rgba(255,255,255,1);
+};
+
+.missed {
+    opacity: 0.35;
+    background-color: rgba(255,255,255,1);
+    color: #000;
+};
+
+.rejected {
+    opacity: 0.35;
+    background-color: rgba(255,255,255,1);
+    color: #000;
 };
