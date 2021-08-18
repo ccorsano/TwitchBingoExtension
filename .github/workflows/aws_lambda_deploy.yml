@@ -43,4 +43,4 @@ jobs:
       - name: Deploy Lambda application
         working-directory: TwitchBingoService/
         run: |
-          sam deploy --stack-name ${{ secrets.AWS_STACK_NAME }} --s3-prefix "TwitchBingoService/" --s3-bucket ${{ secrets.AWS_DEPLOYMENT_S3_BUCKET }} --region ${{ secrets.AWS_REGION }}
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name ${{ secrets.AWS_STACK_NAME }} --s3-prefix "TwitchBingoService/" --s3-bucket ${{ secrets.AWS_DEPLOYMENT_S3_BUCKET }} --region ${{ secrets.AWS_REGION }}
