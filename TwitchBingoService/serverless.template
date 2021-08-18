@@ -49,7 +49,7 @@
         }
       },
       "Metadata": {
-        "Dockerfile": "Lambda_Dockerfile",
+        "Dockerfile": "LambdaDockerfile",
         "DockerContext": ".",
         "DockerTag": ""
       }
