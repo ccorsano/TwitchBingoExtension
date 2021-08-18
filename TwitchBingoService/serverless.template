@@ -51,7 +51,7 @@
       "Metadata": {
         "Dockerfile": "LambdaDockerfile",
         "DockerContext": ".",
-        "DockerTag": ""
+        "DockerTag": "v1"
       }
     }
   },
