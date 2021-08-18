@@ -1,0 +1,45 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy to AWS Lambda
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ "feature/aws-lambda-hosting" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        # You may pin to the exact commit or the version.
+        # uses: aws-actions/configure-aws-credentials@0d9a5be0dceea74e09396820e1e522ba4a110d2f
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # AWS Region, e.g. us-east-2
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Setup AWS SAM CLI
+        uses: aws-actions/setup-sam@v1
+      - name: Build SAM template
+        working-directory: TwitchBingoService/
+        run: |
+          sam build --use-containers -t ./serverless.template
+      - name: Deploy Lambda application
+        working-directory: TwitchBingoService/
+        run: |
+          sam deploy --stack-name ${{ secrets.AWS_STACK_NAME }} --s3-prefix "TwitchBingoService/" --s3-bucket ${{ secrets.AWS_DEPLOYMENT_S3_BUCKET }} --region ${{ secrets.AWS_REGION }}
