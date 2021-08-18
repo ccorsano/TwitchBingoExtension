@@ -24,17 +24,19 @@ namespace TwitchBingoService.Storage
             _logger = logger;
             _storageAccount = CloudStorageAccount.Parse(_storageOptions.ConnectionString);
             _tablesPrefix = _storageOptions.Prefix.ToLowerInvariant() ?? "";
-            var client = _storageAccount.CreateCloudTableClient();
-            var gameTable = client.GetTableReference(GameTableName);
-            gameTable.CreateIfNotExists();
-            var userTable = client.GetTableReference(UserNameTableName);
-            userTable.CreateIfNotExists();
-            var tentativesTable = client.GetTableReference(TentativesTableName);
-            tentativesTable.CreateIfNotExists();
-            var pendingTentativesTable = client.GetTableReference(PendingTentativesTableName);
-            pendingTentativesTable.CreateIfNotExists();
-            var notificationsTable = client.GetTableReference(NotificationsTableName);
-            notificationsTable.CreateIfNotExists();
+
+            // TODO: move storage init to an external function with tighter security
+            //var client = _storageAccount.CreateCloudTableClient();
+            //var gameTable = client.GetTableReference(GameTableName);
+            //gameTable.CreateIfNotExists();
+            //var userTable = client.GetTableReference(UserNameTableName);
+            //userTable.CreateIfNotExists();
+            //var tentativesTable = client.GetTableReference(TentativesTableName);
+            //tentativesTable.CreateIfNotExists();
+            //var pendingTentativesTable = client.GetTableReference(PendingTentativesTableName);
+            //pendingTentativesTable.CreateIfNotExists();
+            //var notificationsTable = client.GetTableReference(NotificationsTableName);
+            //notificationsTable.CreateIfNotExists();
         }
 
         private string GameTableName => $"{_tablesPrefix}game";

@@ -4,6 +4,7 @@ var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('state') == "testing")
 {
     server = "https://twitchext-aws-test.conceptoire.com"
+    // server = "https://localhost:5001"
 }
 
 

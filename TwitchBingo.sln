@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchBingoService", "TwitchBingoService\TwitchBingoService.csproj", "{1E09D3A7-DA6E-4DD7-98D9-BE13E3EED0EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchBingoServiceTests", "TwitchBingoServiceTests\TwitchBingoServiceTests.csproj", "{B564CBCA-F50F-4FE3-8583-BA951516C166}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchBingoServiceTests", "TwitchBingoServiceTests\TwitchBingoServiceTests.csproj", "{B564CBCA-F50F-4FE3-8583-BA951516C166}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
