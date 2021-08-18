@@ -39,7 +39,7 @@ jobs:
       - name: Build SAM template
         working-directory: TwitchBingoService/
         run: |
-          sam build --use-containers -t ./serverless.template
+          sam build -t ./serverless.template
       - name: Deploy Lambda application
         working-directory: TwitchBingoService/
         run: |
