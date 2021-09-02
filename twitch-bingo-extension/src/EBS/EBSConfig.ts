@@ -1,10 +1,9 @@
-var server = "https://twitchext.conceptoire.com/bingo/v1"
+var server = "https://bingo-ebs.conceptoire.com"
 
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('state') == "testing")
 {
-    server = "https://twitchext-aws-test.conceptoire.com"
-    // server = "https://localhost:5001"
+    server = "https://localhost:5001"
 }
 
 
