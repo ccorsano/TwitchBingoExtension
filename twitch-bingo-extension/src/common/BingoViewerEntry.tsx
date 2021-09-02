@@ -101,7 +101,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 onClickCapture={handlePrompt}>
                 <div className={clsx("bingoCellOverlay", stateClass)}></div>
                 <div className={clsx("bingoEntry")}>
-                    <div style={{fontSize: props.fontSize}}>
+                    <div className={clsx("bingoEntryText")} style={{fontSize: props.fontSize}}>
                         {props.config.text}
                     </div>
                 </div>

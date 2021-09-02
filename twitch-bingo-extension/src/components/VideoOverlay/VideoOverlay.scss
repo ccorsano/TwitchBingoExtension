@@ -22,7 +22,14 @@
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: 14vh 1fr 9vh;
+    grid-template-columns: 3rem 1fr auto;
+}
+
+#bingoRenderingArea.tall
+{
+    text-size-adjust: 0.8;
+    grid-template-columns: 3rem 50% auto;
 }
 
 .bingoGrid

@@ -87,6 +87,19 @@ export default function VideoOverlay()
             <ActiveGameContext.Consumer>
                 {
                     gameContext => {
+                        var layoutClass = ""
+                        if (gameContext.game)
+                        {
+                            if (gameContext.game.rows >= gameContext.game.columns)
+                            {
+                                layoutClass = "tall"
+                            }
+                            else
+                            {
+                                layoutClass = "wide"
+                            }
+                        }
+
                         var moderationDrawer: JSX.Element = null;
                         if (gameContext.canModerate)
                         {
@@ -122,7 +135,7 @@ export default function VideoOverlay()
                         }
                 
                         return [
-                            <div id="bingoRenderingArea">
+                            <div id="bingoRenderingArea" className={layoutClass}>
                                 <div id="safeAreaTop" style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '14vh', width: '100%' }} onClickCapture={drawingAreaClick}></div>
                                 <div style={{ gridColumn: 1, gridRow: 2, height: '75vh' }} onClickCapture={drawingAreaClick}>
                                     <VideoOverlayTabWidget

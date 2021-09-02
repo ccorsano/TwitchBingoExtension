@@ -1,11 +1,12 @@
 .bingoEntry {
-    padding-top: 2vh;
-    padding-bottom: 2vh;
     padding-left: 1vw;
     padding-right: 1vw;
     z-index: 9;
     overflow: hidden;
     position: relative;
+    height: 100%;
+    display: grid;
+    align-content: center;
 };
 
 .bingoCellPrompt {
@@ -56,6 +57,11 @@
         height: 110%;
     }
 };
+
+.bingoEntryText {
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
 
 .hiddenCell {
     opacity: 0%;
