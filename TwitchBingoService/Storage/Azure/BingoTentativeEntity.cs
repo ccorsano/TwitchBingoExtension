@@ -40,7 +40,7 @@ namespace TwitchBingoService.Storage.Azure
             return new BingoTentative
             {
                 playerId = PlayerId,
-                entryKey = EntryKey,
+                entryKey = (ushort) EntryKey,
                 confirmed = Confirmed,
                 tentativeTime = TentativeTime,
             };
@@ -50,7 +50,7 @@ namespace TwitchBingoService.Storage.Azure
 
         public string PlayerId { get; set; }
 
-        public ushort EntryKey { get; set; }
+        public Int32 EntryKey { get; set; }
 
         public bool Confirmed { get; set; }
 
