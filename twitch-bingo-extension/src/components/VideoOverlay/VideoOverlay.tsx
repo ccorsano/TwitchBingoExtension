@@ -90,7 +90,7 @@ export default function VideoOverlay()
                         var layoutClass = ""
                         if (gameContext.game)
                         {
-                            if (gameContext.game.rows >= gameContext.game.columns)
+                            if (gameContext.game.rows >= gameContext.game.columns && gameContext.game.columns < 4)
                             {
                                 layoutClass = "tall"
                             }
@@ -147,7 +147,7 @@ export default function VideoOverlay()
                                         onToggleModerationPane={(_) => {setModerationDrawerOpen(!moderationDrawerOpen)}} />
                                     { gameContext.canModerate ? moderationDrawer : null }
                                 </div>
-                                <div id="bingoGridArea" style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw', height: '75vh', overflow: 'hidden' }}>
+                                <div id="bingoGridArea" style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw', height: '76vh', overflow: 'hidden' }}>
                                     {
                                         isShowingIdentityPrompt ? (
                                             <div style={
