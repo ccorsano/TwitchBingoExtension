@@ -6,6 +6,7 @@ import { Twitch } from '../services/TwitchService';
 import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoGrid, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
 import { BingoGameContext } from './BingoGameContext';
 import { BingoGridContext } from './BingoGridContext';
+import { BingoBroadcastEvent, BingoBroadcastEventType, BingoConfiguration } from '../model/BingoConfiguration';
 
 export const ActiveGameContext = React.createContext<BingoGameContext>(null)
 export const ActiveGridContext = React.createContext<BingoGridContext>(null)
@@ -29,24 +30,35 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [hasSharedIdentity, setSharedIdentity] = React.useState(false)
     const [isAuthorized, setAuthorized] = React.useState(false)
 
+    const onLoadConfig = React.useCallback((configContent: BingoConfiguration) => {
+        setEntries(configContent.entries ?? new Array(0))
+        const activeGameId: string = configContent.activeGameId ?? configContent.activeGame?.gameId
+        if (activeGame?.gameId !== activeGameId)
+        {
+            BingoEBS.getGame(activeGameId)
+                .then(game => {
+                    setActiveGame(game)
+                    onStart(game)
+                    if (props.onReceiveGame)
+                    {
+                        props.onReceiveGame(configContent.activeGame);
+                    }
+                })
+                .catch(error => {
+                    console.log(`Error fetching game ${activeGameId}: ${error}`)
+                })
+        }
+    }, [activeGame])
+
     const loadConfig = (_broadcasterConfig: any) => {
         var extensionConfig = Twitch.configuration;
         if (! extensionConfig?.content)
         {
             return;
         }
-        var configContent = JSON.parse(extensionConfig.content);
-        setEntries(configContent?.entries ?? new Array(0))
-        setActiveGame(configContent?.activeGame)
-        if (configContent?.activeGame)
-        {
-            onStart(configContent.activeGame);
-            if (props.onReceiveGame)
-            {
-                props.onReceiveGame(configContent.activeGame);
-            }
-        }
-    };
+        var configContent: BingoConfiguration = JSON.parse(extensionConfig.content);
+        onLoadConfig(configContent)
+    }
 
     React.useEffect(() => {
         Twitch.onConfiguration.push(loadConfig);
@@ -60,20 +72,25 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }, [])
 
     const receiveBroadcast = React.useCallback((_target, _contentType, messageStr) => {
-        let message = JSON.parse(messageStr);
+        let message: BingoBroadcastEvent = JSON.parse(messageStr);
         switch (message.type) {
-            case 'set-config':
-                setEntries(message.payload.entries)
-                setActiveGame(message.payload.activeGame)
-                console.log(message.payload.activeGame);
+            case BingoBroadcastEventType.SetConfig:
+                let config: BingoConfiguration = message.payload
+                if (config.activeGame)
+                {
+                    setActiveGame(message.payload.activeGame)
+                    console.log(config.activeGame);
+                }
+                onLoadConfig(config)
                 break;
-            case 'start':
+            case BingoBroadcastEventType.Start:
+                setActiveGame(message.payload)
                 onStart(message.payload);
                 break;
-            case 'bingo':
+            case BingoBroadcastEventType.Bingo:
                 refreshGrid(activeGame, entries);
                 break;
-            case 'stop':
+            case BingoBroadcastEventType.Stop:
                 setPendingResults(new Array(0))
                 setGrid(null)
                 setEntries(new Array(0))
@@ -84,7 +101,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                     props.onStop()
                 }
                 break;
-            case 'confirm':
+            case BingoBroadcastEventType.Confirm:
                 onConfirmationNotification(message.payload)
                 break;
             default:

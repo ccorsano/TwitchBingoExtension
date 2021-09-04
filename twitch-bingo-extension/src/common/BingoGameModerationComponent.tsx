@@ -2,6 +2,7 @@ import React from "react"
 import { BingoEBS } from "../EBS/BingoService/EBSBingoService"
 import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
 import { EBSError } from "../EBS/EBSBase"
+import { BingoBroadcastEvent, BingoBroadcastEventType } from "../model/BingoConfiguration"
 import { ActiveGameContext } from "./BingoGameComponent"
 import { BingoGameModerationContext } from "./BingoGameModerationContext"
 import { TwitchExtHelper } from "./TwitchExtension"
@@ -60,7 +61,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
-        let message = JSON.parse(messageStr, (key, value) => {
+        let message: BingoBroadcastEvent = JSON.parse(messageStr, (key, value) => {
             if (key == "tentativeTime" || key == "confirmationTime")
             {
                 return new Date(value);
@@ -68,11 +69,11 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
             return value;
         });
         switch (message.type) {
-            case 'tentative':
+            case BingoBroadcastEventType.Tentative:
                 var notification = message.payload as BingoTentativeNotification;
                 receiveTentative(notification);
                 break;
-            case 'confirm':
+            case BingoBroadcastEventType.Confirm:
                 var confirm = message.payload as BingoConfirmationNotification;
                 console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
                 receiveConfirmation(confirm);
