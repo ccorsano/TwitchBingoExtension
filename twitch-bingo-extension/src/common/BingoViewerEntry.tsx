@@ -107,8 +107,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 </div>
                 <div
                     className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                    onClickCapture={(props.isShown && confirmationPrompt) ? handleTentative : null}
-                    style={{fontSize: props.fontSize}} >
+                    onClickCapture={(props.isShown && confirmationPrompt) ? handleTentative : null} >
                     {LL.BingoViewerEntry.ConfirmButtonLabel()}
                 </div>
                 { timerComponent }
