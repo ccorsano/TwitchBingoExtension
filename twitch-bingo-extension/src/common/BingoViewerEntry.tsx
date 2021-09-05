@@ -17,7 +17,7 @@ type BingoViewerEntryProps = {
     onTentative: (entry: BingoEntry) => void,
     countdown?: Date,
     fontSize: string,
-    isShown: boolean,
+    isShown: boolean
 }
 
 const renderTime = ({remainingTime}) => {
@@ -101,7 +101,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                 onClickCapture={handlePrompt}>
                 <div className={clsx("bingoCellOverlay", stateClass)}></div>
                 <div className={clsx("bingoEntry")}>
-                    <div className={clsx("bingoEntryText")} style={{fontSize: props.fontSize}}>
+                    <div className={clsx("bingoEntryText")} >
                         {props.config.text}
                     </div>
                 </div>

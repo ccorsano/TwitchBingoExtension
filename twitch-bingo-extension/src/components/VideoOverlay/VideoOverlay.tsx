@@ -90,7 +90,7 @@ export default function VideoOverlay()
                         var layoutClass = ""
                         if (gameContext.game)
                         {
-                            if (gameContext.game.rows >= gameContext.game.columns && gameContext.game.columns < 4)
+                            if (gameContext.game.columns < 4)
                             {
                                 layoutClass = "tall"
                             }

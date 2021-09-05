@@ -32,38 +32,6 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
         return fontSize.toFixed(2) + "vw";
     }
 
-    var colWidth = "1fr"
-    switch (context.grid?.cols) {
-        case 2:
-            colWidth = "23.5vw"
-            break;
-        case 3:
-            colWidth = "14.3333vw"
-            break;
-        case 4:
-            colWidth = "20.25vw"
-            break;
-        case 5:
-            colWidth = "16vw"
-            break;
-    }
-    
-    var rowHeight = "1fr"
-    switch (context.grid?.rows) {
-        case 2:
-            rowHeight = "27vh"
-            break;
-        case 3:
-            rowHeight = "17vh"
-            break;
-        case 4:
-            rowHeight = "13vh"
-            break;
-        case 5:
-            rowHeight = "10.2vh"
-            break;
-    }
-
     return gameContext.isStarted && context.grid ? (
     <div className={clsx("gridOuterBox")} style={{opacity: props.isCollapsed ? 0.0 : 1.0}}>
         <div className={clsx("gridHeaderBox")}>
@@ -72,10 +40,10 @@ export default function OverlayBingoGrid(props: OverlayBingoGridProps)
         <div className={clsx("gridHeaderSeparator")}></div>
         <div className={clsx("gridBodyBox")}>
             <div 
-                className="bingoGrid"
+                className={clsx("bingoGrid", `c${context.grid.cols}`, `r${context.grid.rows}`)}
                 style={{
-                    gridTemplateRows: [...Array(context.grid.rows).keys()].map(() => rowHeight).join(' '),
-                    gridTemplateColumns: [...Array(context.grid.cols).keys()].map(() => colWidth).join(' ')
+                    gridTemplateRows: [...Array(context.grid.rows).keys()].map(() => '1fr').join(' '),
+                    gridTemplateColumns: [...Array(context.grid.cols).keys()].map(() => '1fr').join(' ')
                 }}>
                 {
                     [...Array(context.grid.rows).keys()].map(row => {

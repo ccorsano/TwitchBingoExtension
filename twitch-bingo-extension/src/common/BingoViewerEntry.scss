@@ -1,3 +1,6 @@
+@use "sass:map";
+@import './OverlayConstants.scss';
+
 .bingoEntry {
     padding-left: 1vw;
     padding-right: 1vw;
@@ -7,6 +10,107 @@
     height: 100%;
     display: grid;
     align-content: center;
+    margin: auto; // Keep item centered when hovering
+};
+
+.bingoGrid.c2.r2 .bingoEntryText {
+    font-size: 2.0vw;
+}
+
+.bingoGrid.c2.r3 .bingoEntryText {
+    font-size: 1.75vw;
+}
+
+.bingoGrid.c2.r4 .bingoEntryText {
+    font-size: 1.6vw;
+}
+
+.bingoGrid.c2.r5 .bingoEntryText {
+    font-size: 1.5vw;
+}
+
+.bingoGrid.c3.r2 .bingoEntryText {
+    font-size: 2.0vw;
+}
+
+.bingoGrid.c3.r3 .bingoEntryText {
+    font-size: 1.75vw;
+}
+
+.bingoGrid.c3.r4 .bingoEntryText {
+    font-size: 1.6vw;
+}
+
+.bingoGrid.c3.r5 .bingoEntryText {
+    font-size: 1.5vw;
+}
+
+.bingoGrid.c4.r2 .bingoEntryText {
+    font-size: 2.1vw;
+}
+
+.bingoGrid.c4.r3 .bingoEntryText {
+    font-size: 1.75vw;
+}
+
+.bingoGrid.c4.r4 .bingoEntryText {
+    font-size: 1.6vw;
+}
+
+.bingoGrid.c4.r5 .bingoEntryText {
+    font-size: 1.5vw;
+}
+
+.bingoGrid.c5.r2 .bingoEntryText {
+    font-size: 2vw;
+}
+
+.bingoGrid.c5.r3 .bingoEntryText {
+    font-size: 1.75vw;
+}
+
+.bingoGrid.c5.r4 .bingoEntryText {
+    font-size: 1.6vw;
+}
+
+.bingoGrid.c5.r5 .bingoEntryText {
+    font-size: 1.5vw;
+}
+
+.bingoGrid.c3.r5 .bingoEntryText {
+    font-size: 1.25vw;
+}
+
+.bingoGrid.c2 .bingoEntry {
+    width: map.get($overlay-columns-width, 2) - 2vw;
+};
+
+.bingoGrid.c3 .bingoEntry {
+    width: map.get($overlay-columns-width, 3) - 2vw;
+};
+
+.bingoGrid.c4 .bingoEntry {
+    width: map.get($overlay-columns-width, 4) - 2vw;
+};
+
+.bingoGrid.c5 .bingoEntry {
+    width: map.get($overlay-columns-width, 5) - 2vw;
+};
+
+.bingoGrid.r2 .bingoEntry {
+    height: map.get($overlay-rows-height, 2);
+};
+
+.bingoGrid.r3 .bingoEntry {
+    height: map.get($overlay-rows-height, 3);
+};
+
+.bingoGrid.r4 .bingoEntry {
+    height: map.get($overlay-rows-height, 4);
+};
+
+.bingoGrid.r5 .bingoEntry {
+    height: map.get($overlay-rows-height, 5);
 };
 
 .bingoCellPrompt {
@@ -61,6 +165,7 @@
 .bingoEntryText {
     padding-top: 2vh;
     padding-bottom: 2vh;
+    margin: auto;
 }
 
 .hiddenCell {
@@ -106,6 +211,12 @@
     z-index: 5;
     background-size: 11vh;
 };
+
+.bingoCellOverlay.idle {
+    &:hover {
+        background: unset;
+    }
+}
 
 .type0 .bingoCellOverlay {
     background-position-x: 66%;
