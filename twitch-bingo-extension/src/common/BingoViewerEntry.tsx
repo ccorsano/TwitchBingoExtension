@@ -38,12 +38,12 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         {
             timerComponent = 
             <div className={clsx("bingoCellPrompt", "bingoCellPromptVisible")} style={{cursor: "unset"}}>
-                <div style={{ display: 'inline-block' }}>
+                <div style={{ display: 'inline-block', fontSize: '16px' }}>
                     <CountdownCircleTimer
                         isPlaying
                         size={50}
                         strokeWidth={3}
-                        colors="#000"
+                        colors="#FFF"
                         isLinearGradient={true}
                         duration={duration}
                         children={renderTime}
