@@ -116,32 +116,63 @@
 .bingoCellPrompt {
     transition: all 0.5s;
     width: 100%;
-    background-color: rgba(234,78,122,0.8); // #fff3d6
-    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
     color: #FFF;
     text-shadow: 0 0 2vh #000;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 3vh;
+    padding-bottom: 1vh;
     z-index: 10;
     position: absolute;
-    bottom: 1rem;
+    bottom: 0px;
+    background-image: url("/assets/Stamp.svg");
+    background-position-x: center;
+    background-position-y: 0vh;
+    background-repeat: no-repeat;
+};
+
+.bingoGrid.c2 .bingoCellPrompt {
+    background-size: map.get($overlay-columns-width, 2);
+};
+
+.bingoGrid.c3 .bingoCellPrompt {
+    background-size: map.get($overlay-columns-width, 3);
+};
+
+.bingoGrid.c4 .bingoCellPrompt {
+    background-size: map.get($overlay-columns-width, 4) / 1.5;
+};
+
+.bingoGrid.c5 .bingoCellPrompt {
+    background-size: map.get($overlay-columns-width, 5) / 1.5;
 };
 
 .bingoCellPromptVisible {
     height: unset;
-    opacity: 1.0;
+    opacity: 0.9;
     &:hover {
         cursor: pointer;
-        background-color: rgba(248,192,208,0.9); // #fbf7ef
         color: #000;
         text-shadow: 0 0 2vh rgba(234,78,122,1.0);
-        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
     }
 };
 
 .bingoCellPromptHidden {
     opacity: 0.0;
-    bottom: -1vh;
+};
+
+.bingoGrid.c2 .bingoCellPromptHidden {
+    background-position-y: map.get($overlay-rows-height, 2);
+};
+
+.bingoGrid.c3 .bingoCellPromptHidden {
+    background-position-y: map.get($overlay-rows-height, 3);
+};
+
+.bingoGrid.c4 .bingoCellPromptHidden {
+    background-position-y: map.get($overlay-rows-height, 4);
+};
+
+.bingoGrid.c5 .bingoCellPromptHidden {
+    background-position-y: map.get($overlay-rows-height, 5);
 };
 
 .bingoCell {
