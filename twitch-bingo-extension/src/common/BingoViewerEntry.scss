@@ -122,7 +122,6 @@
     padding-bottom: 1vh;
     z-index: 10;
     position: absolute;
-    bottom: 0px;
     background-image: url("/assets/Stamp.svg");
     background-position-x: center;
     background-position-y: 0vh;
@@ -148,6 +147,7 @@
 .bingoCellPromptVisible {
     height: unset;
     opacity: 0.9;
+    bottom: 0px;
     &:hover {
         cursor: pointer;
         color: #000;
@@ -160,19 +160,19 @@
 };
 
 .bingoGrid.c2 .bingoCellPromptHidden {
-    background-position-y: map.get($overlay-rows-height, 2);
+    bottom: map.get($overlay-rows-height, 2) / -2;
 };
 
 .bingoGrid.c3 .bingoCellPromptHidden {
-    background-position-y: map.get($overlay-rows-height, 3);
+    bottom: map.get($overlay-rows-height, 3) / -2;
 };
 
 .bingoGrid.c4 .bingoCellPromptHidden {
-    background-position-y: map.get($overlay-rows-height, 4);
+    bottom: map.get($overlay-rows-height, 4) / -2;
 };
 
 .bingoGrid.c5 .bingoCellPromptHidden {
-    background-position-y: map.get($overlay-rows-height, 5);
+    bottom: map.get($overlay-rows-height, 5) / -2;
 };
 
 .bingoCell {
@@ -183,6 +183,7 @@
     width: 100%;
     height: 100%;
     z-index: 1;
+    overflow: hidden;
 };
 
 .bingoCell.idle {
@@ -321,3 +322,16 @@
     background-color: rgba(255,255,255,1);
     color: #000;
 };
+
+.countdownPrompt {
+    cursor: unset;
+    background: rgba(255,255,255,0.9);
+    text-shadow: 0 0 2vh rgba(234,78,122,1.0);
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.countdownText {
+    color: #D81A4F;
+    font-weight: bold;
+}

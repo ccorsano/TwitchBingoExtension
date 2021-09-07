@@ -21,7 +21,11 @@ type BingoViewerEntryProps = {
 }
 
 const renderTime = ({remainingTime}) => {
-    return FormatTimeout(remainingTime);
+    return (
+        <span className="countdownText">
+            { FormatTimeout(remainingTime) }
+        </span>
+    );
 }
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
@@ -37,16 +41,17 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         if (duration > 0)
         {
             timerComponent = 
-            <div className={clsx("bingoCellPrompt", "bingoCellPromptVisible")} style={{cursor: "unset"}}>
-                <div style={{ display: 'inline-block', fontSize: '16px' }}>
+            <div className={clsx("countdownPrompt", "bingoCellPrompt", "bingoCellPromptVisible")}>
+                <div style={{ display: 'inline-block', fontSize: '12px' }}>
                     <CountdownCircleTimer
                         isPlaying
-                        size={50}
-                        strokeWidth={3}
-                        colors="#FFF"
+                        size={70}
                         isLinearGradient={true}
                         duration={duration}
                         children={renderTime}
+                        strokeWidth={12}
+                        trailColor={"#fbf7ef"}
+                        colors={"#EA4E7A"}
                     />
                 </div>
             </div>
