@@ -42,7 +42,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         {
             timerComponent = 
             <div className={clsx("countdownPrompt", "bingoCellPrompt", "bingoCellPromptVisible")}>
-                <div style={{ display: 'inline-block', fontSize: '12px' }}>
+                <div style={{ fontSize: '16px' }}>
                     <CountdownCircleTimer
                         isPlaying
                         size={70}
@@ -50,7 +50,7 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
                         duration={duration}
                         children={renderTime}
                         strokeWidth={12}
-                        trailColor={"#fbf7ef"}
+                        trailColor={"#F4A4BB"}
                         colors={"#EA4E7A"}
                     />
                 </div>

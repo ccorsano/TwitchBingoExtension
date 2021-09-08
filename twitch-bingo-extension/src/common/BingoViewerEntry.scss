@@ -243,7 +243,7 @@
     opacity: 100%;
     background-repeat: no-repeat;
     background-size: contain;
-    z-index: 5;
+    z-index: 15;
     background-size: 11vh;
 };
 
@@ -329,6 +329,13 @@
     text-shadow: 0 0 2vh rgba(234,78,122,1.0);
     padding-top: 0;
     padding-bottom: 0;
+    height: 100%;
+}
+
+.countdownPrompt > div {
+    display: inline-grid;
+    align-items: center;
+    height: 100%;
 }
 
 .countdownText {
