@@ -164,7 +164,7 @@ export default function VideoOverlay()
                                                     {LL.OverlayBingoGrid.IdentityPromptMessage()}
                                                 </div>
                                                 <div
-                                                    className={clsx("bingoCellPrompt", "bingoCellPromptVisible")}
+                                                    className={clsx("bandeauPrompt", "bandeauPromptVisible")}
                                                     style={{position: 'unset'}}
                                                     onClickCapture={(_) => gameContext.promptIdentity()}>
                                                     {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
