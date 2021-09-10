@@ -9,11 +9,30 @@
     padding-right: 5px;
     height: 36px;
     overflow: hidden;
-    border-bottom: solid #666 thin;
+    border: black;
+    border-width: thick;
+    border-style: solid;
+    border-radius: 36px;
+
+    display: grid;
+
     > div {
         align-self: center;
     };
     transition: all 0.5s;
+    div.key {
+        border-radius: 18px;
+        background-color: black;
+        color: white;
+        width: 36px;
+        height: 36px;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 36px;
+        margin-right: 12px;
+        grid-column: 1;
+    }
     .timer {
         height: 0px;
         width: 0px;
@@ -22,30 +41,49 @@
     };
     .text {
         text-overflow: ellipsis;
-        grid-column-start: 1;
-        grid-column-end: 3;
+        grid-column-start: 2;
+        grid-column-end: 4;
     }
     cursor: pointer;
 }
 
 .idle {
-    background: $baby-powder;
+    background: white;
 };
 .prompt {
-    background: $dutch-white;
-    border-left: solid 3px #666;
+    background: whitesmoke;
+    border-color: #666;
 };
 .pending {
-    background: $banana-mania-2;
+    background: lightgray;
     min-height: 50px !important;
 };
 .confirmed {
-    background: $jasmine;
+    border-color: darkgray;
+
+    div.key {
+        background-color: rgba(234,78,122,0.8);
+    }
+
+    div.text {
+        color: white;
+    }
 };
+.confirmed.highlighted {
+    div.key {
+        background-color: rgba(234,78,122,0.8);
+    }
+    div.text {
+        color: black;
+    }
+}
 
 .missed {
     background: $lightgray;
     color: #666;
+    div.key {
+        background-color: darkgray;
+    }
 };
 
 .missed.highlighted {
@@ -55,6 +93,9 @@
 .rejected {
     background: $lightgray;
     color: #666;
+    div.key {
+        background-color: darkgray;
+    }
 };
 
 .rejected.highlighted {
@@ -64,6 +105,9 @@
 .highlighted {
     height: unset;
     min-height: 36px;
+    div.key {
+        background-color: darkgray;
+    }
     .timer {
         height: unset;
         width: fit-content;
@@ -80,9 +124,6 @@
     height: unset;
     min-height: 64px;
     overflow-y: hidden;
-    .text {
-        text-align: center;
-    };
     .confirm {
         border-top-right-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
@@ -104,9 +145,9 @@
 .bingoCellPrompt {
     transition: all 0.5s;
     height: 100%;
-    background-color: rgba(255,243,214,0.9); // #fff3d6
-    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
-    color: #000;
+    background-color: black; // #fff3d6
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.8);
+    color: white;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     z-index: 10;
