@@ -1,0 +1,41 @@
+svg.mobileGrid {
+    background-color: #000;
+
+    .gridBorder {
+        stroke-width: 5;
+        stroke: #FFF;
+    }
+
+    g rect.background {
+        fill: #FFF;
+        stroke-opacity: 0;
+        stroke-width: 10;
+        stroke: darkgray;
+    }
+
+    g text {
+        z-index: 0;
+        text-anchor: middle;
+        fill: #000;
+    }
+
+    g.confirmed circle {
+        fill: rgba(229,39,93,0.79);
+        z-index: 9;
+    }
+
+    g.missed rect.background {
+        fill: gray;
+    }
+
+    g.highlighted {
+        rect.background {
+            fill: #000;
+            stroke: #FFF;
+            stroke-opacity: 1.0;
+        }
+        text {
+            fill: #FFF;
+        }
+    }
+}

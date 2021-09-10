@@ -2,6 +2,7 @@ import React from 'react'
 import { seededRand } from '../../common/ExtensionUtils';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 const headerTitle = require("../../../assets/BingoHeaderMobile.svg")
+require('./BingoMobileMiniGrid.scss');
 
 type BingoMobileMiniGridProps = {
     cells: Array<BingoGridCell>,
@@ -26,12 +27,12 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
     const rand = seededRand(seedStr)
     
     return (
-        <svg viewBox={`0 0 1000 ${height}`} style={{backgroundColor: "black"}}>
+        <svg className="mobileGrid" viewBox={`0 0 1000 ${height}`}>
             <defs>
             </defs>
-            <rect x="10" y="10" width="980" height={height-20} rx="10" ry="10" style={{strokeWidth: 5, stroke: "white"}} />
+            <rect className="gridBorder" x="10" y="10" width="980" height={height-20} rx="10" ry="10" />
             <image preserveAspectRatio="xMidYMid meet" x="50" y="0" width={900} height={125} href={headerTitle}/>
-            <line x1="10" x2={990} y1="127.5" y2="127.5" style={{strokeWidth: 5, stroke: "white"}} />
+            <line className="gridBorder" x1="10" x2={990} y1="127.5" y2="127.5" />
             <g transform={"translate(0,14)"}>
                 {
                     [...Array(props.rows).keys()].map(row => {
@@ -39,57 +40,62 @@ export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
                         return [...Array(props.columns).keys()].map(col => {
                             // let isColComplete = gridContext.isColComplete(col);
                             let cell = getCell(row, col);
-                            if (! cell)
-                            {
-                                var key = 1000 + col + (row * props.columns);
-                                return <rect key={key} x={(col+0.025)*10} y={(row+0.025)*10} width="9" height="9" rx="0.1" ry="0.1" style={{backgroundColor: "white"}} />
-                            }
-                            else
+                            if (cell)
                             {
                                 const isSelected = cell.key === props.selectedKey
 
-                                var fill = "white"
+                                var classes: string[] = Array();
+
                                 switch (cell.state) {
+                                    case BingoEntryState.Confirmed:
+                                        classes.push("confirmed")
+                                        break;
+                                    case BingoEntryState.Idle:
+                                        classes.push("idle")
+                                        break;
                                     case BingoEntryState.Missed:
-                                        case BingoEntryState.Rejected:
-                                        fill = "gray"
+                                    case BingoEntryState.Rejected:
+                                        classes.push("missed")
+                                        break;
+                                    case BingoEntryState.Pending:
+                                        classes.push("pending")
                                         break;
                                     default:
-                                        fill = "white"
                                         break;
+                                }
+                                if (isSelected)
+                                {
+                                    classes.push("highlighted")
                                 }
 
                                 var text = cell.key
 
+                                const baseX = col*cellSizeWithMargin
+                                const baseY = row*cellSizeWithMargin
                                 const randX = rand()*(cellSize*0.250)-(cellSize*0.125)
                                 const randY = rand()*(cellSize*0.250)-(cellSize*0.125)
 
-                                console.log(`${randX},${randY}`)
-
                                 const confirmationMark = cell.state == BingoEntryState.Confirmed ? (
-                                    <circle fill="rgba(229,39,93,0.79)" cx={randX+col*cellSizeWithMargin+50+cellSize/2} cy={randY+row*cellSizeWithMargin+135+cellSize/2} r={cellSize/2.25} z="9" />
+                                    <circle cx={randX+baseX+50+cellSize/2} cy={randY+baseY+135+cellSize/2} r={cellSize/2.25} />
                                 ) : null
 
                                 return (
-                                    <g key={cell.key} style={{userSelect: 'none'}}>
+                                    <g className={classes.join(' ')} key={cell.key} style={{userSelect: 'none'}}>
                                         <rect
-                                            x={col*cellSizeWithMargin+50}
-                                            y={row*cellSizeWithMargin+135}
+                                            className="background"
+                                            x={baseX+50}
+                                            y={baseY+135}
                                             width={cellSize}
                                             height={cellSize}
-                                            fill={fill}
                                             rx={cellSize/5}
                                             ry={cellSize/5}
-                                            strokeOpacity={isSelected ? 1.0 : 0.0}
-                                            strokeWidth={10}
-                                            stroke={"darkgray"}
                                             onClickCapture={(_) => props.onSelectCell(col, row)}
                                         />
-                                        <text x={col*cellSizeWithMargin+50+cellSize/2} y={row*cellSizeWithMargin+160+cellSize/2} z="0" fontSize={cellSize/2} textAnchor="middle" fill="#000">{text}</text>
+                                        <text x={baseX+50+cellSize/2} y={baseY+160+cellSize/2} fontSize={cellSize/2}>{text}</text>
                                         { confirmationMark }
                                         <rect
-                                            x={col*cellSizeWithMargin+50}
-                                            y={row*cellSizeWithMargin+135}
+                                            x={baseX+50}
+                                            y={baseY+135}
                                             z="10"
                                             width={cellSize}
                                             height={cellSize}
