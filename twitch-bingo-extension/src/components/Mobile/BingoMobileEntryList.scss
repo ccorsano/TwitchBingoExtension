@@ -21,7 +21,7 @@
     };
     transition: all 0.5s;
     div.key {
-        border-radius: 18px;
+        border-radius: 36px;
         background-color: black;
         color: white;
         width: 36px;
@@ -59,14 +59,14 @@
     min-height: 50px !important;
 };
 .confirmed {
-    border-color: darkgray;
+    background-color: white;
 
     div.key {
         background-color: $marker-color;
     }
 
     div.text {
-        color: white;
+        color: black;
     }
 };
 .confirmed.highlighted {
@@ -87,7 +87,8 @@
 };
 
 .missed.highlighted {
-    background: #FFF;
+    background: lightgray;
+    color: #666;
 };
 
 .rejected {
@@ -99,14 +100,17 @@
 };
 
 .rejected.highlighted {
-    background: #FFF;
+    background: lightgray;
+    color: #666;
 };
 
 .highlighted {
     height: unset;
     min-height: 36px;
     div.key {
-        background-color: darkgray;
+        background-color: white;
+        color: black;
+        border: solid black thin;
     }
     .timer {
         height: unset;
