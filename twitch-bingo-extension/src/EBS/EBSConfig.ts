@@ -1,4 +1,4 @@
-var server = "https://twitchext.conceptoire.com/bingo/v1"
+var server = "https://bingo-ebs.conceptoire.com"
 
 var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('state') == "testing")
