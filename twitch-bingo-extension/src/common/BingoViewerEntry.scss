@@ -1,4 +1,5 @@
 @use "sass:map";
+@import './BingoTheme.scss';
 @import './OverlayConstants.scss';
 
 .bingoEntry {
@@ -151,7 +152,7 @@
     &:hover {
         cursor: pointer;
         color: #000;
-        text-shadow: 0 0 2vh rgba(234,78,122,1.0);
+        text-shadow: 0 0 2vh $marker-color-opaque;
     }
 };
 
@@ -304,29 +305,29 @@
 }
 
 .bingoCell.pending {
-    background-color: rgba(255,255,255,1);
+    background-color: #FFF;
 };
 
 .bingoCell.confirmed {
-    background-color: rgba(255,255,255,1);
+    background-color: #FFF;
 };
 
 .bingoCell.missed {
     opacity: 0.35;
-    background-color: rgba(255,255,255,1);
+    background-color: #FFF;
     color: #000;
 };
 
 .bingoCell.rejected {
     opacity: 0.35;
-    background-color: rgba(255,255,255,1);
+    background-color: #FFF;
     color: #000;
 };
 
 .countdownPrompt {
     cursor: unset;
     background: rgba(255,255,255,0.9);
-    text-shadow: 0 0 2vh rgba(234,78,122,1.0);
+    text-shadow: 0 0 2vh $marker-color-opaque;
     padding-top: 0;
     padding-bottom: 0;
     height: 100%;

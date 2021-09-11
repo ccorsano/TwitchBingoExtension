@@ -62,7 +62,7 @@
     border-color: darkgray;
 
     div.key {
-        background-color: rgba(234,78,122,0.8);
+        background-color: $marker-color;
     }
 
     div.text {
@@ -71,7 +71,7 @@
 };
 .confirmed.highlighted {
     div.key {
-        background-color: rgba(234,78,122,0.8);
+        background-color: $marker-color;
     }
     div.text {
         color: black;
@@ -79,7 +79,7 @@
 }
 
 .missed {
-    background: $lightgray;
+    background: lightgray;
     color: #666;
     div.key {
         background-color: darkgray;
@@ -87,11 +87,11 @@
 };
 
 .missed.highlighted {
-    background: $baby-powder;
+    background: #FFF;
 };
 
 .rejected {
-    background: $lightgray;
+    background: lightgray;
     color: #666;
     div.key {
         background-color: darkgray;
@@ -99,7 +99,7 @@
 };
 
 .rejected.highlighted {
-    background: $baby-powder;
+    background: #FFF;
 };
 
 .highlighted {

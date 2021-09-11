@@ -1,3 +1,5 @@
+@import '../../common/BingoTheme.scss';
+
 svg.mobileGrid {
     background-color: #000;
 
@@ -20,7 +22,7 @@ svg.mobileGrid {
     }
 
     g.confirmed circle {
-        fill: rgba(229,39,93,0.79);
+        fill: $strong-marker-color;
         z-index: 9;
     }
 
