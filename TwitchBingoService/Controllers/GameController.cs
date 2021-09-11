@@ -40,7 +40,6 @@ namespace TwitchBingoService.Controllers
         }
 
         [HttpGet("{gameId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
         public Task<BingoGame> GetGame(Guid gameId)
         {
             var channelClaim = User.Claims.First(c => c.Type == "channel_id");
