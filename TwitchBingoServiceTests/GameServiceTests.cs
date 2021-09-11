@@ -152,7 +152,7 @@ namespace TwitchBingoServiceTests
             var mockEBS = GetEBSService();
             var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions
             {
-                DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(2)
+                DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(200)
             });
             var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
@@ -176,15 +176,15 @@ namespace TwitchBingoServiceTests
 
             // Confirm entry from moderator
             var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
-            await Task.Delay(2);
+            await Task.Delay(201);
             var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
             Assert.False(tentative02.confirmed);
             var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
-            await Task.Delay(2);
+            await Task.Delay(201);
             var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
             Assert.False(tentative03.confirmed);
             var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
-            await Task.Delay(2);
+            await Task.Delay(201);
 
             // Get updated grid for player
             var grid01_2 = await gameService.GetGrid(game.gameId, "Player01");
@@ -210,7 +210,7 @@ namespace TwitchBingoServiceTests
             var mockEBS = GetEBSService();
             var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions
             {
-                DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(100),
+                DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(200),
             });
             var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
@@ -237,7 +237,7 @@ namespace TwitchBingoServiceTests
             // Confirm entry from moderator
             var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
             var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
-            await Task.Delay(101);
+            await Task.Delay(210);
             var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
 
             // Get updated grid for player
