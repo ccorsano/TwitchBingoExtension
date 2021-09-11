@@ -4,8 +4,6 @@ import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../i18n/i18n-react";
-import BingoCellRibbon from "./BingoCellRibbon";
-import { getRGB, jasminePalette } from "./BingoThemes";
 require('./BingoStyles.scss')
 require('./BingoViewerEntry.scss')
 
@@ -19,11 +17,15 @@ type BingoViewerEntryProps = {
     onTentative: (entry: BingoEntry) => void,
     countdown?: Date,
     fontSize: string,
-    isShown: boolean,
+    isShown: boolean
 }
 
 const renderTime = ({remainingTime}) => {
-    return FormatTimeout(remainingTime);
+    return (
+        <span className="countdownText">
+            { FormatTimeout(remainingTime) }
+        </span>
+    );
 }
 
 export default function BingoViewerEntry(props: BingoViewerEntryProps) {
@@ -39,16 +41,17 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         if (duration > 0)
         {
             timerComponent = 
-            <div className={clsx("bingoCellPrompt", "bingoCellPromptVisible")} style={{cursor: "unset"}}>
-                <div style={{ display: 'inline-block' }}>
+            <div className={clsx("countdownPrompt", "bingoCellPrompt", "bingoCellPromptVisible")}>
+                <div style={{ fontSize: '16px' }}>
                     <CountdownCircleTimer
                         isPlaying
-                        size={50}
-                        strokeWidth={3}
-                        colors="#000"
+                        size={70}
                         isLinearGradient={true}
                         duration={duration}
                         children={renderTime}
+                        strokeWidth={12}
+                        trailColor={"#F4A4BB"}
+                        colors={"#EA4E7A"}
                     />
                 </div>
             </div>
@@ -89,39 +92,31 @@ export default function BingoViewerEntry(props: BingoViewerEntryProps) {
         default:
             break;
     }
-
-    var ribbon = null;
-    if (props.state == BingoEntryState.Missed || props.state == BingoEntryState.Rejected)
-    {
-        ribbon = (
-            <div style={{ position: "absolute", top: "0px", right:"0px", maxWidth:"25%", maxHeight: "25%" }}>
-                <BingoCellRibbon fillColor={getRGB(jasminePalette.base)} width="100%" height="100%" text={LL.BingoViewerEntry.MissedRibbonLabel()} />
-            </div>
-        )
-    }
+    const entryVariantType = `type${props.config.key % 10}`;
 
     return (
-        <div className={clsx(
-                            "bingoCell",
-                            props.isShown ? "visibleCell" : "hiddenCell",
-                            "paper",
-                            stateClass,
-                            props.isColCompleted ? "colConfirmed" : '',
-                            props.isRowCompleted ? "rowConfirmed" : '')}
-             onClickCapture={handlePrompt}>
-            <div className={clsx("bingoEntry")}>
-                <div style={{fontSize: props.fontSize}}>
-                    {props.config.text}
+        <div className={clsx("entryGridCell", entryVariantType)}>
+            <div className={clsx(
+                                "bingoCell",
+                                props.isShown ? "visibleCell" : "hiddenCell",
+                                "paper",
+                                stateClass,
+                                props.isColCompleted ? "colConfirmed" : '',
+                                props.isRowCompleted ? "rowConfirmed" : '')}
+                onClickCapture={handlePrompt}>
+                <div className={clsx("bingoCellOverlay", stateClass)}></div>
+                <div className={clsx("bingoEntry")}>
+                    <div className={clsx("bingoEntryText")} >
+                        {props.config.text}
+                    </div>
                 </div>
+                <div
+                    className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
+                    onClickCapture={(props.isShown && confirmationPrompt) ? handleTentative : null} >
+                    {LL.BingoViewerEntry.ConfirmButtonLabel()}
+                </div>
+                { timerComponent }
             </div>
-            <div
-                className={clsx("bingoCellPrompt", confirmationPrompt ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                onClickCapture={(props.isShown && confirmationPrompt) ? handleTentative : null}
-                style={{fontSize: props.fontSize}} >
-                {LL.BingoViewerEntry.ConfirmButtonLabel()}
-            </div>
-            { timerComponent }
-            { ribbon }
         </div>
     )
 }

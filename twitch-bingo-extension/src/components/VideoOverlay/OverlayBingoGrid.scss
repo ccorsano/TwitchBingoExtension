@@ -1,0 +1,65 @@
+.gridOuterBox
+{
+    transition: opacity 0.5s;
+    border-width: 0.5vh;
+    border-radius: 4.5vh;
+    border-color: #FFF;
+    border-style: solid;
+    box-shadow: 0px 0px 0.45vh 0px rgba(0,0,0,0.5);
+    padding-bottom: 2.5vh;
+}
+
+.gridHeaderBox
+{
+    margin: 1vh;
+    border-style: solid;
+    border-color: #FFF;
+    border-width: 0.0645rem;
+    border-top-left-radius: 3vh;
+    border-top-right-radius: 3vh;
+    padding: 2.5vh;
+    box-shadow: 0px 0px 0.45vh 0px rgba(0,0,0,0.5);
+    text-align: center;
+    height: 7vh;
+
+    img {
+        height: 100%;
+    }
+}
+
+.tall .gridHeaderBox
+{
+    height: 7vh;
+}
+
+.tall .gridHeaderBox img {
+    height: unset;
+    width: 60%;
+}
+
+.gridHeaderSeparator
+{
+    border-top-width: 0.5vh;
+    border-color: #FFF;
+    border-top-style: solid;
+    box-shadow: 0px 0px 0.45vh rgba(0,0,0,0.5);
+    padding: 0px;
+    top: 0px;
+    position: relative;
+    z-index: -1; // Set it to be positioned behind the outer borders
+    width: 100.1%; // Extend out on the right to not see a black border
+}
+
+.gridBodyBox
+{
+    padding: 2.5vh;
+    padding-bottom: 0;
+}
+
+.bingoCellArea {
+    position: relative;
+    z-index: 0;
+    &:hover {
+        z-index: 10;
+    }
+}

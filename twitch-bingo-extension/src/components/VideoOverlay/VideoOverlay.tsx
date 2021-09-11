@@ -87,6 +87,19 @@ export default function VideoOverlay()
             <ActiveGameContext.Consumer>
                 {
                     gameContext => {
+                        var layoutClass = ""
+                        if (gameContext.game)
+                        {
+                            if (gameContext.game.columns < 4)
+                            {
+                                layoutClass = "tall"
+                            }
+                            else
+                            {
+                                layoutClass = "wide"
+                            }
+                        }
+
                         var moderationDrawer: JSX.Element = null;
                         if (gameContext.canModerate)
                         {
@@ -122,9 +135,9 @@ export default function VideoOverlay()
                         }
                 
                         return [
-                            <div id="bingoRenderingArea">
-                                <div id="safeAreaTop" style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '6rem', width: '100%' }} onClickCapture={drawingAreaClick}></div>
-                                <div style={{ gridColumn: 1, gridRow: 2 }} onClickCapture={drawingAreaClick}>
+                            <div id="bingoRenderingArea" className={layoutClass}>
+                                <div id="safeAreaTop" style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 1, height: '14vh', width: '100%' }} onClickCapture={drawingAreaClick}></div>
+                                <div style={{ gridColumn: 1, gridRow: 2, height: '75vh' }} onClickCapture={drawingAreaClick}>
                                     <VideoOverlayTabWidget
                                         shown={isWidgetShown}
                                         collapsed={isCollapsed}
@@ -134,7 +147,7 @@ export default function VideoOverlay()
                                         onToggleModerationPane={(_) => {setModerationDrawerOpen(!moderationDrawerOpen)}} />
                                     { gameContext.canModerate ? moderationDrawer : null }
                                 </div>
-                                <div id="bingoGridArea" style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw' }}>
+                                <div id="bingoGridArea" style={{ gridColumn: 2, gridRow: 2, width: '1fr', marginLeft: '2vw', height: '76vh', overflow: 'hidden' }}>
                                     {
                                         isShowingIdentityPrompt ? (
                                             <div style={
@@ -151,7 +164,7 @@ export default function VideoOverlay()
                                                     {LL.OverlayBingoGrid.IdentityPromptMessage()}
                                                 </div>
                                                 <div
-                                                    className={clsx("bingoCellPrompt", "bingoCellPromptVisible")}
+                                                    className={clsx("bandeauPrompt", "bandeauPromptVisible")}
                                                     style={{position: 'unset'}}
                                                     onClickCapture={(_) => gameContext.promptIdentity()}>
                                                     {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
@@ -163,9 +176,9 @@ export default function VideoOverlay()
                                         isCollapsed={isCollapsed}
                                     />
                                 </div>
-                                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem' }} onClickCapture={drawingAreaClick}>
+                                <div style={{ gridColumn: 3, gridRow: 2, width: '7rem', height: '75vh' }} onClickCapture={drawingAreaClick}>
                                 </div>
-                                <div style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '6rem', width: '100%' }} onClickCapture={drawingAreaClick}></div>
+                                <div id="safeAreaBottom" style={{ gridColumnStart: 1, gridColumnEnd: 4, gridRow: 3, height: '9vh', width: '100%' }} onClickCapture={drawingAreaClick}></div>
                             </div>
                         ];
                     }

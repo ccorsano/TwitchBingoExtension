@@ -5,6 +5,7 @@ import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
 import { Twitch } from '../../services/TwitchService';
 import { BingoEntry, BingoGame } from '../../EBS/BingoService/EBSBingoTypes';
 import { BingoEditableEntry } from '../../model/BingoEntry';
+import { BingoBroadcastEventType, BingoConfiguration } from '../../model/BingoConfiguration';
 import { EBSVersion } from '../../EBS/EBSConfig';
 import StatusCard from './StatusCard';
 import LibraryEditor from './LibraryEditor';
@@ -23,7 +24,7 @@ export default function Config() {
 
     const isSelected = React.useCallback((entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key), [selectedEntries])
 
-    const loadConfig = (broadcasterConfig: TwitchExtensionConfiguration) => {
+    const loadConfig = React.useCallback((broadcasterConfig: TwitchExtensionConfiguration) => {
         if (! broadcasterConfig?.content)
         {
             return;
@@ -37,8 +38,20 @@ export default function Config() {
         setRows(configContent?.rows ?? 3)
         setColumns(configContent?.columns ?? 3)
         setConfirmationThresholdSeconds(configContent?.confirmationThreshold ?? 120)
-        setActiveGame(configContent?.activeGame)
-    }
+
+        
+        const activeGameId: string = configContent.activeGameId ?? configContent.activeGame?.gameId
+        if (activeGame?.gameId !== activeGameId)
+        {
+            BingoEBS.getGame(activeGameId)
+                .then(game => {
+                    setActiveGame(game)
+                })
+                .catch(error => {
+                    console.log(`Error fetching game ${activeGameId}: ${error}`)
+                })
+        }
+    }, [activeGame])
 
     React.useEffect(() => {
         Twitch.onConfiguration.push(loadConfig);
@@ -61,26 +74,21 @@ export default function Config() {
     }, [nextKey, entries])
 
     const onSave = React.useCallback((): void => {
-        const serializedConfig = JSON.stringify({
+        const config: BingoConfiguration = {
             nextKey: nextKey,
             entries: entries,
             selectedEntries: selectedEntries,
             rows: rows,
             columns: columns,
             confirmationThreshold: confirmationThresholdSeconds,
-            activeGame: activeGame,
-        });
+            activeGameId: activeGame.gameId,
+        }
+        const serializedConfig = JSON.stringify(config);
         TwitchExtHelper.configuration.set('broadcaster', EBSVersion, serializedConfig);
         TwitchExtHelper.rig.log(serializedConfig);
         TwitchExtHelper.send('broadcast','application/json', {
-            type: "set-config",
-            payload: {
-                entries: entries,
-                selectedEntries: selectedEntries,
-                rows: rows,
-                columns: columns,
-                confirmationThreshold: confirmationThresholdSeconds,
-            }
+            type: BingoBroadcastEventType.SetConfig,
+            payload: config
         });
     }, [nextKey, entries, selectedEntries, rows, columns, confirmationThresholdSeconds, activeGame])
 
@@ -123,19 +131,20 @@ export default function Config() {
 
             setActiveGame(game)
             
-            var configUpdateJson = JSON.stringify({
+            const config: BingoConfiguration = {
                 nextKey: nextKey,
                 entries: entries,
                 selectedEntries: selectedEntries,
                 rows: rows,
                 columns: columns,
                 confirmationThreshold: confirmationThresholdSeconds,
-                activeGame: game,
-            })
+                activeGameId: game.gameId,
+            }
+            var configUpdateJson = JSON.stringify(config)
             TwitchExtHelper.configuration.set('broadcaster', EBSVersion, configUpdateJson);
             console.log(configUpdateJson);
             TwitchExtHelper.send('broadcast','application/json', {
-                type: "start",
+                type: BingoBroadcastEventType.Start,
                 payload: game
             });
         }).finally(() => {
@@ -150,7 +159,7 @@ export default function Config() {
         }
         BingoEBS.stopGame(activeGame.gameId).finally(() => {
             TwitchExtHelper.send('broadcast','application/json', {
-                type: "stop",
+                type: BingoBroadcastEventType.Stop,
                 payload: activeGame
             })
             setActiveGame(null)

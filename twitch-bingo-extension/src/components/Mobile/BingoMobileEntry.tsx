@@ -84,15 +84,16 @@ const BingoMobileEntry = React.forwardRef<HTMLDivElement, BingoMobileEntryProps>
              className={clsx("bingoEntry", bClass, props.isSelected ? [isPrompting ? "prompting" : "highlighted", "prompt"] : '')}
              onClickCapture={(_) => isCurrentElementActive ? setPrompting(!isPrompting) : props.onSelect(props.cell.key) }
              style={{ position: 'relative' }}>
-             <div>
-                    {props.cell.text}
-             </div>
-             <div
-                 className={clsx("bingoCellPrompt", (isCurrentElementActive && isPrompting) ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
-                 onClickCapture={ isPrompting ? (_) => confirmKey(props.cell.key) : null} >
-                 {LL.Mobile.ConfirmButton()}
-             </div>
-             { timerComponent }
+            <div className='key'>{props.cell.key}</div>
+            <div className='text'>
+               {props.cell.text}
+            </div>
+            <div
+                className={clsx("bingoCellPrompt", (isCurrentElementActive && isPrompting) ? "bingoCellPromptVisible" : "bingoCellPromptHidden")}
+                onClickCapture={ isPrompting ? (_) => confirmKey(props.cell.key) : null} >
+                {LL.Mobile.ConfirmButton()}
+            </div>
+            { timerComponent }
         </div>
     )
 })

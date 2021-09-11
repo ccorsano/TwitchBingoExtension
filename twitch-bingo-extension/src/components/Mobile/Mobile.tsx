@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import BingoGameComponent, { ActiveGameContext, ActiveGridContext } from '../../common/BingoGameComponent';
 import { BingoGridContext } from '../../common/BingoGridContext';
-import { getRGB, jasminePalette } from '../../common/BingoThemes';
 import LinearIndeterminateLoader from '../../common/LinearIndeterminateLoader';
 import { BingoGrid } from '../../EBS/BingoService/EBSBingoTypes';
 import { I18nContext } from '../../i18n/i18n-react';
@@ -78,7 +77,7 @@ export default function Mobile()
                                     if (! gameContext.isAuthorized)
                                     {
                                         return (
-                                            <div  style={{backgroundColor: getRGB(jasminePalette.base), width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                            <div style={{backgroundColor: '#000', width: '100vw', height: '100vh', overflow: 'hidden'}}>
                                                 <div>
                                                     <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
                                                 </div>
@@ -89,7 +88,7 @@ export default function Mobile()
                                     if (! gameContext.hasSharedIdentity)
                                     {
                                         return (
-                                        <div  style={{backgroundColor: getRGB(jasminePalette.base), width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                        <div  style={{backgroundColor: '#FFF', color: '#000', width: '100vw', height: '100vh', overflow: 'hidden'}}>
                                             <div style={{marginBottom: '2rem', marginTop: '1rem', padding: '1rem'}}>
                                                     {LL.OverlayBingoGrid.IdentityPromptMessage()}
                                                 </div>
@@ -105,7 +104,7 @@ export default function Mobile()
 
                                     const shouldRender = gameContext.isStarted && gridContext.grid && sortedEntries
                                     return shouldRender ? (
-                                        <div style={{backgroundColor: '#FFF', width: '100vw', height: '100vh', display: 'grid', gridTemplateRows: 'auto 1fr'}}>
+                                        <div style={{backgroundColor: '#000', width: '100vw', height: '100vh', display: 'grid', gridTemplateRows: 'auto 1fr'}}>
                                             <div style={{gridRow: 1, height: 'fit-content'}}>
                                                 <BingoMobileMiniGrid
                                                     cells={gridContext.grid.cells.map(c => gridContext.getCell(c.row, c.col)[0])}
@@ -125,7 +124,7 @@ export default function Mobile()
                                                     />
                                             </div>
                                         </div>
-                                    ): <div  style={{backgroundColor: getRGB(jasminePalette.base), width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                    ): <div  style={{backgroundColor: '#000', color: '#FFF', width: '100vw', height: '100vh', overflow: 'hidden'}}>
                                         <div>
                                             <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
                                             <div style={{marginTop: '2rem', textAlign: 'center'}}>

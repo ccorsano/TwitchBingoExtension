@@ -1,7 +1,8 @@
 import React from 'react'
-import { getRGB, jasminePalette } from '../../common/BingoThemes';
-import { I18nContext } from '../../i18n/i18n-react';
+import { seededRand } from '../../common/ExtensionUtils';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
+const headerTitle = require("../../../assets/BingoHeaderMobile.svg")
+require('./BingoMobileMiniGrid.scss');
 
 type BingoMobileMiniGridProps = {
     cells: Array<BingoGridCell>,
@@ -14,90 +15,99 @@ type BingoMobileMiniGridProps = {
 
 export default function BingoMobileMiniGrid(props: BingoMobileMiniGridProps)
 {
-    const { LL } = React.useContext(I18nContext)
-
     function getCell(row: number, col: number)
     {
         return props.cells.find(c => c.row == row && c.col == col)
     }
+
+    const cellSizeWithMargin = 900 / Math.max(props.columns, props.rows)
+    const cellSize = cellSizeWithMargin-10
+    const height = cellSizeWithMargin * props.rows + 180
+    const seedStr = React.useMemo(() => `${props.columns}${props.rows}${props.cells.map(c => c.key).join('_')}`, [props.rows, props.columns])
+    const rand = seededRand(seedStr)
     
     return (
-        <svg viewBox={`0 0 ${props.columns} ${props.rows / 2}`}>
+        <svg className="mobileGrid" viewBox={`0 0 1000 ${height}`}>
             <defs>
-                <filter id="dropShadow" x="0" y="0" width="110%" height="110%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="0.025" floodOpacity="0.3"/>
-                </filter>
             </defs>
-            {
-                [...Array(props.rows).keys()].map(row => {
-                    // let isRowComplete = gridContext.isRowComplete(row);
-                    return [...Array(props.columns).keys()].map(col => {
-                        // let isColComplete = gridContext.isColComplete(col);
-                        let cell = getCell(row, col);
-                        if (! cell)
-                        {
-                            var key = 1000 + col + (row * props.columns);
-                            return <rect key={key} x={col+0.025} y={row+0.025} width="0.9" height="0.45" rx="0.01" ry="0.01" />
-                        }
-                        else
-                        {
-                            const isSelected = cell.key === props.selectedKey
-                            var fill = isSelected ? getRGB(jasminePalette.prompt) : getRGB(jasminePalette.base)
-                            switch (cell.state) {
-                                case BingoEntryState.Pending:
-                                    fill = getRGB(jasminePalette.pending)
-                                    break;
-                                case BingoEntryState.Confirmed:
-                                    fill = getRGB(isSelected ? jasminePalette.baseHover : jasminePalette.confirmed)
-                                    break;
-                                case BingoEntryState.Missed:
-                                    fill = getRGB(isSelected ? jasminePalette.baseHover : jasminePalette.missed)
-                                    break;
-                                case BingoEntryState.Rejected:
-                                    fill = getRGB(isSelected ? jasminePalette.baseHover : jasminePalette.missed)
-                                    break;
-                                default:
-                                    break;
-                            }
+            <rect className="gridBorder" x="10" y="10" width="980" height={height-20} rx="10" ry="10" />
+            <image preserveAspectRatio="xMidYMid meet" x="50" y="0" width={900} height={125} href={headerTitle}/>
+            <line className="gridBorder" x1="10" x2={990} y1="127.5" y2="127.5" />
+            <g transform={"translate(0,14)"}>
+                {
+                    [...Array(props.rows).keys()].map(row => {
+                        // let isRowComplete = gridContext.isRowComplete(row);
+                        return [...Array(props.columns).keys()].map(col => {
+                            // let isColComplete = gridContext.isColComplete(col);
+                            let cell = getCell(row, col);
+                            if (cell)
+                            {
+                                const isSelected = cell.key === props.selectedKey
 
-                            var text = ""
-                            switch (cell.state) {
-                                case BingoEntryState.Pending:
-                                    text = LL.Mobile.PendingLabel()
-                                    break;
-                                case BingoEntryState.Confirmed:
-                                    text = "✔"
-                                    break;
-                                case BingoEntryState.Missed:
+                                var classes: string[] = Array();
+
+                                switch (cell.state) {
+                                    case BingoEntryState.Confirmed:
+                                        classes.push("confirmed")
+                                        break;
+                                    case BingoEntryState.Idle:
+                                        classes.push("idle")
+                                        break;
+                                    case BingoEntryState.Missed:
                                     case BingoEntryState.Rejected:
-                                    text = "✖"
-                                    break;
-                                default:
-                                    break;
-                            }
+                                        classes.push("missed")
+                                        break;
+                                    case BingoEntryState.Pending:
+                                        classes.push("pending")
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                if (isSelected)
+                                {
+                                    classes.push("highlighted")
+                                }
 
-                            return (
-                                <g key={cell.key} style={{userSelect: 'none'}}>
-                                    <rect
-                                        x={col+0.025}
-                                        y={(row/2.0)+0.025}
-                                        width="0.95"
-                                        height="0.45"
-                                        fill={fill}
-                                        filter="url(#dropShadow)"
-                                        strokeWidth="0.01"
-                                        strokeOpacity={isSelected ? "0.8" : "0.5"}
-                                        stroke="black"
-                                        rx="0.01"
-                                        ry="0.01"
-                                        onClickCapture={(_) => props.onSelectCell(col, row)}
-                                    />
-                                    <text x={col + 0.5} y={(row/2.0) + 0.3} fontSize="0.125" textAnchor="middle" fill="#333">{text}</text>
-                                </g>)
-                        }
+                                var text = cell.key
+
+                                const baseX = col*cellSizeWithMargin
+                                const baseY = row*cellSizeWithMargin
+                                const randX = rand()*(cellSize*0.250)-(cellSize*0.125)
+                                const randY = rand()*(cellSize*0.250)-(cellSize*0.125)
+
+                                const confirmationMark = cell.state == BingoEntryState.Confirmed ? (
+                                    <circle cx={randX+baseX+50+cellSize/2} cy={randY+baseY+135+cellSize/2} r={cellSize/2.25} />
+                                ) : null
+
+                                return (
+                                    <g className={classes.join(' ')} key={cell.key} style={{userSelect: 'none'}}>
+                                        <rect
+                                            className="background"
+                                            x={baseX+50}
+                                            y={baseY+135}
+                                            width={cellSize}
+                                            height={cellSize}
+                                            rx={cellSize/5}
+                                            ry={cellSize/5}
+                                            onClickCapture={(_) => props.onSelectCell(col, row)}
+                                        />
+                                        <text x={baseX+50+cellSize/2} y={baseY+160+cellSize/2} fontSize={cellSize/2}>{text}</text>
+                                        { confirmationMark }
+                                        <rect
+                                            x={baseX+50}
+                                            y={baseY+135}
+                                            z="10"
+                                            width={cellSize}
+                                            height={cellSize}
+                                            fill="rgba(255,255,255,0.0)"
+                                            onClickCapture={(_) => props.onSelectCell(col, row)}
+                                        />
+                                    </g>)
+                            }
+                        })
                     })
-                })
-            }
+                }
+            </g>
         </svg>
     )
 }
