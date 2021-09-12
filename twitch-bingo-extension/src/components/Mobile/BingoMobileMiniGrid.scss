@@ -1,12 +1,13 @@
 @import './MobileTheme.scss';
 
 svg.mobileGrid {
-    background-color: $grid-fill-color;
+    background-color: $panel-fill-color;
     max-height: 50vh;
 
     .gridBorder {
         stroke-width: 5;
         stroke: $grid-border-color;
+        fill: $grid-fill-color
     }
 
     g rect.background {

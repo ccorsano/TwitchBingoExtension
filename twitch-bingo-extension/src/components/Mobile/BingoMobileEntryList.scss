@@ -43,6 +43,7 @@
         text-overflow: ellipsis;
         grid-column-start: 2;
         grid-column-end: 4;
+        color: $grid-text-color;
     }
     cursor: pointer;
 }

@@ -104,7 +104,7 @@ export default function Mobile()
 
                                     const shouldRender = gameContext.isStarted && gridContext.grid && sortedEntries
                                     return shouldRender ? (
-                                        <div style={{backgroundColor: '#000', width: '100vw', height: '100vh', display: 'grid', gridTemplateRows: 'auto 1fr'}}>
+                                        <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr'}}>
                                             <div style={{gridRow: 1, height: 'fit-content'}}>
                                                 <BingoMobileMiniGrid
                                                     cells={gridContext.grid.cells.map(c => gridContext.getCell(c.row, c.col)[0])}
@@ -124,7 +124,7 @@ export default function Mobile()
                                                     />
                                             </div>
                                         </div>
-                                    ): <div  style={{backgroundColor: '#000', color: '#FFF', width: '100vw', height: '100vh', overflow: 'hidden'}}>
+                                    ): <div  style={{ color: '#FFF'}}>
                                         <div>
                                             <LinearIndeterminateLoader style={{marginBottom: '1rem', marginTop: '1rem'}} />
                                             <div style={{marginTop: '2rem', textAlign: 'center'}}>

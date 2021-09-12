@@ -1,5 +1,7 @@
 @import "../../common/BingoTheme.scss";
 
+// Black
+$panel-fill-color: #000;
 $grid-text-color: #000;
 $grid-text-inverted: #FFF;
 $grid-fill-color: #000;
@@ -12,3 +14,48 @@ $list-missed-background: lightgray;
 $list-missed-key: darkgray;
 $list-missed-text: #666;
 $list-pending-background: lightgray;
+
+// Bistre
+// $panel-fill-color: #856d4d;
+// $grid-text-color: #2F271B;
+// $grid-text-inverted: #F7F5F1;
+// $grid-fill-color: #856d4d;
+// $grid-border-color: #F7F5F1;
+// $cell-fill-color-base: #D0C1AD;
+// $cell-fill-color-missed: #EFEAE4;
+// $cell-fill-color-highlighted: #2F271B;
+// $cell-stroke-color-highlighted: #D8CBBB;
+// $list-missed-background: #EFEAE4;
+// $list-missed-key: #D0C1AD;
+// $list-missed-text: #6B6967;
+// $list-pending-background: #D8CBBB;
+
+// Ecru
+// $panel-fill-color: #c7bb83;
+// $grid-text-color: #F7F5ED;
+// $grid-text-inverted: #413B1D;
+// $grid-fill-color: #c7bb83;
+// $grid-border-color: #413B1D;
+// $cell-fill-color-base: #211D0F;
+// $cell-fill-color-missed: #413B1D;
+// $cell-fill-color-highlighted: #62582C;
+// $cell-stroke-color-highlighted: #83763B;
+// $list-missed-background: #413B1D;
+// $list-missed-key: #211D0F;
+// $list-missed-text: #413B1D;
+// $list-pending-background: #83763B;
+
+// Light French Beige
+// $panel-fill-color: #C8AD7F;
+// $grid-text-color: #211A0E;
+// $grid-text-inverted: #F7F3ED;
+// $grid-fill-color: #C8AD7F;
+// $grid-border-color: #F7F3ED;
+// $cell-fill-color-base: #E7DCC8;
+// $cell-fill-color-missed: #FBF9F6;
+// $cell-fill-color-highlighted: #211A0E;
+// $cell-stroke-color-highlighted: #D8C4A3;
+// $list-missed-background: #FBF9F6;
+// $list-missed-key: #E7DCC8;
+// $list-missed-text: #AEA699;
+// $list-pending-background: #D8C4A3;
