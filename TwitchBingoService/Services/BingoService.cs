@@ -348,7 +348,7 @@ namespace TwitchBingoService.Services
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey);
 
             Task moderationTask = Task.CompletedTask;
-            if (tentatives.Length == 1 && (game.moderators?.Any() ?? false))
+            if (tentatives.Length == 1)
             {
                 _logger.LogWarning($"Sending tentative notification to {string.Join(",", game.moderators)}");
                 await _ebsService.TryWhisperJson(game.channelId, game.moderators,
