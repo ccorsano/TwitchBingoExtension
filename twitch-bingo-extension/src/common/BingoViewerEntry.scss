@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:math";
 @import './BingoTheme.scss';
 @import './OverlayConstants.scss';
 
@@ -138,11 +139,11 @@
 };
 
 .bingoGrid.c4 .bingoCellPrompt {
-    background-size: map.get($overlay-columns-width, 4) / 1.5;
+    background-size: math.div(map.get($overlay-columns-width, 4), 1.5);
 };
 
 .bingoGrid.c5 .bingoCellPrompt {
-    background-size: map.get($overlay-columns-width, 5) / 1.5;
+    background-size: math.div(map.get($overlay-columns-width, 5), 1.5);
 };
 
 .bingoCellPromptVisible {
@@ -161,19 +162,19 @@
 };
 
 .bingoGrid.c2 .bingoCellPromptHidden {
-    bottom: map.get($overlay-rows-height, 2) / -2;
+    bottom: math.div(map.get($overlay-rows-height, 2),-2);
 };
 
 .bingoGrid.c3 .bingoCellPromptHidden {
-    bottom: map.get($overlay-rows-height, 3) / -2;
+    bottom: math.div(map.get($overlay-rows-height, 3),-2);
 };
 
 .bingoGrid.c4 .bingoCellPromptHidden {
-    bottom: map.get($overlay-rows-height, 4) / -2;
+    bottom: math.div(map.get($overlay-rows-height, 4),-2);
 };
 
 .bingoGrid.c5 .bingoCellPromptHidden {
-    bottom: map.get($overlay-rows-height, 5) / -2;
+    bottom: math.div(map.get($overlay-rows-height, 5),-2);
 };
 
 .bingoCell {
