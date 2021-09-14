@@ -51,28 +51,7 @@ const BingoMobileEntry = React.forwardRef<HTMLDivElement, BingoMobileEntryProps>
     }
     
     var showTimer: boolean = props.cell.timer != null;
-    var timerComponent: React.ReactElement = null;
-    if (showTimer)
-    {
-        var duration = (props.cell.timer.getTime() - Date.now()) / 1000;
-        if (duration > 0)
-        {
-            timerComponent = 
-            <div style={{ position: 'absolute', right: '0rem' }}>
-                <div style={{ display: 'inline-block' }}>
-                    <CountdownCircleTimer
-                        isPlaying
-                        size={50}
-                        strokeWidth={3}
-                        colors="#000"
-                        isLinearGradient={true}
-                        duration={duration}
-                        children={renderTime}
-                    />
-                </div>
-            </div>
-        }
-    }
+    var duration = showTimer ? (props.cell.timer.getTime() - Date.now()) / 1000 : 0;
 
     const confirmKey = (key: number) => {
         setPrompting(false)
@@ -93,7 +72,22 @@ const BingoMobileEntry = React.forwardRef<HTMLDivElement, BingoMobileEntryProps>
                 onClickCapture={ isPrompting ? (_) => confirmKey(props.cell.key) : null} >
                 {LL.Mobile.ConfirmButton()}
             </div>
-            { timerComponent }
+            <div className={clsx("bingoCellTimer", showTimer && duration > 0 ? "bingoCellTimerVisible" : "bingoCellTimerHidden")}>
+                <div style={{ display: 'inline-block' }}>
+                    {
+                        showTimer && duration > 0 ? 
+                        <CountdownCircleTimer
+                            isPlaying
+                            size={50}
+                            strokeWidth={3}
+                            colors="#000"
+                            isLinearGradient={true}
+                            duration={duration}
+                            children={renderTime}
+                        /> : null
+                    }
+                </div>
+            </div>
         </div>
     )
 })
