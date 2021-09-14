@@ -148,7 +148,7 @@ namespace TwitchBingoService.Storage
         public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key)
         {
             var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(TentativesTableName);
+            var table = client.GetTableReference(PendingTentativesTableName);
             try
             {
                 var query = new TableQuery<BingoTentativeEntity>();
