@@ -27,16 +27,22 @@ namespace TwitchBingoService.Storage.Azure
             {
                 Game = System.Text.Json.JsonSerializer.Deserialize<BingoGame>(SerializedGame);
             }
+            if (Game != null && !string.IsNullOrEmpty(SerializedModerators))
+            {
+                Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(SerializedModerators);
+            }
         }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
             SerializedGame = System.Text.Json.JsonSerializer.Serialize(Game);
+            SerializedModerators = System.Text.Json.JsonSerializer.Serialize(Game.moderators);
             return base.WriteEntity(operationContext);
         }
 
         public string ChannelId { get; set; }
         public string SerializedGame { get; set; }
+        public string SerializedModerators { get; set; }
         public BingoGame Game { get; set; }
     }
 }
