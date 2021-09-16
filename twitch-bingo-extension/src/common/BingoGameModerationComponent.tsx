@@ -41,10 +41,10 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         }
     }
 
-    const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
+    const receiveConfirmation = React.useCallback((confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
-        console.log(`Confirmation threshold: ${props.activeGame?.confirmationThreshold}`)
-        var delay = ParseTimespan(props.activeGame?.confirmationThreshold)
+        console.log(`Confirmation threshold: ${props.activeGame?.confirmationThreshold} (${props.activeGame})`)
+        var delay = ParseTimespan(props.activeGame.confirmationThreshold)
         console.log(`Will wait for ${delay}ms to ping for notification`)
         setTimeout(() => {
             console.log(`Pinging for notification`)
@@ -66,7 +66,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 return tentative
             })
         })
-    }
+    }, [props.activeGame])
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
