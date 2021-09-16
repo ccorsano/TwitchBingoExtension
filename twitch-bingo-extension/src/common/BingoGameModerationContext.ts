@@ -7,4 +7,5 @@ export type BingoGameModerationContext = {
     onConfirm: (entry: BingoEntry) => void;
     onTentativeExpire: (entry: BingoTentativeNotification) => void;
     onTestTentative: (entry: BingoEntry) => void;
+    onForceNotify: (entry: BingoEntry) => void;
 }

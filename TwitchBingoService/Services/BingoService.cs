@@ -278,7 +278,15 @@ namespace TwitchBingoService.Services
             entry.confirmedAt = DateTime.UtcNow;
             entry.confirmedBy = userId;
 
-            await _storage.WriteGame(game);
+            await Task.WhenAll(
+                _storage.WriteGame(game),
+                _storage.QueueNotification(gameId, key, new BingoNotification
+                {
+                    key = key,
+                    playerId = userId,
+                    type = NotificationType.Confirmation
+                })
+            );
 
             if (game.moderators?.Any() ?? false)
             {
@@ -299,11 +307,6 @@ namespace TwitchBingoService.Services
             }
 
             await ProcessTentatives(game, key);
-
-            var notification = Task.Delay(game.confirmationThreshold).ContinueWith(async t =>
-            {
-                await HandleNotifications(gameId, key);
-            });
 
             return entry;
         }
@@ -387,8 +390,18 @@ namespace TwitchBingoService.Services
             }
         }
 
-        private async Task HandleNotifications(Guid gameId, ushort key)
+        public async Task HandleNotifications(Guid gameId, ushort key)
         {
+            // Fetch notifications queue
+            var notifications = await _storage.UnqueueNotifications(gameId, key);
+
+            if (notifications.Length == 0)
+            {
+                _logger.LogWarning("No notifications to handle");
+                return;
+            }
+
+            // Fetch current game state
             _logger.LogInformation("Pushing notification for {gameId}, entry {key}", gameId, key);
             var game = await _storage.ReadGame(gameId);
             if (game == null)
@@ -396,22 +409,28 @@ namespace TwitchBingoService.Services
                 throw new ArgumentOutOfRangeException("gameId");
             }
 
+            // Retrieve entry from game
             var confirmedEntry = game.entries.First(e => e.key == key);
 
-            var confirmationTask = _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+            // Send confirm notification first
+            var confirmationTask = Task.CompletedTask;
+            if (notifications.Any(n => n.type == NotificationType.Confirmation))
             {
-                type = "confirm",
-                payload = new
+
+                confirmationTask = _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
                 {
-                    gameId = gameId,
-                    key = key,
-                    confirmationTime = confirmedEntry.confirmedAt,
-                    confirmedBy = confirmedEntry.confirmedBy,
-                }
-            }));
+                    type = "confirm",
+                    payload = new
+                    {
+                        gameId = gameId,
+                        key = key,
+                        confirmationTime = confirmedEntry.confirmedAt,
+                        confirmedBy = confirmedEntry.confirmedBy,
+                    }
+                }));
+            }
 
-            var notifications = await _storage.UnqueueNotifications(gameId, key);
-
+            // Process completion notifications
             var colComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId))
                     .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
             var rowComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId))
@@ -434,6 +453,7 @@ namespace TwitchBingoService.Services
             }));
             await confirmationTask;
 
+            // Send chat messages
             if (!game.hasChatIntegration)
             {
                 _logger.LogInformation("No chat integration for this game {gameId} on channel {channelId}, skipping.", game.gameId, game.channelId);

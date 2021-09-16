@@ -95,5 +95,25 @@ namespace TwitchBingoService.Controllers
                 });
             }
         }
+
+        [HttpPost("{gameId}/{key}/notify")]
+        [ProducesErrorResponseType(typeof(APIError))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
+        public async Task<IActionResult> PostNotify(Guid gameId, ushort key)
+        {
+            try
+            {
+                await _gameService.HandleNotifications(gameId, key);
+                return new EmptyResult();
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Error triggering notifications for game {gameId} for key {key} by moderator {playerName}", gameId, key, User.Identity.Name);
+                return new ConflictObjectResult(new APIError
+                {
+                    Error = ex.Message
+                });
+            }
+        }
     }
 }

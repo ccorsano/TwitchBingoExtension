@@ -239,13 +239,16 @@ namespace TwitchBingoService.Storage
                 {
                     batchDelete.Add(TableOperation.Delete(entity));
                 }
-                try
+                if (batchDelete.Count > 0)
                 {
-                    await table.ExecuteBatchAsync(batchDelete);
-                }
-                catch(StorageException ex)
-                {
-                    _logger.LogError(ex, "Failed to cleanup retrieved notifications for game {gameId} key {key}", gameId, key);
+                    try
+                    {
+                        await table.ExecuteBatchAsync(batchDelete);
+                    }
+                    catch (StorageException ex)
+                    {
+                        _logger.LogError(ex, "Failed to cleanup retrieved notifications for game {gameId} key {key}", gameId, key);
+                    }
                 }
 
                 return entityList.Select(e => e.ToNotification()).ToArray();

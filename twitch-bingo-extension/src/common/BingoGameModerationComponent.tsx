@@ -1,6 +1,6 @@
 import React from "react"
 import { BingoEBS } from "../EBS/BingoService/EBSBingoService"
-import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
+import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification, ParseTimespan } from "../EBS/BingoService/EBSBingoTypes"
 import { EBSError } from "../EBS/EBSBase"
 import { BingoBroadcastEvent, BingoBroadcastEventType } from "../model/BingoConfiguration"
 import { ActiveGameContext } from "./BingoGameComponent"
@@ -42,6 +42,12 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     }
 
     const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
+        // Schedule a ping to the server to trigger notifications
+        var delay = ParseTimespan(context.game?.confirmationThreshold)
+        setTimeout(() => {
+            BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
+        }, delay)
+
         setTentatives(currentTentatives => {
             return currentTentatives.map(tentative => {
                 if (tentative.gameId == confirmation.gameId && tentative.key == confirmation.key)
@@ -136,6 +142,10 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         receiveTentative(notification)
     }
 
+    const onForceNotify = (game: BingoGame, entry: BingoEntry) => {
+        BingoEBS.notify(game.gameId, entry.key.toString())
+    }
+
     return (
         <ActiveGameModerationContext.Provider value={
                 {
@@ -144,6 +154,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                     onConfirm: entry => onConfirm(context.game, entry),
                     onTentativeExpire: entry => onTentativeExpire(entry),
                     onTestTentative: entry => onTestTentative(context.game, entry),
+                    onForceNotify: entry => onForceNotify(context.game, entry),
                 }
             }>
             { props.children }

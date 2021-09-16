@@ -35,6 +35,10 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
         if (props.onTest) props.onTest(entry)
     }
 
+    const onForceNotify = (entry: BingoEntry) => {
+        moderationContext.onForceNotify(entry)
+    }
+
     return (
         <Paper elevation={3}>
             <div>
@@ -80,7 +84,7 @@ export default function ModerationBingoComponent(props: ModerationBingoComponent
                                     <div style={{gridColumn: 2, display: 'inline-grid', paddingLeft: '0.5rem'}}>
                                         <ButtonGroup size="small" style={{display:'inline-block'}}>
                                             <Button aria-label={LL.BingoModeration.ConfirmButtonLabel()} onClick={(_) => props.onConfirm(entry)} disabled={isConfirmed}>{LL.BingoModeration.ConfirmButton()}</Button>
-                                            { TwitchExtQuery.state === "testing" ? <Button aria-label="Test" onClick={(_) => onTest(entry)}>Test</Button> : null }
+                                            { TwitchExtQuery.state === "testing" ? <React.Fragment><Button aria-label="Test" onClick={(_) => onTest(entry)}>Test</Button><Button aria-label="Notify" onClick={(_) => onForceNotify(entry)}>‼</Button></React.Fragment> : null }
                                         </ButtonGroup>
                                     </div>
                                 </div>

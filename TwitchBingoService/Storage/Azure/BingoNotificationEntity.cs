@@ -29,7 +29,7 @@ namespace TwitchBingoService.Storage.Azure
         {
             return new BingoNotification
             {
-                key = Key,
+                key = (ushort)Key,
                 type = (NotificationType)Type,
                 playerId = PlayerId,
             };
@@ -39,9 +39,9 @@ namespace TwitchBingoService.Storage.Azure
 
         public DateTime NotificationTime { get; set; }
 
-        public ushort Key { get; set; }
+        public Int32 Key { get; set; }
 
-        public byte Type { get; set; }
+        public Int32 Type { get; set; }
 
         public string PlayerId { get; set; }
 

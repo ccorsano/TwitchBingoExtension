@@ -26,6 +26,10 @@ export class EBSBingoService extends EBSBase {
     confirm = (gameId: string, entryKey: string): Promise<BingoTentative> => {
         return this.servicePost("/game/" + encodeURI(gameId) + "/" + encodeURI(entryKey) + "/confirm", {});
     }
+    
+    notify = (gameId: string, entryKey: string): Promise<void> => {
+        return this.servicePost("/game/" + encodeURI(gameId) + "/" + encodeURI(entryKey) + "/notify", {});
+    }
 
     getGrid = (gameId: string): Promise<BingoGrid> => {
         return this.serviceFetch("/game/" + encodeURI(gameId) + "/grid", {});

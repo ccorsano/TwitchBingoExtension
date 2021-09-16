@@ -11,6 +11,7 @@ namespace TwitchBingoService.Model
         CompletedRow = 0,
         CompletedColumn = 1,
         CompletedGrid = 2,
+        Confirmation = 3,
     }
 
     [ProtoContract]
