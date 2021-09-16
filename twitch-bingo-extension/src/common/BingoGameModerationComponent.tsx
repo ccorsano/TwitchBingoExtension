@@ -1,6 +1,6 @@
 import React from "react"
 import { BingoEBS } from "../EBS/BingoService/EBSBingoService"
-import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification, ParseTimespan } from "../EBS/BingoService/EBSBingoTypes"
+import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
 import { EBSError } from "../EBS/EBSBase"
 import { BingoBroadcastEvent, BingoBroadcastEventType } from "../model/BingoConfiguration"
 import { ActiveGameContext } from "./BingoGameComponent"
