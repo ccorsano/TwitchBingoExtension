@@ -107,6 +107,7 @@ export default function VideoOverlay()
                                 <Suspense fallback={<LinearIndeterminateLoader />}>
                                     <BingoGameModerationComponent
                                         activeGame={gameContext.game}
+                                        confirmationTimeout={ParseTimespan(gameContext.game?.confirmationThreshold ?? "00:00:00")}
                                         onReceiveTentative={onTentativeNotification}
                                         onNotificationsEmpty={onNotificationsEmpty} >
                                         <ActiveGameModerationContext.Consumer>

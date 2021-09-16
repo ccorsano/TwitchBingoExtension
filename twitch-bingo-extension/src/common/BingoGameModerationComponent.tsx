@@ -13,6 +13,7 @@ export const ActiveGameModerationContext = React.createContext<BingoGameModerati
 type BingoGameModerationComponentProps = {
     children?: React.ReactNode,
     activeGame?: BingoGame,
+    confirmationTimeout: number,
     onReceiveTentative?: (tentative: BingoTentativeNotification) => void,
     onReceiveConfirmation?: (confirmation: BingoConfirmationNotification) => void,
     onNotificationsEmpty?: () => void,
@@ -41,15 +42,14 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         }
     }
 
-    const receiveConfirmation = React.useCallback((confirmation: BingoConfirmationNotification) => {
+    const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
         console.log(`Confirmation threshold: ${props.activeGame?.confirmationThreshold} (${props.activeGame})`)
-        var delay = ParseTimespan(props.activeGame.confirmationThreshold)
-        console.log(`Will wait for ${delay}ms to ping for notification`)
+        console.log(`Will wait for ${props.confirmationTimeout}ms to ping for notification`)
         setTimeout(() => {
-            console.log(`Pinging for notification`)
+            console.log(`Pinging for notification gameId: ${confirmation.gameId} key: ${confirmation.key}`)
             BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
-        }, delay)
+        }, props.confirmationTimeout)
 
         setTentatives(currentTentatives => {
             return currentTentatives.map(tentative => {
@@ -66,7 +66,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 return tentative
             })
         })
-    }, [props.activeGame])
+    }
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
