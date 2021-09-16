@@ -1,11 +1,7 @@
 export type PaletteColor = {
     name: string,
     hex: string,
-    rgb: number[],
-    cmyk: number[],
-    hsb: number[],
-    hsl: number[],
-    lab: number[],
+    rgb: number[]
 }
 
 export function getRGB(color: PaletteColor): string {
@@ -21,72 +17,44 @@ export function getHex(color: PaletteColor): string {
 export const jasminePalette = {
     base:
     {
-        name:"Floral White",
-        hex:"fbf7ef",
-        rgb:[251,247,239],
-        cmyk:[0,2,5,2],
-        hsb:[40,5,98],
-        hsl:[40,60,96],
-        lab:[97,0,4]
+        name:"White",
+        hex:"FFF",
+        rgb:[255,255,255]
     },
     baseHover:
     {
-        name:"Cornsilk",
-        hex:"fff3d6",
-        rgb:[255,243,214],
-        cmyk:[0,5,16,0],
-        hsb:[42,16,100],
-        hsl:[42,100,92],
-        lab:[96,-1,15]
+        name:"Alice Blue",
+        hex:"E7F2F9",
+        rgb:[231,242,249]
     },
     prompt:
     {
-        name:"Dutch White",
-        hex:"fae8bf",
-        rgb:[250,232,191],
-        cmyk:[0,7,24,2],
-        hsb:[42,24,98],
-        hsl:[42,86,86],
-        lab:[92,0,22]
+        name:"Cadet Grey",
+        hex:"8296A6",
+        rgb:[130,150,166]
     },
     promptHover:
     {
-        name:"Banana Mania",
-        hex:"fae7b0",
-        rgb:[250,231,176],
-        cmyk:[0,8,30,2],
-        hsb:[45,30,98],
-        hsl:[45,88,84],
-        lab:[92,-2,29]
+        name:"Cadet Grey (Light)",
+        hex:"A0AFBB",
+        rgb:[160,175,187]
     },
     pending:
     {
-        name:"Banana Mania",
-        hex:"ffe6a7",
-        rgb:[255,230,167],
-        cmyk:[0,10,35,0],
-        hsb:[43,35,100],
-        hsl:[43,100,83],
-        lab:[92,0,34]
+        name:"Slate gray",
+        hex:"617889",
+        rgb:[97,120,137]
     },
     confirmed:
     {
-        name:"Jasmine",
-        hex:"ffe194",
-        rgb:[255,225,148],
-        cmyk:[0,12,42,0],
-        hsb:[43,42,100],
-        hsl:[43,100,79],
-        lab:[90,0,41]
+        name:"Cadet Grey",
+        hex:"94A5B3",
+        rgb:[148, 165, 179]
     },
     missed:
     {
         name:"Light Gray",
         hex:"d4d4d4",
-        rgb:[212,212,212],
-        cmyk:[0,0,0,17],
-        hsb:[0,0,83],
-        hsl:[0,0,83],
-        lab:[85,0,0]
+        rgb:[212,212,212]
     }
 }
