@@ -43,8 +43,11 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
 
     const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
+        console.log(`Confirmation threshold: ${context.game?.confirmationThreshold}`)
         var delay = ParseTimespan(context.game?.confirmationThreshold)
+        console.log(`Will wait for ${delay}ms to ping for notification`)
         setTimeout(() => {
+            console.log(`Pinging for notification`)
             BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
         }, delay)
 
