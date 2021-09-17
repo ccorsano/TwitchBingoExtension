@@ -112,7 +112,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
             console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
             TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         }
-    }, [game])
+    }, [])
 
     React.useEffect(() => {
         if (tentatives.length == 0)
