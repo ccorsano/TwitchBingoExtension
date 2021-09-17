@@ -106,8 +106,6 @@ export default function VideoOverlay()
                             moderationDrawer = (
                                 <Suspense fallback={<LinearIndeterminateLoader />}>
                                     <BingoGameModerationComponent
-                                        activeGame={gameContext.game}
-                                        confirmationTimeout={ParseTimespan(gameContext.game?.confirmationThreshold ?? "00:00:00")}
                                         onReceiveTentative={onTentativeNotification}
                                         onNotificationsEmpty={onNotificationsEmpty} >
                                         <ActiveGameModerationContext.Consumer>

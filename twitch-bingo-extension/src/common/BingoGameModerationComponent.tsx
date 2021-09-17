@@ -1,6 +1,6 @@
 import React from "react"
 import { BingoEBS } from "../EBS/BingoService/EBSBingoService"
-import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
+import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification, ParseTimespan } from "../EBS/BingoService/EBSBingoTypes"
 import { EBSError } from "../EBS/EBSBase"
 import { BingoBroadcastEvent, BingoBroadcastEventType } from "../model/BingoConfiguration"
 import { ActiveGameContext } from "./BingoGameComponent"
@@ -12,8 +12,6 @@ export const ActiveGameModerationContext = React.createContext<BingoGameModerati
 
 type BingoGameModerationComponentProps = {
     children?: React.ReactNode,
-    activeGame?: BingoGame,
-    confirmationTimeout: number,
     onReceiveTentative?: (tentative: BingoTentativeNotification) => void,
     onReceiveConfirmation?: (confirmation: BingoConfirmationNotification) => void,
     onNotificationsEmpty?: () => void,
@@ -22,7 +20,7 @@ type BingoGameModerationComponentProps = {
 export default function BingoGameModerationComponent(props: BingoGameModerationComponentProps)
 {
     const context = React.useContext(ActiveGameContext)
-
+    
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
 
     const receiveTentative = (notification: BingoTentativeNotification) => {
@@ -42,14 +40,19 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         }
     }
 
-    const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
+    const receiveConfirmation = React.useCallback((confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
-        console.log(`Confirmation threshold: ${props.activeGame?.confirmationThreshold} (${props.activeGame})`)
-        console.log(`Will wait for ${props.confirmationTimeout}ms to ping for notification`)
+        console.log(`Confirmation threshold: ${context.game?.confirmationThreshold} (${context.game})`)
+        if (! context.game?.confirmationThreshold)
+        {
+            console.log("Error: no active game in context")
+        }
+        var delay = ParseTimespan(context.game?.confirmationThreshold)
+        console.log(`Will wait for ${delay}ms to ping for notification`)
         setTimeout(() => {
             console.log(`Pinging for notification gameId: ${confirmation.gameId} key: ${confirmation.key}`)
             BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
-        }, props.confirmationTimeout)
+        }, delay)
 
         setTentatives(currentTentatives => {
             return currentTentatives.map(tentative => {
@@ -66,7 +69,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 return tentative
             })
         })
-    }
+    }, [context])
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);

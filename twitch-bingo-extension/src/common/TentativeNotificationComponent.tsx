@@ -27,6 +27,7 @@ export default function TentativeNotificationComponent(props: TentativeNotificat
         setReferenceTime(new Date())
     };
 
+    console.log(`TentativeNotificationComponent: ${props.confirmationTimeout}`)
     var duration: number = (referenceTime.getTime() - Date.now()) + props.confirmationTimeout;
     
     return (
