@@ -1,3 +1,5 @@
+import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
 import React from "react"
 import { BingoEBS } from "../EBS/BingoService/EBSBingoService"
 import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoTentativeNotification, ParseTimespan } from "../EBS/BingoService/EBSBingoTypes"
@@ -7,6 +9,7 @@ import { ActiveGameContext } from "./BingoGameComponent"
 import { BingoGameModerationContext } from "./BingoGameModerationContext"
 import { TwitchExtHelper } from "./TwitchExtension"
 
+dayjs.extend(utc)
 
 export const ActiveGameModerationContext = React.createContext<BingoGameModerationContext>(null)
 
@@ -22,7 +25,8 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     const context = React.useContext(ActiveGameContext)
     
     const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0))
-    const [game, setGame] = React.useState(null)
+    const [pendingConfirmations, setPendingConfirmations] = React.useState(new Array<BingoConfirmationNotification>(0))
+    const [game, setGame] = React.useState<BingoGame>(null)
 
     React.useEffect(() => {
         if (context.game != game)
@@ -31,6 +35,35 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
             setGame(context.game)
         }
     }, [game, context])
+
+    React.useEffect(() => {
+        if (game)
+        {
+            var currentTime = dayjs.utc()
+            const confirmationThreshold = ParseTimespan(game.confirmationThreshold)
+            const interval = setInterval(() => {
+                var remaining = new Array<BingoConfirmationNotification>(0)
+                pendingConfirmations.forEach(confirmation => {
+                    var confirmationTime = dayjs(confirmation.confirmationTime)
+                    var expirationTime = confirmationTime.add(confirmationThreshold, 'ms')
+                    if (currentTime > expirationTime)
+                    {
+                        console.log(`Notifying confirmation ${confirmation.key}`)
+                        BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
+                    }
+                    else
+                    {
+                        remaining.push(confirmation)
+                    }
+                });
+                setPendingConfirmations(remaining)
+            }, 1000)
+
+            return () => {
+                clearInterval(interval)
+            }
+        }
+    }, [game, pendingConfirmations])
 
     const receiveTentative = (notification: BingoTentativeNotification) => {
         setTentatives(currentTentatives => {
@@ -49,20 +82,8 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         }
     }
 
-    const receiveConfirmation = (activeGame: BingoGame, confirmation: BingoConfirmationNotification) => {
-        // Schedule a ping to the server to trigger notifications
-        console.log(`Confirmation threshold: ${activeGame?.confirmationThreshold} (${activeGame})`)
-        if (! activeGame?.confirmationThreshold)
-        {
-            console.log("Error: no active game in context")
-        }
-        var delay = ParseTimespan(activeGame?.confirmationThreshold)
-        console.log(`Will wait for ${delay}ms to ping for notification`)
-        setTimeout(() => {
-            console.log(`Pinging for notification gameId: ${confirmation.gameId} key: ${confirmation.key}`)
-            BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
-        }, delay)
-
+    const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
+        setPendingConfirmations(currentConfirmations => [...currentConfirmations, confirmation])
         setTentatives(currentTentatives => {
             return currentTentatives.map(tentative => {
                 if (tentative.gameId == confirmation.gameId && tentative.key == confirmation.key)
@@ -91,13 +112,13 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         });
         switch (message.type) {
             case BingoBroadcastEventType.Tentative:
-                var notification = message.payload as BingoTentativeNotification;
-                receiveTentative(notification);
+                var notification = message.payload as BingoTentativeNotification
+                receiveTentative(notification)
                 break;
             case BingoBroadcastEventType.Confirm:
-                var confirm = message.payload as BingoConfirmationNotification;
+                var confirm = message.payload as BingoConfirmationNotification
                 console.log(`Received notification of confirmation of key ${confirm.key} by ${confirm.confirmedBy}, game ${game}`)
-                receiveConfirmation(game, confirm);
+                receiveConfirmation(confirm)
                 break;
             default:
                 break;
@@ -158,7 +179,13 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     }
 
     const onForceNotify = (game: BingoGame, entry: BingoEntry) => {
-        BingoEBS.notify(game.gameId, entry.key.toString())
+        var fakeConfirmation: BingoConfirmationNotification = {
+            gameId: game.gameId,
+            confirmationTime: dayjs.utc().toDate(),
+            confirmedBy: 'me',
+            key: entry.key
+        }
+        setPendingConfirmations(currentConfirmations => [...currentConfirmations, fakeConfirmation])
     }
 
     return (
