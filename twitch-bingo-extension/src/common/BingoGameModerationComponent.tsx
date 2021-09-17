@@ -25,9 +25,9 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     const [game, setGame] = React.useState(null)
 
     React.useEffect(() => {
-        console.log(`Refreshing game from context: ${game?.gameId} => ${context.game?.gameId}`)
         if (context.game != game)
         {
+            console.log(`Refreshing game from context: ${game?.gameId} => ${context.game?.gameId}`)
             setGame(context.game)
         }
     }, [game, context])
@@ -49,7 +49,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         }
     }
 
-    const receiveConfirmation = (activeGame: BingoGame,confirmation: BingoConfirmationNotification) => {
+    const receiveConfirmation = (activeGame: BingoGame, confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
         console.log(`Confirmation threshold: ${activeGame?.confirmationThreshold} (${activeGame})`)
         if (! activeGame?.confirmationThreshold)
@@ -96,7 +96,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 break;
             case BingoBroadcastEventType.Confirm:
                 var confirm = message.payload as BingoConfirmationNotification;
-                console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
+                console.log(`Received notification of confirmation of key ${confirm.key} by ${confirm.confirmedBy}, game ${game}`)
                 receiveConfirmation(game, confirm);
                 break;
             default:
@@ -112,7 +112,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
             console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
             TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         }
-    }, [])
+    }, [game])
 
     React.useEffect(() => {
         if (tentatives.length == 0)
