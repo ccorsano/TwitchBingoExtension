@@ -49,14 +49,14 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         }
     }
 
-    const receiveConfirmation = React.useCallback((confirmation: BingoConfirmationNotification) => {
+    const receiveConfirmation = (activeGame: BingoGame,confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
-        console.log(`Confirmation threshold: ${game?.confirmationThreshold} (${game})`)
-        if (! context.game?.confirmationThreshold)
+        console.log(`Confirmation threshold: ${activeGame?.confirmationThreshold} (${activeGame})`)
+        if (! activeGame?.confirmationThreshold)
         {
             console.log("Error: no active game in context")
         }
-        var delay = ParseTimespan(game?.confirmationThreshold)
+        var delay = ParseTimespan(activeGame?.confirmationThreshold)
         console.log(`Will wait for ${delay}ms to ping for notification`)
         setTimeout(() => {
             console.log(`Pinging for notification gameId: ${confirmation.gameId} key: ${confirmation.key}`)
@@ -78,7 +78,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 return tentative
             })
         })
-    }, [game])
+    }
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
@@ -97,7 +97,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
             case BingoBroadcastEventType.Confirm:
                 var confirm = message.payload as BingoConfirmationNotification;
                 console.log("Received notification of confirmation of key " + confirm.key + " by " + confirm.confirmedBy)
-                receiveConfirmation(confirm);
+                receiveConfirmation(game, confirm);
                 break;
             default:
                 break;
