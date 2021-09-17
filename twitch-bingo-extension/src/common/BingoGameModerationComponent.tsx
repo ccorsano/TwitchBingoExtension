@@ -80,7 +80,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
         })
     }
 
-    const onReceiveWhisper = (_target, _contentType, messageStr) => {
+    const onReceiveWhisper = React.useCallback((_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
         let message: BingoBroadcastEvent = JSON.parse(messageStr, (key, value) => {
             if (key == "tentativeTime" || key == "confirmationTime")
@@ -102,7 +102,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
             default:
                 break;
         }
-    }
+    }, [game])
 
     React.useEffect(() => {
         console.log(`Registering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
