@@ -21,7 +21,16 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
 {
     const context = React.useContext(ActiveGameContext)
     
-    const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0));
+    const [tentatives, setTentatives] = React.useState(new Array<BingoTentativeNotification>(0))
+    const [game, setGame] = React.useState(null)
+
+    React.useEffect(() => {
+        console.log(`Refreshing game from context: ${game?.gameId} => ${context.game?.gameId}`)
+        if (context.game != game)
+        {
+            setGame(context.game)
+        }
+    }, [game, context])
 
     const receiveTentative = (notification: BingoTentativeNotification) => {
         setTentatives(currentTentatives => {
@@ -42,12 +51,12 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
 
     const receiveConfirmation = React.useCallback((confirmation: BingoConfirmationNotification) => {
         // Schedule a ping to the server to trigger notifications
-        console.log(`Confirmation threshold: ${context.game?.confirmationThreshold} (${context.game})`)
+        console.log(`Confirmation threshold: ${game?.confirmationThreshold} (${game})`)
         if (! context.game?.confirmationThreshold)
         {
             console.log("Error: no active game in context")
         }
-        var delay = ParseTimespan(context.game?.confirmationThreshold)
+        var delay = ParseTimespan(game?.confirmationThreshold)
         console.log(`Will wait for ${delay}ms to ping for notification`)
         setTimeout(() => {
             console.log(`Pinging for notification gameId: ${confirmation.gameId} key: ${confirmation.key}`)
@@ -69,7 +78,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 return tentative
             })
         })
-    }, [context])
+    }, [game])
 
     const onReceiveWhisper = (_target, _contentType, messageStr) => {
         console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
