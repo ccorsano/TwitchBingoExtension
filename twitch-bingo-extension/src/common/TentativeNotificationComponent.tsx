@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { CountdownCircleTimer } from "react-countdown-circle-timer"
 import { BingoEntry } from "../EBS/BingoService/EBSBingoTypes"
 import { bingoStyles } from "./BingoStyles"
+import { I18nContext } from "../i18n/i18n-react"
 
 type TentativeNotificationComponentProps = {
     gameId: string,
@@ -17,6 +18,8 @@ type TentativeNotificationComponentProps = {
 
 export default function TentativeNotificationComponent(props: TentativeNotificationComponentProps)
 {
+    const { LL } = React.useContext(I18nContext)
+
     const [isConfirmed, setConfirmed] = React.useState(props.isConfirmed);
     const [referenceTime, setReferenceTime] = React.useState<Date>(props.referenceTime);
     const classes = bingoStyles();
@@ -57,7 +60,7 @@ export default function TentativeNotificationComponent(props: TentativeNotificat
                 {props.entry.text}
             </div>
             <div style={{gridColumn: 3, display: 'inline-grid'}}>
-                <Button onClick={handleConfirm} disabled={isConfirmed}>Confirm</Button>
+                <Button aria-label={LL.BingoModeration.ConfirmButtonLabel()} onClick={handleConfirm} disabled={isConfirmed}>{LL.BingoModeration.ConfirmButton()}</Button>
             </div>
         </div>
     )
