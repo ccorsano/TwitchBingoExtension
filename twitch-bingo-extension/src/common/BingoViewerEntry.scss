@@ -314,13 +314,13 @@
 };
 
 .bingoCell.missed {
-    opacity: 0.35;
+    opacity: 0.60;
     background-color: #FFF;
     color: #000;
 };
 
 .bingoCell.rejected {
-    opacity: 0.35;
+    opacity: 0.60;
     background-color: #FFF;
     color: #000;
 };
@@ -328,7 +328,7 @@
 .countdownPrompt {
     cursor: unset;
     background: rgba(255,255,255,0.9);
-    text-shadow: 0 0 2vh $marker-color-opaque;
+    text-shadow: 0 0 2vh #FFF;
     padding-top: 0;
     padding-bottom: 0;
     height: 100%;
