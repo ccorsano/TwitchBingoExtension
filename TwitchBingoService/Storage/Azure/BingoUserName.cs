@@ -9,6 +9,7 @@ namespace TwitchBingoService.Storage.Azure
     public class BingoUserName : TableEntity
     {
         public BingoUserName()
+        {
 
         }
 
