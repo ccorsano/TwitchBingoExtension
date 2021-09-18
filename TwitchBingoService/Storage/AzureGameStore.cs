@@ -105,7 +105,7 @@ namespace TwitchBingoService.Storage
             var result = await table.ExecuteAsync(retrieve);
             if (result.HttpStatusCode / 100 != 2)
             {
-                throw new Exception("Could not save username to storage");
+                return null;
             }
             return (result.Result as BingoUserName).UserName;
         }
