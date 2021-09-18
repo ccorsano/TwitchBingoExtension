@@ -39,6 +39,7 @@ export default function BingoMobileEntryList(props: BingoMobileEntryListProps)
                     
                     return (
                         <BingoMobileEntry
+                            key={cell.key}
                             ref={(ref) => { entriesRefs.current.set(cell.key, ref) } }
                             cell={cell}
                             isSelected={isCurrentElementSelected}

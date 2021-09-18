@@ -119,14 +119,14 @@ export default function Config() {
         BingoEBS.createGame({
             rows: rows,
             columns: columns,
-            entries: selectedEntries.map<EBSBingo.BingoEntry>((entryKey: number) => {
+            entries: selectedEntries.map<EBSBingo.BingoEntry>((entryKey: number, index: number) => {
                 var entry:BingoEntry = entries.find(b => b.key == entryKey);
                 if (! entry)
                 {
                     throw "Missing entry with key " + entryKey;
                 }
                 return {
-                    key: entry.key,
+                    key: index + 1,
                     text: entry.text,
                 };
             }),

@@ -32,11 +32,11 @@ export default function EntrySelectionView(props:EntrySelectionViewProps)
     {
         targetListElement = <List>
             {
-                props.selectedEntries.map(key => {
+                props.selectedEntries.map((key, index) => {
                     var entry:BingoEditableEntry = props.entries.find(b => b.key == key);
                     return <ListItem button onClick={() => props.onRemoveFromSelection(entry)} key={key}>
                         <ListItemText
-                            primary={entry.text}
+                            primary={`${index}) ${entry.text}`}
                         />
                         <IconButton onClickCapture={() => props.onRemoveFromSelection(entry)} size="small">
                             <Icon>
