@@ -42,4 +42,26 @@ svg.mobileGrid {
             fill: $grid-text-inverted;
         }
     }
+
+    g.highlighted.confirmed {
+        rect.background {
+            fill: $cell-fill-color-base;
+            stroke: $cell-fill-color-missed;
+            stroke-opacity: 1.0;
+        }
+        text {
+            fill: $grid-text-color;
+        }
+    }
+
+    g.highlighted.missed {
+        rect.background {
+            fill: $cell-fill-color-missed;
+            stroke: $cell-stroke-color-highlighted;
+            stroke-opacity: 1.0;
+        }
+        text {
+            fill: $cell-fill-color-highlighted;
+        }
+    }
 }

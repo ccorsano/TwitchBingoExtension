@@ -148,12 +148,12 @@
 
 .bingoCellPromptVisible {
     height: unset;
-    opacity: 0.9;
+    opacity: 1.0;
     bottom: 0px;
     &:hover {
         cursor: pointer;
-        color: #000;
-        text-shadow: 0 0 2vh $marker-color-opaque;
+        color: #FFF;
+        text-shadow: 0 0 2vh $idle-hover;
     }
 };
 

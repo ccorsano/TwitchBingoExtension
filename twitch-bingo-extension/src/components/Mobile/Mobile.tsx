@@ -94,7 +94,7 @@ export default function Mobile()
                                                 </div>
                                                 <div
                                                     className={clsx("bingoCellPrompt", "bingoCellPromptVisible")}
-                                                    style={{position: 'unset', maxWidth: 'unset', textAlign: 'center', height: 'fit-content'}}
+                                                    style={{position: 'unset', maxWidth: 'unset', textAlign: 'center', height: 'fit-content', borderRadius: 'unset'}}
                                                     onClickCapture={(_) => gameContext.promptIdentity()}>
                                                     {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                                                 </div>
