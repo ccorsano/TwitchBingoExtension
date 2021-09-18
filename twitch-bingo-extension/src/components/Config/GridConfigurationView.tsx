@@ -25,6 +25,7 @@ type GridConfigurationViewProps = {
     onSave: () => void;
     onStart: () => void;
     isStarting: boolean;
+    canEnableChat: boolean;
 }
 
 export default function GridConfigurationView(props:GridConfigurationViewProps)
@@ -105,6 +106,19 @@ export default function GridConfigurationView(props:GridConfigurationViewProps)
                     value={props.confirmationThresholdSeconds}
                     onChange={(_, value) => props.onConfirmationTimeoutChange(value as number)}
                 />
+                <Box>
+                    {
+                        props.canEnableChat ?
+                        <Alert severity="info">
+                            <AlertTitle>{LL.Config.DeactivateChatIntegrationTitle()}</AlertTitle>
+                            {LL.Config.DeactivateChatIntegrationText()}
+                        </Alert> :
+                        <Alert severity="warning">
+                            <AlertTitle>{LL.Config.ActivateChatIntegrationTitle()}</AlertTitle>
+                            {LL.Config.ActivateChatIntegrationText()}
+                        </Alert>
+                    }
+                </Box>
             </CardContent>
             <CardActions>
                 <Button variant="contained" color="primary" onClick={props.onSave}>

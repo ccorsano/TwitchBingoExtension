@@ -146,6 +146,10 @@ export type Translation = {
 			 * Stop game
 			 */
 			'StopButton': string
+			/**
+			 * Loading configuration ...
+			 */
+			'LoadingConfiguration': string
 		}
 		'EntrySelectionView': {	
 			/**
@@ -187,6 +191,22 @@ export type Translation = {
 			 */
 			'EditLabel': string
 		}
+		/**
+		 * Chat integration is enabled
+		 */
+		'DeactivateChatIntegrationTitle': string
+		/**
+		 * You can disable chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.
+		 */
+		'DeactivateChatIntegrationText': string
+		/**
+		 * Chat integration is disabled
+		 */
+		'ActivateChatIntegrationTitle': string
+		/**
+		 * You can allow chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.
+		 */
+		'ActivateChatIntegrationText': string
 	}
 }
 
@@ -327,6 +347,10 @@ export type TranslationFunctions = {
 			 * Stop game
 			 */
 			'StopButton': () => LocalizedString
+			/**
+			 * Loading configuration ...
+			 */
+			'LoadingConfiguration': () => LocalizedString
 		}
 		'EntrySelectionView': {	
 			/**
@@ -368,6 +392,22 @@ export type TranslationFunctions = {
 			 */
 			'EditLabel': () => LocalizedString
 		}
+		/**
+		 * Chat integration is enabled
+		 */
+		'DeactivateChatIntegrationTitle': () => LocalizedString
+		/**
+		 * You can disable chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.
+		 */
+		'DeactivateChatIntegrationText': () => LocalizedString
+		/**
+		 * Chat integration is disabled
+		 */
+		'ActivateChatIntegrationTitle': () => LocalizedString
+		/**
+		 * You can allow chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.
+		 */
+		'ActivateChatIntegrationText': () => LocalizedString
 	}
 }
 

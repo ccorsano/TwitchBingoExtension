@@ -44,6 +44,7 @@ const en: BaseTranslation = {
 			StatusActive: "Active",
 			StatusInactive: "Inactive",
 			StopButton: "Stop game",
+			LoadingConfiguration: "Loading configuration ...",
 		},
 		EntrySelectionView: {
 			Title: "Selection",
@@ -57,7 +58,11 @@ const en: BaseTranslation = {
 			DeleteLabelCantRemove: "Cannot delete a selected entry",
 			AddSelectionLabel: "Add to selection",
 			EditLabel: "Edit this entry",
-		}
+		},
+		DeactivateChatIntegrationTitle: "Chat integration is enabled",
+		DeactivateChatIntegrationText: "You can disable chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.",
+		ActivateChatIntegrationTitle: "Chat integration is disabled",
+		ActivateChatIntegrationText: "You can allow chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.",
 	},
 }
 

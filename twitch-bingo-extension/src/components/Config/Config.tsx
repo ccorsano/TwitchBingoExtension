@@ -21,6 +21,8 @@ export default function Config() {
     const [confirmationThresholdSeconds, setConfirmationThresholdSeconds] = React.useState(120)
     const [activeGame, setActiveGame] = React.useState<BingoGame>(null)
     const [isStarting, setStarting] = React.useState(false)
+    const [isLoading, setLoading] = React.useState(true)
+    const [canEnableChat, setCanEnableChat] = React.useState(false)
 
     const isSelected = React.useCallback((entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key), [selectedEntries])
 
@@ -38,6 +40,7 @@ export default function Config() {
         setRows(configContent?.rows ?? 3)
         setColumns(configContent?.columns ?? 3)
         setConfirmationThresholdSeconds(configContent?.confirmationThreshold ?? 120)
+        setCanEnableChat(TwitchExtHelper.features.isChatEnabled)
 
         
         const activeGameId: string = configContent.activeGameId ?? configContent.activeGame?.gameId
@@ -49,6 +52,9 @@ export default function Config() {
                 })
                 .catch(error => {
                     console.log(`Error fetching game ${activeGameId}: ${error}`)
+                })
+                .finally(() => {
+                    setLoading(false)
                 })
         }
     }, [activeGame])
@@ -214,10 +220,10 @@ export default function Config() {
 
     return (
         <React.Fragment>
-            <StatusCard isActive={activeGame != null} onStop={onStop} />,
+            <StatusCard isActive={activeGame != null} isLoading={isLoading} onStop={onStop} />,
             <React.Fragment>
             {
-                activeGame != null ? null :
+                (activeGame != null || isLoading) ? null :
                 [
                     <LibraryEditor
                         entries={entries}
@@ -245,6 +251,7 @@ export default function Config() {
                         onSave={onSave}
                         onStart={onStart}
                         isStarting={isStarting}
+                        canEnableChat={canEnableChat}
                     />
                 ]
             }

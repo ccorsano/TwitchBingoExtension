@@ -44,6 +44,7 @@ const fr: Translation = {
 			StatusActive: "Partie en cours",
 			StatusInactive: "Inactif",
 			StopButton: "Arrêter la partie",
+			LoadingConfiguration: "Chargement de la configuration ...",
 		},
 		EntrySelectionView: {
 			Title: "Sélection",
@@ -57,7 +58,11 @@ const fr: Translation = {
 			DeleteLabelCantRemove: "Impossible de supprimer une proposition sélectionnée",
 			AddSelectionLabel: "Ajouter à la sélection",
 			EditLabel: "Editer la proposition",
-		}
+		},
+		DeactivateChatIntegrationTitle: "L'intégration au chat est active",
+		DeactivateChatIntegrationText: "Vous pouvez désactiver l'intégration au chat en allant sur votre panneau “Mes extensions” puis en cliquant sur “Gérer les autorisations”.",
+		ActivateChatIntegrationTitle: "L'intégration au chat est inactive",
+		ActivateChatIntegrationText: "Vous pouvez activer l'intégration au chat en allant sur votre panneau “Mes extensions” puis en cliquant sur “Gérer les autorisations”.",
 	},
 }
 

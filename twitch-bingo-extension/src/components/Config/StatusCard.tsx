@@ -1,3 +1,4 @@
+import { Box, LinearProgress } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
@@ -8,6 +9,7 @@ import React from 'react'
 import { I18nContext } from '../../i18n/i18n-react'
 
 type StatusCardProps = {
+    isLoading: boolean;
     isActive: boolean;
     onStop: () => void;
 }
@@ -21,9 +23,14 @@ export default function StatusCard(props: StatusCardProps)
             <CardHeader title={LL.Config.StatusCard.Title()} />
             <CardContent>
                 {
-                    props.isActive === true ?
-                    <Typography>{LL.Config.StatusCard.StatusActive()}</Typography> :
-                    <Typography>{LL.Config.StatusCard.StatusInactive()}</Typography>
+                    props.isLoading ?
+                        <Box style={{ margin: '1vw' }}>
+                            <LinearProgress variant="indeterminate" />
+                            <Typography align='center'>{LL.Config.StatusCard.LoadingConfiguration()}</Typography>
+                        </Box> :
+                            props.isActive === true ?
+                            <Typography>{LL.Config.StatusCard.StatusActive()}</Typography> :
+                            <Typography>{LL.Config.StatusCard.StatusInactive()}</Typography>
                 }
             </CardContent>
             <CardActions>
