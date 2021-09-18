@@ -1,6 +1,8 @@
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -142,7 +144,7 @@ namespace TwitchBingoService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime hostLifetime)
         {
             if (env.IsDevelopment())
             {
@@ -189,6 +191,13 @@ namespace TwitchBingoService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            // Explicitely flush Telemetry channel on shutdown, else when running on Lambda we will lose exceptions & more
+            hostLifetime.ApplicationStopping.Register(() =>
+            {
+                var channel = app.ApplicationServices.GetRequiredService<ITelemetryChannel>();
+                channel.Flush();
             });
         }
     }
