@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchBingoService.Configuration;
 using TwitchBingoService.Model;
@@ -44,6 +45,7 @@ namespace TwitchBingoService.Storage
         private string TentativesTableName => $"{_tablesPrefix}tentatives";
         private string PendingTentativesTableName => $"{_tablesPrefix}pendingtentatives";
         private string NotificationsTableName => $"{_tablesPrefix}notifications";
+        private string LogTableName => $"{_tablesPrefix}log";
 
         public async Task WriteGame(BingoGame bingoGame)
         {
@@ -256,6 +258,50 @@ namespace TwitchBingoService.Storage
             catch (StorageException e)
             {
                 _logger.LogError(e, "Failed to read tentatives for game {gameId}, key {key}", gameId, key);
+                throw;
+            }
+        }
+
+        public async Task WriteLog(Guid gameId, BingoLogEntry entry)
+        {
+            _logger.LogInformation($"Log: {gameId}, {entry.key}, {entry.type}");
+
+            var client = _storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(LogTableName);
+            var entity = new BingoLogEntity(gameId, entry);
+            var notificationInsert = TableOperation.InsertOrReplace(entity);
+
+            var result = await table.ExecuteAsync(notificationInsert);
+            if (result.HttpStatusCode / 100 != 2)
+            {
+                _logger.LogError("Failed to write log for game {gameId}, log {log}", gameId, JsonSerializer.Serialize(entry));
+                throw new Exception("Failed to write log");
+            }
+        }
+
+        public async Task<BingoLogEntry[]> ReadLog(Guid gameId)
+        {
+            var client = _storageAccount.CreateCloudTableClient();
+            var table = client.GetTableReference(LogTableName);
+            try
+            {
+                var query = new TableQuery<BingoLogEntity>();
+                query.FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", gameId.ToString());
+
+                TableQuerySegment<BingoLogEntity> querySegment = null;
+                var entityList = new List<BingoLogEntity>();
+                while (querySegment == null || querySegment.ContinuationToken != null)
+                {
+                    querySegment = await table.ExecuteQuerySegmentedAsync(query, querySegment != null ?
+                                                     querySegment.ContinuationToken : null);
+                    entityList.AddRange(querySegment);
+                }
+
+                return entityList.Select(e => e.ToLogEntry()).ToArray();
+            }
+            catch (StorageException e)
+            {
+                _logger.LogError(e, "Failed to read logs for game {gameId}", gameId);
                 throw;
             }
         }

@@ -60,6 +60,23 @@ export interface BingoConfirmationNotification {
     confirmedBy: string;
 }
 
+export enum NotificationType {
+    CompletedRow = 0,
+    CompletedColumn = 1,
+    CompletedGrid = 2,
+    Confirmation = 3,
+    Missed = 4,
+}
+
+export interface BingoLogEntry {
+    gameId: string;
+    key: number;
+    type: NotificationType;
+    playersCount: number;
+    playerNames: string[];
+    timestamp: string;
+}
+
 const TimeSpanRegexp = (/^(-?)((\d+)\.)?(\d{2}):(\d{2}):(\d{2})(\.(\d{7}))?$/);
 export function ParseTimespan(timeSpan: string): number
 {

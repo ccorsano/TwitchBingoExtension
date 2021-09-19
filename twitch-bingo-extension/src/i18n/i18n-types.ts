@@ -151,6 +151,37 @@ export type Translation = {
 			 */
 			'LoadingConfiguration': string
 		}
+		'GameLog': {	
+			/**
+			 * Game Log
+			 */
+			'Header': string
+			/**
+			 * #{entryKey} “{entryText}” confirmed by {playerNames}
+			 * @param {unknown} entryKey
+			 * @param {unknown} entryText
+			 * @param {unknown} playerNames
+			 */
+			'ConfirmationText': RequiredParams3<'entryKey', 'entryText', 'playerNames'>
+			/**
+			 * #{entryKey} completed columns for {playersCount} players
+			 * @param {unknown} entryKey
+			 * @param {unknown} playersCount
+			 */
+			'CompletedColText': RequiredParams2<'entryKey', 'playersCount'>
+			/**
+			 * #{entryKey} completed rows for {playersCount} players
+			 * @param {unknown} entryKey
+			 * @param {unknown} playersCount
+			 */
+			'CompletedRowText': RequiredParams2<'entryKey', 'playersCount'>
+			/**
+			 * #{entryKey} completed the grid for {playersCount} players
+			 * @param {unknown} entryKey
+			 * @param {unknown} playersCount
+			 */
+			'CompletedGridText': RequiredParams2<'entryKey', 'playersCount'>
+		}
 		'EntrySelectionView': {	
 			/**
 			 * Selection
@@ -352,6 +383,28 @@ export type TranslationFunctions = {
 			 */
 			'LoadingConfiguration': () => LocalizedString
 		}
+		'GameLog': {	
+			/**
+			 * Game Log
+			 */
+			'Header': () => LocalizedString
+			/**
+			 * #{entryKey} “{entryText}” confirmed by {playerNames}
+			 */
+			'ConfirmationText': (arg: { entryKey: unknown, entryText: unknown, playerNames: unknown }) => LocalizedString
+			/**
+			 * #{entryKey} completed columns for {playersCount} players
+			 */
+			'CompletedColText': (arg: { entryKey: unknown, playersCount: unknown }) => LocalizedString
+			/**
+			 * #{entryKey} completed rows for {playersCount} players
+			 */
+			'CompletedRowText': (arg: { entryKey: unknown, playersCount: unknown }) => LocalizedString
+			/**
+			 * #{entryKey} completed the grid for {playersCount} players
+			 */
+			'CompletedGridText': (arg: { entryKey: unknown, playersCount: unknown }) => LocalizedString
+		}
 		'EntrySelectionView': {	
 			/**
 			 * Selection
@@ -412,3 +465,23 @@ export type TranslationFunctions = {
 }
 
 export type Formatters = {}
+
+type Param<P extends string> = `{${P}}`
+
+type Params2<P1 extends string, P2 extends string> =
+	`${string}${Param<P1>}${string}${Param<P2>}${string}`
+
+type Params3<P1 extends string, P2 extends string, P3 extends string> =
+	`${string}${Param<P1>}${string}${Param<P2>}${string}${Param<P3>}${string}`
+
+type RequiredParams2<P1 extends string, P2 extends string> =
+	| Params2<P1, P2>
+	| Params2<P2, P1>
+
+type RequiredParams3<P1 extends string, P2 extends string, P3 extends string> =
+	| Params3<P1, P2, P3>
+	| Params3<P1, P3, P2>
+	| Params3<P2, P1, P3>
+	| Params3<P2, P3, P1>
+	| Params3<P3, P1, P2>
+	| Params3<P3, P2, P1>

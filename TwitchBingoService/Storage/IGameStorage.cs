@@ -18,5 +18,7 @@ namespace TwitchBingoService.Storage
         public Task<BingoNotification[]> UnqueueNotifications(Guid gameId, ushort key);
         public Task<string> ReadUserName(string userId);
         public Task WriteUserName(string userId, string userName);
+        public Task WriteLog(Guid gameid, BingoLogEntry entry);
+        public Task<BingoLogEntry[]> ReadLog(Guid gameId);
     }
 }

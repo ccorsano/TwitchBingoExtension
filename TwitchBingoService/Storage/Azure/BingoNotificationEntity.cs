@@ -9,14 +9,12 @@ namespace TwitchBingoService.Storage.Azure
 {
     public class BingoNotificationEntity : TableEntity
     {
-        public static string InvertedTicks(DateTime dateTime) => string.Format("{0:D19}", DateTime.MaxValue.Ticks - dateTime.Ticks);
-
         public BingoNotificationEntity()
         {
 
         }
 
-        public BingoNotificationEntity(Guid gameId, DateTime notificationTime, BingoNotification notification) : base(gameId.ToString(), InvertedTicks(notificationTime))
+        public BingoNotificationEntity(Guid gameId, DateTime notificationTime, BingoNotification notification) : base(gameId.ToString(), notificationTime.InvertedTicks())
         {
             GameId = gameId;
             NotificationTime = notificationTime;
