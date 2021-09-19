@@ -20,6 +20,16 @@ New in 2021.3
 
 The extension will celebrate the most attentive viewers by posting messages on the chat.
 
+# Changelog v2021.03
+
+- Redesign
+  - Both the Overlay and the Mobile view got a full visual overhaul
+- Scalable Backend
+  - Backend is now hosted on AWS Lambda, and as such now can scale dynamically
+- Game Log
+  - Now the broadcaster can view live feedback on bingo confirmation and number of viewers completing the grid
+- Bug fixes & polish
+
 # Feature summary
 
 - Broadcaster can configure a number of bingo entries, meant to represent funny occurrences that happen regularly on his stream
@@ -34,14 +44,15 @@ The extension will celebrate the most attentive viewers by posting messages on t
 # Format of the archive
 
 This extension is built with React + Typescript and distributed with included Webpack sourcemaps.
-Source code for this release is also available on
-  https://github.com/ccorsano/TwitchBingoExtension/tree/6bf976781a662399dd4357160f9b7399f257ebb0/twitch-bingo-extension, or upon request by email.
 
-# Changelog v2021.03
+## Source code
+Source code for this release is available on
+ https://github.com/ccorsano/TwitchBingoExtension/releases/tag/2021.03-rc1, or upon explicit request.
 
-- Redesign
-- Mobile view
-- Localization
+To build, download the release source code above, decompress, then:
+> cd twitch-bingo-extension
+> yarn install --frozen-lockfile
+> yarn run build
 
 # Testing walkthrough
 
@@ -64,6 +75,7 @@ Source code for this release is also available on
   1.5 - Launch the game
     - Check that the start button is enabled, if not verify if there are any errors displayed on the configuration panel.
     - Click Start game
+    - Note that the view will show a Game Log section, with the "Start" event shown
   
 2- Play as a viewer
   - On the stream, unfold the grid by clicking the widget on the top-left corner
@@ -82,6 +94,7 @@ Source code for this release is also available on
   - On the viewer's overlay, observe the cell either turn gold or grey depending whether a moderator confirmed it
   - On the chat, once the confirmation grace period is over, the EBS will post a notification that the entry was confirmed
   - On the chat, if a viewer has completed a row, a column, or the full grid, a celebration will be sent from the EBS.
+  - The broadcaster can also visualize these events in the Game Log on the configuration and Dashboard configuration view.
   - Viewers are expected to celebrate on the chat on their own initiative as well, of course
 
 5 - Play as a Mobile viewer
