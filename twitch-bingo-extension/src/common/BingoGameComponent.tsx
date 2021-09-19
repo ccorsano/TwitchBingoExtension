@@ -167,8 +167,12 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
-            console.log(`Refreshing grid. Entries: ${JSON.stringify(refreshEntries)}`)
-            setEntries(refreshEntries)
+            console.log(`Refreshing grid.`)
+            if (refreshEntries)
+            {
+                console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
+                setEntries(refreshEntries)
+            }
             setGrid(grid)
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
@@ -190,7 +194,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const onTentativeRefresh = React.useCallback((entry: BingoEntry) => {
         console.log(`onTentative, refreshing grid after timeout ${entries.length}`);
         setPendingResults(pendingResults.filter(p => p.key != entry.key))
-        refreshGrid(activeGame, entries);
+        refreshGrid(activeGame, null);
     }, [activeGame, entries, pendingResults])
 
     const onTentative = React.useCallback((entry: BingoEntry) => {  
