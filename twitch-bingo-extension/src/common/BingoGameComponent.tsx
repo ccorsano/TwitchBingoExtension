@@ -167,6 +167,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
+            console.log(`Refreshing grid. Entries: ${JSON.stringify(entries)}`)
             setEntries(entries)
             setGrid(grid)
         }).catch(error => {
