@@ -88,14 +88,20 @@ export default function Config() {
     }
 
     React.useEffect(() => {
-        var onBroadcast = () => {
+        // Setup gameLog refresh whenever a message is received, either broadcast or whisper
+        var whisperChannel = 'whisper-' + TwitchExtHelper.viewer.opaqueId
+        var onReceiveUpdate = () => {
             refreshLog(activeGame)
         }
-        Twitch.listen('broadcast', onBroadcast)
+
+        // Initial refresh when game updates
         refreshLog(activeGame)
+        Twitch.listen('broadcast', onReceiveUpdate)
+        Twitch.listen(whisperChannel, onReceiveUpdate)
 
         return () => {
-            Twitch.unlisten('broadcast', onBroadcast)
+            Twitch.unlisten('broadcast', onReceiveUpdate)
+            Twitch.unlisten(whisperChannel, onReceiveUpdate)
         }
     }, [activeGame])
 
