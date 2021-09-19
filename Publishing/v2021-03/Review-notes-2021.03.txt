@@ -11,12 +11,12 @@ Customizable & interactive bingo games for streamers communities
 - Let viewers spot and report the events as they appear on your stream
 - Moderators as well as yourself can confirm or reject reported events
 - When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened
-- After the event is confirmed, viewers have a the same configurable grace period to report it
+- After the event is confirmed, viewers have the same grace period to report it
 
 New in 2021.3
 - Redesign by twitch.tv/fastoche !
 - Backend ready for scale
-- Bug fix & polish
+- Game Log on live config panel
 
 The extension will celebrate the most attentive viewers by posting messages on the chat.
 
