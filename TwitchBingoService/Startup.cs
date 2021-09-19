@@ -139,7 +139,7 @@ namespace TwitchBingoService
             services.AddTransient(s => TwitchChatClientBuilder.Create()
                 .WithOAuthToken(s.GetService<IOptions<TwitchChatClientOptions>>().Value.OAuthToken)
                 .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
-            services.AddTransient<TwitchAPIClient>();
+            services.AddTransient<ITwitchAPIClient, TwitchAPIClient>();
             services.AddMemoryCache();
         }
 
