@@ -160,15 +160,15 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }
     }, [canModerate])
 
-    const refreshGrid = (game: BingoGame, entries: BingoEntry[]) => {
+    const refreshGrid = (game: BingoGame, refreshEntries: BingoEntry[]) => {
         if (! game)
         {
             console.error("No game provided to refreshGrid")
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
-            console.log(`Refreshing grid. Entries: ${JSON.stringify(entries)}`)
-            setEntries(entries)
+            console.log(`Refreshing grid. Entries: ${JSON.stringify(refreshEntries)}`)
+            setEntries(refreshEntries)
             setGrid(grid)
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
