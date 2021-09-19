@@ -21,13 +21,13 @@ namespace TwitchBingoService.Services
     public class TwitchEBSService
     {
         static readonly DateTimeOffset EPOCH = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        private readonly TwitchAPIClient _apiClient;
+        private readonly ITwitchAPIClient _apiClient;
         private readonly TwitchOptions _options;
         private readonly ILogger _logger;
         private HttpClient _twitchExtensionClient;
         private SigningCredentials _jwtSigningCredentials;
 
-        public TwitchEBSService(IHttpClientFactory httpClientFactory, TwitchAPIClient apiClient, IOptions<TwitchOptions> options, ILogger<TwitchEBSService> logger)
+        public TwitchEBSService(IHttpClientFactory httpClientFactory, ITwitchAPIClient apiClient, IOptions<TwitchOptions> options, ILogger<TwitchEBSService> logger)
         {
             _options = options.Value;
             _logger = logger;

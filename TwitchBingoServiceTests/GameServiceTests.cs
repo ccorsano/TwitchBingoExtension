@@ -1,3 +1,4 @@
+using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -64,7 +65,12 @@ namespace TwitchBingoServiceTests
                 .Returns(new HttpClient(handlerMock.Object));
             var loggerFactory = new LoggerFactory();
 
-            return new TwitchEBSService(mockHttpFactory.Object, null, new OptionsWrapper<TwitchOptions>(new TwitchOptions
+            var twitchApiClientMock = new Mock<ITwitchAPIClient>();
+            twitchApiClientMock
+                .Setup(c => c.GetUsersByIdAsync(It.IsAny<IEnumerable<string>>(), CancellationToken.None))
+                .Returns(Task.FromResult < HelixUsersGetResult[]>(new HelixUsersGetResult[] { new HelixUsersGetResult { Login = "test" } }));
+
+            return new TwitchEBSService(mockHttpFactory.Object, twitchApiClientMock.Object, new OptionsWrapper<TwitchOptions>(new TwitchOptions
             {
                 ExtensionId = "nope",
                 ExtensionSecret = "dGhpcyBpcyBhIHNlY3JldCBwaHJhc2UgdG8gZ2VuZXJhdGUgYSB0ZXN0IHByaXZhdGUga2V5"
