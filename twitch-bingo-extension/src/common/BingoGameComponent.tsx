@@ -278,18 +278,22 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     
     const onConfirmationNotification = React.useCallback((confirmation: BingoConfirmationNotification) => {
         console.log(confirmation)
-        setEntries(currentEntries => currentEntries.map(entry => {
-            if (entry.key === confirmation.key)
-            {
-                return {
-                    key: confirmation.key,
-                    text: entry.text,
-                    confirmedAt: confirmation.confirmationTime,
-                    confirmedBy: confirmation.confirmedBy,
+        setEntries(currentEntries => {
+            console.log(`entries: ${entries.length}`)
+            console.log(`currentEntries: ${currentEntries.length}`)
+            return currentEntries.map(entry => {
+                if (entry.key === confirmation.key)
+                {
+                    return {
+                        key: confirmation.key,
+                        text: entry.text,
+                        confirmedAt: confirmation.confirmationTime,
+                        confirmedBy: confirmation.confirmedBy,
+                    }
                 }
-            }
-            return entry
-        }))
+                return entry
+            })
+        })
     }, [entries])
 
     const promptIdentity = (): void => {
