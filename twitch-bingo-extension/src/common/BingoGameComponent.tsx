@@ -223,7 +223,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }
 
     const getCell = React.useCallback((row: number, col: number): [BingoGridCell,BingoEntry] => {
-        var cellResult = grid.cells.filter(c => c.row == row && c.col == col);
+        var cellResult = grid.cells.filter(c => c.row === row && c.col === col);
         if (cellResult.length == 1)
         {
             var cell = cellResult[0];
@@ -232,7 +232,6 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             {
                 var entry = entryResult[0];
                 var pending: BingoPendingResult = pendingResults.find(p => p.key == cell.key);
-                // console.log("Pending result for key " + cell.key + " : " + pending?.key +  " expires at " + pending?.expireAt);
                 return [
                     {
                         row: row,
@@ -245,6 +244,14 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                     entry
                 ];
             }
+            else
+            {
+                console.error(`Error fetching cell entry #${cell.key} at (r${row},c${col}), result: ${JSON.stringify(entryResult)}`)
+            }
+        }
+        else
+        {
+            console.error(`Error fetching cell at (r${row},c${col}), result: ${JSON.stringify(cellResult)}`)
         }
         return [
             {
