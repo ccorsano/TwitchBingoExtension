@@ -31,7 +31,6 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [isAuthorized, setAuthorized] = React.useState(false)
 
     const onLoadConfig = React.useCallback((configContent: BingoConfiguration) => {
-        setEntries(configContent.entries ?? new Array(0))
         const activeGameId: string = configContent.activeGameId ?? configContent.activeGame?.gameId
         if (activeGame?.gameId !== activeGameId)
         {
@@ -278,7 +277,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const onConfirmationNotification = React.useCallback((confirmation: BingoConfirmationNotification) => {
         console.log(confirmation)
         setEntries(entries.map(entry => {
-            if (entry.key == confirmation.key)
+            if (entry.key === confirmation.key)
             {
                 return {
                     key: confirmation.key,
