@@ -152,7 +152,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         if (canModerate)
         {
             BingoEBS.getGame(game.gameId).then(refreshedGame => {
-                console.log("Refreshed game for moderation")
+                // console.log("Refreshed game for moderation")
                 setActiveGame(refreshedGame)
             }).catch(error => {
                 console.error("Error loading game from EBS: " + error);
@@ -167,7 +167,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
-            console.log(`Refreshing grid.`)
+            // console.log(`Refreshing grid.`)
             if (refreshEntries)
             {
                 // console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
@@ -186,7 +186,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }, [grid])
 
     const onStart = (payload: BingoGame) => {
-        console.log("Received start for game:" + payload.gameId);
+        // console.log("Received start for game:" + payload.gameId);
         refreshGrid(payload, payload.entries);
         setStarted(true)
     };

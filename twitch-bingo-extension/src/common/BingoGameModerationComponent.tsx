@@ -31,7 +31,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     React.useEffect(() => {
         if (context.game != game)
         {
-            console.log(`Refreshing game from context: ${game?.gameId} => ${context.game?.gameId}`)
+            // console.log(`Refreshing game from context: ${game?.gameId} => ${context.game?.gameId}`)
             setGame(context.game)
         }
     }, [game, context])
