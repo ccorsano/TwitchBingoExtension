@@ -68,11 +68,26 @@ namespace TwitchBingoService.Services
 
             await _storage.WriteGame(game);
 
+            var tasks = new List<Task>();
             if (game.hasChatIntegration)
             {
-                var chatBot = await ConnectBot(channelId, CancellationToken.None);
-                await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
+                tasks.Add(Task.Run(async () =>
+                {
+                    var chatBot = await ConnectBot(channelId, CancellationToken.None);
+                    await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
+                }));
             }
+            tasks.Add(_storage.WriteLog(game.gameId, new BingoLogEntry
+            {
+                gameId = game.gameId,
+                key = 0,
+                type = NotificationType.Start,
+                playerNames = new string[0],
+                playersCount = 0,
+                timestamp = DateTime.UtcNow,
+            }));
+
+            await Task.WhenAll(tasks);
 
             return game;
         }

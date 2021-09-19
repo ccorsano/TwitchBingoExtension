@@ -8,6 +8,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import BorderVerticalIcon from '@material-ui/icons/BorderVertical'
 import BorderHorizontalIcon from '@material-ui/icons/BorderHorizontal'
 import BorderAllIcon from '@material-ui/icons/BorderAll'
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled'
 
 type GameLogViewProps = {
     entries: BingoEntry[],
@@ -72,6 +73,19 @@ export default function GameLogView(props: GameLogViewProps)
         </ListItem>
     )
 
+    var start = (index: number, parsedTime: Dayjs) => (
+        <ListItem key={index}>
+            <ListItemIcon>
+                <PlayCircleFilledIcon />
+            </ListItemIcon>
+            <ListItemText secondary={parsedTime.format(timeFormat)}>
+                <Typography variant="body2">
+                    {LL.Config.GameLog.StartedGameText()}
+                </Typography>
+            </ListItemText>
+        </ListItem>
+    )
+
     return props.isLoading ?
         (
             <LinearProgress variant='indeterminate' />
@@ -94,6 +108,8 @@ export default function GameLogView(props: GameLogViewProps)
                             return row(index, entry, log, logTime)
                         case NotificationType.CompletedGrid:
                             return grid(index, entry, log, logTime)
+                        case NotificationType.Start:
+                            return start(index, logTime)
                         default:
                             break;
                     }

@@ -66,6 +66,7 @@ export enum NotificationType {
     CompletedGrid = 2,
     Confirmation = 3,
     Missed = 4,
+    Start = 5,
 }
 
 export interface BingoLogEntry {

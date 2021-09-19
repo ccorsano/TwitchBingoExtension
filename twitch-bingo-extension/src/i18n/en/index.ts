@@ -48,6 +48,7 @@ const en: BaseTranslation = {
 		},
 		GameLog: {
 			Header: "Game Log",
+			StartedGameText: "Game started !",
 			ConfirmationText: "#{entryKey} “{entryText}” confirmed by {playerNames}",
 			CompletedColText: "#{entryKey} completed columns for {playersCount} players",
 			CompletedRowText: "#{entryKey} completed rows for {playersCount} players",

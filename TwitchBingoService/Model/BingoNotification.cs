@@ -13,6 +13,7 @@ namespace TwitchBingoService.Model
         CompletedGrid = 2,
         Confirmation = 3,
         Missed = 4,
+        Start = 5,
     }
 
     [ProtoContract]

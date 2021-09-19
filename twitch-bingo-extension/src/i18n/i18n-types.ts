@@ -157,6 +157,10 @@ export type Translation = {
 			 */
 			'Header': string
 			/**
+			 * Game started !
+			 */
+			'StartedGameText': string
+			/**
 			 * #{entryKey} “{entryText}” confirmed by {playerNames}
 			 * @param {unknown} entryKey
 			 * @param {unknown} entryText
@@ -388,6 +392,10 @@ export type TranslationFunctions = {
 			 * Game Log
 			 */
 			'Header': () => LocalizedString
+			/**
+			 * Game started !
+			 */
+			'StartedGameText': () => LocalizedString
 			/**
 			 * #{entryKey} “{entryText}” confirmed by {playerNames}
 			 */

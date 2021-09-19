@@ -48,6 +48,7 @@ const fr: Translation = {
 		},
 		GameLog: {
 			Header: "Journal de la partie",
+			StartedGameText: "Partie démarrée !",
 			ConfirmationText: "#{entryKey} {entryText} confirmé par {playerNames}",
 			CompletedColText: "#{entryKey} a complété une colonne pour {playersCount} joueurs",
 			CompletedRowText: "#{entryKey} a complété une ligne pour {playersCount} joueurs",
