@@ -87,6 +87,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                 onStart(message.payload);
                 break;
             case BingoBroadcastEventType.Bingo:
+                console.log(`Received Bingo message, entries: ${entries.length}`)
                 refreshGrid(activeGame, entries);
                 break;
             case BingoBroadcastEventType.Stop:
