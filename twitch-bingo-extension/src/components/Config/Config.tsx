@@ -24,7 +24,7 @@ export default function Config() {
     const [isStarting, setStarting] = React.useState(false)
     const [isLoading, setLoading] = React.useState(true)
     const [canEnableChat, setCanEnableChat] = React.useState(false)
-    const [isLoadingLog, setLoadingLog] = React.useState(true)
+    const [isLoadingLog, setLoadingLog] = React.useState(false)
     const [logEntries, setLogEntries] = React.useState<EBSBingo.BingoLogEntry[]>(new Array(0))
 
     const isSelected = React.useCallback((entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key), [selectedEntries])
@@ -92,6 +92,7 @@ export default function Config() {
             refreshLog(activeGame)
         }
         Twitch.listen('broadcast', onBroadcast)
+        refreshLog(activeGame)
 
         return () => {
             Twitch.unlisten('broadcast', onBroadcast)
