@@ -226,7 +226,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         if (cellResult.length == 1)
         {
             var cell = cellResult[0];
-            var entryResult = entries.filter(e => e.key == cell.key);
+            var entryResult = entries.filter(e => e.key === cell.key);
             if (entryResult.length == 1)
             {
                 var entry = entryResult[0];
@@ -246,6 +246,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             else
             {
                 console.error(`Error fetching cell entry #${cell.key} at (r${row},c${col}), result: ${JSON.stringify(entryResult)}`)
+                console.error(`Entries : ${JSON.stringify(entries)}`)
             }
         }
         else
@@ -276,7 +277,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     
     const onConfirmationNotification = React.useCallback((confirmation: BingoConfirmationNotification) => {
         console.log(confirmation)
-        setEntries(entries.map(entry => {
+        setEntries(currentEntries => currentEntries.map(entry => {
             if (entry.key === confirmation.key)
             {
                 return {
