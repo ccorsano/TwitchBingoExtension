@@ -73,12 +73,16 @@ namespace TwitchBingoService.Storage
             return Task.FromResult(new BingoTentative[0]);
         }
 
-        public Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key)
+        public Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime deletionCutoff)
         {
             var pendingKey = GetPendingTentativeKey(gameId, key);
             var tentatives = PendingTentatives.GetOrAdd(pendingKey, new BingoTentative[0]);
 
-            PendingTentatives.GetValueOrDefault(pendingKey);
+            tentatives = PendingTentatives.GetValueOrDefault(pendingKey);
+
+            var updatedTentatives = tentatives.Where(t => t.tentativeTime >= deletionCutoff).ToArray();
+
+            PendingTentatives.TryUpdate(pendingKey, updatedTentatives, tentatives);
 
             return Task.FromResult(tentatives.ToArray());
         }

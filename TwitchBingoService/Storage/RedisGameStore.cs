@@ -98,7 +98,7 @@ namespace TwitchBingoService.Storage
             }
         }
 
-        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key)
+        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime deletionCutoff)
         {
             const long batchSize = 1;
 
@@ -110,10 +110,24 @@ namespace TwitchBingoService.Storage
             var tentatives = new List<BingoTentative>();
             var index = 0;
             RedisValue[] results = null;
+            var indexToDelete = new List<int>();
             while(results == null || results?.Length == batchSize)
             {
                 results = await db.ListRangeAsync(listKey, index, index + batchSize);
-                tentatives.AddRange(results.Select(r => ProtoBuf.Serializer.Deserialize<BingoTentative>(r)));
+
+                for(int i = 0; i < results.Length; ++i)
+                {
+                    var tentative = ProtoBuf.Serializer.Deserialize<BingoTentative>(results[i]);
+                    if (tentative.tentativeTime < deletionCutoff)
+                    {
+                        indexToDelete.Add(index + i);
+                    }
+                    else
+                    {
+                        tentatives.Add(tentative);
+                    }
+                }
+
                 index += results.Length;
             }
 

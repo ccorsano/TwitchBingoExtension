@@ -147,7 +147,7 @@ namespace TwitchBingoService.Storage
             }
         }
 
-        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key)
+        public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime deletionCutoff)
         {
             var client = _storageAccount.CreateCloudTableClient();
             var table = client.GetTableReference(PendingTentativesTableName);
@@ -158,11 +158,39 @@ namespace TwitchBingoService.Storage
 
                 TableQuerySegment<BingoTentativeEntity> querySegment = null;
                 var entityList = new List<BingoTentativeEntity>();
+                var toBeDeleted = new List<BingoTentativeEntity>();
                 while (querySegment == null || querySegment.ContinuationToken != null)
                 {
                     querySegment = await table.ExecuteQuerySegmentedAsync(query, querySegment != null ?
                                                      querySegment.ContinuationToken : null);
-                    entityList.AddRange(querySegment);
+                    foreach(var entity in querySegment)
+                    {
+                        if (entity.TentativeTime < deletionCutoff)
+                        {
+                            toBeDeleted.Add(entity);
+                        }
+                        else
+                        {
+                            entityList.Add(entity);
+                        }
+                    }
+                }
+
+                // Delete expired tentatives
+                if (toBeDeleted.Count > 0)
+                {
+                    var batch = new TableBatchOperation();
+                    foreach(var entity in toBeDeleted)
+                    {
+                        batch.Add(TableOperation.Delete(entity));
+                    }
+                    try
+                    {
+                        await table.ExecuteBatchAsync(batch);
+                    } catch(StorageException e)
+                    {
+                        _logger.LogError(e, "Failed to clean expired pending tentatives for game {gameId}, key {entryKey}", gameId, key);
+                    }
                 }
 
                 return entityList.Select(e => e.ToTentative()).ToArray();
