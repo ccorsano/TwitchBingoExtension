@@ -156,7 +156,6 @@ export default function Config() {
     }, [selectedEntries])
 
     const onRemoveFromSelection = React.useCallback((entry: BingoEditableEntry): void => {
-        console.log(`Removing entry ${entry.key} from selection`)
         if (entry && isSelected(entry))
         {
             var newEntries = selectedEntries.filter(key => key !== entry.key);
@@ -258,7 +257,6 @@ export default function Config() {
                 newEntry.text = line;
                 newEntry.isNew = false;
                 newEntry.key = index;
-                console.log("Entry: " + newEntry.key + " - " + newEntry.text)
                 entries.push(newEntry);
             });
             setSelectedEntries(new Array(0))

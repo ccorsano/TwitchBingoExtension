@@ -102,7 +102,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
     }
 
     const onReceiveWhisper = React.useCallback((_target, _contentType, messageStr) => {
-        console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
+        // console.log(`Received whisper for ${'whisper-' + TwitchExtHelper.viewer.opaqueId} ${messageStr}`);
         let message: BingoBroadcastEvent = JSON.parse(messageStr, (key, value) => {
             if (key == "tentativeTime" || key == "confirmationTime")
             {
@@ -117,7 +117,7 @@ export default function BingoGameModerationComponent(props: BingoGameModerationC
                 break;
             case BingoBroadcastEventType.Confirm:
                 var confirm = message.payload as BingoConfirmationNotification
-                console.log(`Received notification of confirmation of key ${confirm.key} by ${confirm.confirmedBy}, game ${game}`)
+                // console.log(`Received notification of confirmation of key ${confirm.key} by ${confirm.confirmedBy}, game ${game}`)
                 receiveConfirmation(confirm)
                 break;
             default:

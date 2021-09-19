@@ -125,7 +125,6 @@ type TwitchExtensionQueryParameters = {
 function readTwitchQueryParameters(): TwitchExtensionQueryParameters
 {
     var queryParams = new URLSearchParams(window.location.search);
-    console.log(queryParams)
     return {
         anchor: queryParams.get('anchor'),
         language: queryParams.get('language'),

@@ -78,7 +78,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                 if (config.activeGame)
                 {
                     setActiveGame(message.payload.activeGame)
-                    console.log(config.activeGame);
+                    // console.log(config.activeGame);
                 }
                 onLoadConfig(config)
                 break;
@@ -170,7 +170,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             console.log(`Refreshing grid.`)
             if (refreshEntries)
             {
-                console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
+                // console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
                 setEntries(refreshEntries)
             }
             setGrid(grid)
@@ -281,10 +281,8 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     }, [grid])
     
     const onConfirmationNotification = React.useCallback((confirmation: BingoConfirmationNotification) => {
-        console.log(confirmation)
+        // console.log(confirmation)
         setEntries(currentEntries => {
-            console.log(`entries: ${entries.length}`)
-            console.log(`currentEntries: ${currentEntries.length}`)
             return currentEntries.map(entry => {
                 if (entry.key === confirmation.key)
                 {
