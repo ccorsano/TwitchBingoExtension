@@ -188,7 +188,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     };
 
     const onTentativeRefresh = React.useCallback((entry: BingoEntry) => {
-        console.log("onTentative, refreshing grid after timeout");
+        console.log(`onTentative, refreshing grid after timeout ${entries.length}`);
         setPendingResults(pendingResults.filter(p => p.key != entry.key))
         refreshGrid(activeGame, entries);
     }, [activeGame, entries, pendingResults])
@@ -209,7 +209,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         setPendingResults(pendingResultsRefreshed)
 
         setTimeout(() => onTentativeRefresh(entry), confirmationTimeout);
-        console.log("onTentative, updated cell state, set countdown to " + pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt);
+        console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt} - ${entries.length}`);
     }, [grid, pendingResults, activeGame, entries]);
 
     if (props.onRefreshGrid)
