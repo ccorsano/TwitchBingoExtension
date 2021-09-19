@@ -22,7 +22,7 @@ namespace TwitchBingoService.Storage.Azure
             Key = log.key;
             Type = (byte)log.type;
             PlayersCount = log.playersCount;
-            PlayersNames = JsonSerializer.Serialize(PlayersNames);
+            PlayersNames = JsonSerializer.Serialize(log.playerNames);
         }
 
         public BingoLogEntry ToLogEntry()

@@ -281,7 +281,7 @@ namespace TwitchBingoService.Services
                 throw new InvalidOperationException("Entry already confirmed");
             }
             entry.confirmedAt = DateTime.UtcNow;
-            entry.confirmedBy = userId;
+            entry.confirmedBy = await _ebsService.GetUserDisplayName(userId);
 
             await Task.WhenAll(
                 _storage.WriteGame(game),
@@ -290,6 +290,15 @@ namespace TwitchBingoService.Services
                     key = key,
                     playerId = userId,
                     type = NotificationType.Confirmation
+                }),
+                _storage.WriteLog(game.gameId, new BingoLogEntry
+                {
+                    gameId = game.gameId,
+                    key = key,
+                    timestamp = entry.confirmedAt.Value,
+                    type = NotificationType.Confirmation,
+                    playersCount = 1,
+                    playerNames = new string[] { entry.confirmedBy }
                 })
             );
 
@@ -437,15 +446,6 @@ namespace TwitchBingoService.Services
                         confirmedBy = confirmedEntry.confirmedBy,
                     }
                 })));
-                tasks.Add(_storage.WriteLog(game.gameId, new BingoLogEntry
-                {
-                    gameId = game.gameId,
-                    key = key,
-                    timestamp = confirmedEntry.confirmedAt.Value,
-                    type = NotificationType.Confirmation,
-                    playersCount = 1,
-                    playerNames = new string[] { confirmedEntry.confirmedBy }
-                }));
             }
 
             // Process completion notifications
