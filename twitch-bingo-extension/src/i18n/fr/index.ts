@@ -46,6 +46,13 @@ const fr: Translation = {
 			StopButton: "Arrêter la partie",
 			LoadingConfiguration: "Chargement de la configuration ...",
 		},
+		GameLog: {
+			Header: "Journal de la partie",
+			ConfirmationText: "{entryKey} {entryText} confirmé par {playerNames}",
+			CompletedColText: "{entryKey} a complété une colonne pour {playersCount} joueurs",
+			CompletedRowText: "{entryKey} a complété une ligne pour {playersCount} joueurs",
+			CompletedGridText: "{entryKey} a complété la grille pour {playersCount} joueurs",
+		},
 		EntrySelectionView: {
 			Title: "Sélection",
 			TitleSubHeader: "Entrées actuellement sélectionnées pour la prochaine partie.",

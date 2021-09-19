@@ -46,6 +46,13 @@ const en: BaseTranslation = {
 			StopButton: "Stop game",
 			LoadingConfiguration: "Loading configuration ...",
 		},
+		GameLog: {
+			Header: "Game Log",
+			ConfirmationText: "#{entryKey} “{entryText}” confirmed by {playerNames}",
+			CompletedColText: "#{entryKey} completed columns for {playersCount} players",
+			CompletedRowText: "#{entryKey} completed rows for {playersCount} players",
+			CompletedGridText: "#{entryKey} completed the grid for {playersCount} players",
+		},
 		EntrySelectionView: {
 			Title: "Selection",
 			TitleSubHeader: "These are the bingo entries currently selected for the next game.",

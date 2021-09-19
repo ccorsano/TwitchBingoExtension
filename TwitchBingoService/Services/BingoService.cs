@@ -592,5 +592,9 @@ namespace TwitchBingoService.Services
             }
         }
 
+        public async Task<BingoLogEntry[]> GetGameLog(Guid gameId)
+        {
+            return await _storage.ReadLog(gameId);
+        }
     }
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TwitchExtensionConfiguration, TwitchExtHelper } from '../../common/TwitchExtension';
+import { TwitchExtensionConfiguration, TwitchExtHelper, TwitchExtQuery } from '../../common/TwitchExtension';
 import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
 import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
 import { Twitch } from '../../services/TwitchService';
@@ -11,6 +11,7 @@ import StatusCard from './StatusCard';
 import LibraryEditor from './LibraryEditor';
 import EntrySelectionView from './EntrySelectionView';
 import GridConfigurationView from './GridConfigurationView';
+require('./Config.scss')
 
 export default function Config() {
     const [nextKey, setNextKey] = React.useState(0)
@@ -23,6 +24,8 @@ export default function Config() {
     const [isStarting, setStarting] = React.useState(false)
     const [isLoading, setLoading] = React.useState(true)
     const [canEnableChat, setCanEnableChat] = React.useState(false)
+    const [isLoadingLog, setLoadingLog] = React.useState(true)
+    const [logEntries, setLogEntries] = React.useState<EBSBingo.BingoLogEntry[]>(new Array(0))
 
     const isSelected = React.useCallback((entry: BingoEntry): boolean => selectedEntries.some(b => b == entry.key), [selectedEntries])
 
@@ -69,6 +72,46 @@ export default function Config() {
             }
         }
     }, [])
+
+    var refreshLog = game => {
+        if (game)
+        {
+            setLoadingLog(true)
+            BingoEBS.getGameLog(game.gameId)
+            .then(logs => {
+                setLogEntries(logs)
+            })
+            .finally(() => {
+                setLoadingLog(false)
+            })
+        }
+    }
+
+    React.useEffect(() => {
+        var onBroadcast = () => {
+            refreshLog(activeGame)
+        }
+        Twitch.listen('broadcast', onBroadcast)
+
+        return () => {
+            Twitch.unlisten('broadcast', onBroadcast)
+        }
+    }, [activeGame])
+
+    if (TwitchExtQuery.state === "testing")
+    {
+        React.useEffect(() => {
+            console.log("Registering test polling for logs, activeGame " + activeGame)
+            var timer = setInterval(() => 
+            {
+                refreshLog(activeGame)
+            }, 1000)
+    
+            return () => {
+                clearInterval(timer)
+            }
+        }, [activeGame])
+    }
 
     const onAdd = React.useCallback((): void => {
         var newEntry = new BingoEditableEntry();
@@ -220,7 +263,14 @@ export default function Config() {
 
     return (
         <React.Fragment>
-            <StatusCard isActive={activeGame != null} isLoading={isLoading} onStop={onStop} />,
+            <StatusCard
+                isActive={activeGame != null}
+                isLoading={isLoading}
+                onStop={onStop}
+                isLoadingLog={isLoadingLog}
+                entries={activeGame?.entries}
+                logEntries={logEntries}
+                onRefreshLog={() => refreshLog(activeGame)} />,
             <React.Fragment>
             {
                 (activeGame != null || isLoading) ? null :

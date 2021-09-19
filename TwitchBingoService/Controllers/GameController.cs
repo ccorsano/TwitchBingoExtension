@@ -115,5 +115,12 @@ namespace TwitchBingoService.Controllers
                 });
             }
         }
+
+        [HttpGet("{gameId}/log")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
+        public Task<BingoLogEntry[]> GetGameLog(Guid gameId)
+        {
+            return _gameService.GetGameLog(gameId);
+        }
     }
 }
