@@ -26,6 +26,7 @@ namespace TwitchBingoService.Storage
         private string GetTentativeKey(Guid gameId, string playerId) => $"game:{gameId}:{playerId}:tentatives";
         private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:notifications";
         private string GetUserKey(string userId) => $"bingo:username:{userId}";
+        private string GetGameLogKey(Guid gameId) => $"game:{gameId}:log";
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -191,6 +192,42 @@ namespace TwitchBingoService.Storage
         {
             var db = _connection.GetDatabase();
             await db.StringSetAsync(GetUserKey(userId), userName, TimeSpan.FromDays(1));
+        }
+
+        public async Task WriteLog(Guid gameid, BingoLogEntry entry)
+        {
+            var db = _connection.GetDatabase();
+            var buffer = ArrayPool<byte>.Shared.Rent(512);
+            using (var stream = new MemoryStream(buffer))
+            {
+                ProtoBuf.Serializer.Serialize(stream, entry);
+                stream.Flush();
+                var serializedLogEntry = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
+
+                await db.ListRightPushAsync(GetGameLogKey(gameid), serializedLogEntry);
+            }
+        }
+
+        public async Task<BingoLogEntry[]> ReadLog(Guid gameId)
+        {
+            var db = _connection.GetDatabase();
+
+            bool hasMore = true;
+            long index = 0;
+            var log = new List<BingoLogEntry>();
+            while (hasMore)
+            {
+                var item = await db.ListGetByIndexAsync(GetGameLogKey(gameId), 0);
+                if (!item.HasValue)
+                {
+                    hasMore = false;
+                    continue;
+                }
+                var data = (ReadOnlyMemory<byte>)item;
+                log.Add(ProtoBuf.Serializer.Deserialize<BingoLogEntry>(data));
+                ++index;
+            }
+            return log.ToArray();
         }
     }
 }

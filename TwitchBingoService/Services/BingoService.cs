@@ -167,7 +167,12 @@ namespace TwitchBingoService.Services
         public async Task<BingoGrid> GetGrid(Guid gameId, string playerId)
         {
             var game = await _storage.ReadGame(gameId);
+            return await GetGrid(game, playerId);
+        }
 
+        private async Task<BingoGrid> GetGrid(BingoGame game, string playerId)
+        {
+            var gameId = game.gameId;
             var seed = Crc32Algorithm.Compute(Encoding.UTF8.GetBytes(playerId)) ^ Crc32Algorithm.Compute(gameId.ToByteArray());
             var random = new ALFGenerator(seed);
 
@@ -288,10 +293,11 @@ namespace TwitchBingoService.Services
                 })
             );
 
+            var tasks = new List<Task>();
             if (game.moderators?.Any() ?? false)
             {
                 _logger.LogWarning($"Sending confirmation notification to {string.Join(",", game.moderators)}");
-                await _ebsService.TryWhisperJson(game.channelId, game.moderators,
+                tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators,
                     new
                     {
                         type = "confirm",
@@ -303,10 +309,11 @@ namespace TwitchBingoService.Services
                             confirmedBy = entry.confirmedBy,
                         }
                     }
-                );
+                ));
             }
 
-            await ProcessTentatives(game, key);
+            tasks.Add(ProcessTentatives(game, key));
+            await Task.WhenAll(tasks);
 
             return entry;
         }
@@ -339,7 +346,7 @@ namespace TwitchBingoService.Services
 
         private async Task ProcessTentative(BingoGame game, BingoTentative tentative, BingoEntry entry)
         {
-            var grid = await GetGrid(game.gameId, tentative.playerId);
+            var grid = await GetGrid(game, tentative.playerId);
 
             BingoCellState state = GetCellState(entry, tentative, game.confirmationThreshold);
             if (state == BingoCellState.Missed || state == BingoCellState.Rejected)
@@ -350,11 +357,13 @@ namespace TwitchBingoService.Services
             var cutoff = tentative.tentativeTime.Add(game.confirmationThreshold);
             var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey);
 
+            var tasks = new List<Task>();
+
             Task moderationTask = Task.CompletedTask;
             if (tentatives.Length == 1 && (game.moderators?.Length ?? 0) > 0)
             {
                 _logger.LogWarning($"Sending tentative notification to {string.Join(",", game.moderators)}");
-                await _ebsService.TryWhisperJson(game.channelId, game.moderators,
+                tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators,
                     new
                     {
                         type = "tentative",
@@ -365,29 +374,28 @@ namespace TwitchBingoService.Services
                             tentativeTime = new DateTimeOffset(tentatives.FirstOrDefault()?.tentativeTime ?? tentative.tentativeTime),
                         }
                     }
-                );
+                ));
             }
 
-            if (state != BingoCellState.Confirmed)
+            if (state == BingoCellState.Confirmed)
             {
-                return;
-            }
+                var cell = grid.cells.First(c => c.key == tentative.entryKey);
+                var isRowConfirmed = grid.completedRows.Contains(cell.row);
+                var isColConfirmed = grid.completedCols.Contains(cell.col);
 
-            var cell = grid.cells.First(c => c.key == tentative.entryKey);
-            var isRowConfirmed = grid.completedRows.Contains(cell.row);
-            var isColConfirmed = grid.completedCols.Contains(cell.col);
-
-            if (grid.isCompleted || isRowConfirmed || isColConfirmed)
-            {
-                var notification = new BingoNotification
+                if (grid.isCompleted || isRowConfirmed || isColConfirmed)
                 {
-                    key = cell.key,
-                    type = grid.isCompleted ? NotificationType.CompletedGrid : isRowConfirmed ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
-                    playerId = tentative.playerId,
-                };
-                await _storage.QueueNotification(game.gameId, tentative.entryKey, notification);
-                return;
+                    var notification = new BingoNotification
+                    {
+                        key = cell.key,
+                        type = grid.isCompleted ? NotificationType.CompletedGrid : isRowConfirmed ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
+                        playerId = tentative.playerId,
+                    };
+                    tasks.Add(_storage.QueueNotification(game.gameId, tentative.entryKey, notification));
+                }
             }
+
+            await Task.WhenAll(tasks);
         }
 
         public async Task HandleNotifications(Guid gameId, ushort key)
@@ -412,12 +420,13 @@ namespace TwitchBingoService.Services
             // Retrieve entry from game
             var confirmedEntry = game.entries.First(e => e.key == key);
 
+            var tasks = new List<Task>();
+
             // Send confirm notification first
-            var confirmationTask = Task.CompletedTask;
             if (notifications.Any(n => n.type == NotificationType.Confirmation))
             {
 
-                confirmationTask = _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+                tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
                 {
                     type = "confirm",
                     payload = new
@@ -427,6 +436,15 @@ namespace TwitchBingoService.Services
                         confirmationTime = confirmedEntry.confirmedAt,
                         confirmedBy = confirmedEntry.confirmedBy,
                     }
+                })));
+                tasks.Add(_storage.WriteLog(game.gameId, new BingoLogEntry
+                {
+                    gameId = game.gameId,
+                    key = key,
+                    timestamp = confirmedEntry.confirmedAt.Value,
+                    type = NotificationType.Confirmation,
+                    playersCount = 1,
+                    playerNames = new string[] { confirmedEntry.confirmedBy }
                 }));
             }
 
@@ -439,7 +457,7 @@ namespace TwitchBingoService.Services
                     .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
 
             _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colComplete), string.Join(',', rowComplete), string.Join(',', gridComplete));
-            await _ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+            tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
             {
                 type = "bingo",
                 payload = new
@@ -450,13 +468,50 @@ namespace TwitchBingoService.Services
                     rowComplete = (await rowComplete),
                     gridComplete = (await gridComplete),
                 }
-            }));
-            await confirmationTask;
+            })));
+            if ((await colComplete).Length > 0)
+            {
+                tasks.Add(_storage.WriteLog(gameId, new BingoLogEntry
+                {
+                    gameId = gameId,
+                    key = key,
+                    type = NotificationType.CompletedColumn,
+                    playerNames = await colComplete,
+                    playersCount = (await colComplete).Length,
+                    timestamp = DateTime.UtcNow,
+                }));
+            }
+            if ((await rowComplete).Length > 0)
+            {
+                tasks.Add(_storage.WriteLog(gameId, new BingoLogEntry
+                {
+                    gameId = gameId,
+                    key = key,
+                    type = NotificationType.CompletedRow,
+                    playerNames = await rowComplete,
+                    playersCount = (await rowComplete).Length,
+                    timestamp = DateTime.UtcNow,
+                }));
+            }
+            if ((await gridComplete).Length > 0)
+            {
+                tasks.Add(_storage.WriteLog(gameId, new BingoLogEntry
+                {
+                    gameId = gameId,
+                    key = key,
+                    type = NotificationType.CompletedGrid,
+                    playerNames = await gridComplete,
+                    playersCount = (await gridComplete).Length,
+                    timestamp = DateTime.UtcNow,
+                }));
+            }
+
+            await Task.WhenAll(tasks);
 
             // Send chat messages
             if (!game.hasChatIntegration)
             {
-                _logger.LogInformation("No chat integration for this game {gameId} on channel {channelId}, skipping.", game.gameId, game.channelId);
+                _logger.LogWarning("No chat integration for this game {gameId} on channel {channelId}, skipping.", game.gameId, game.channelId);
                 return;
             }
 

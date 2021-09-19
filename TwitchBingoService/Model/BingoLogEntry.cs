@@ -6,26 +6,19 @@ using System.Threading.Tasks;
 
 namespace TwitchBingoService.Model
 {
-    public enum NotificationType
-    {
-        CompletedRow = 0,
-        CompletedColumn = 1,
-        CompletedGrid = 2,
-        Confirmation = 3,
-        Missed = 4,
-    }
-
     [ProtoContract]
-    public class BingoNotification
+    public class BingoLogEntry
     {
-
         [ProtoMember(1)]
-        public ushort key { get; set; }
-
+        public Guid gameId { get; set; }
         [ProtoMember(2)]
+        public ushort key { get; set; }
         public NotificationType type { get; set; }
-
         [ProtoMember(3)]
-        public string playerId { get; set; }
+        public int playersCount { get; set; }
+        [ProtoMember(4)]
+        public string[] playerNames { get; set; }
+        [ProtoMember(5)]
+        public DateTime timestamp { get; set; }
     }
 }
