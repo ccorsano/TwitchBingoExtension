@@ -334,8 +334,8 @@ namespace TwitchBingoService.Services
             {
                 throw new ArgumentOutOfRangeException("key");
             }
-            var cutoff = entry.confirmedAt?.Add(game.confirmationThreshold) ?? DateTime.MaxValue;
-            var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, cutoff);
+            var deletionCutoff = entry.confirmedAt?.Add(-game.confirmationThreshold) ?? DateTime.MinValue;
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, key, deletionCutoff);
 
             var earliestTentatives = from t in tentatives
                        group t by t.playerId into perPlayer
@@ -363,8 +363,8 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            var cutoff = tentative.tentativeTime.Add(game.confirmationThreshold);
-            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, cutoff);
+            var deletionCutoff = tentative.tentativeTime.Add(-game.confirmationThreshold);
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, deletionCutoff);
 
             var tasks = new List<Task>();
 
