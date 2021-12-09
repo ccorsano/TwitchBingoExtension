@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using BingoGrainInterfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,20 +18,26 @@ namespace TwitchBingoService.Controllers
     public class GameController : Controller
     {
         private readonly BingoService _gameService;
+        private readonly IClusterClient _orleansClient;
         private readonly ILogger _logger;
 
-        public GameController(BingoService gameService, ILogger<GameController> logger)
+        public GameController(BingoService gameService, IClusterClient orleansClient, ILogger<GameController> logger)
         {
             _gameService = gameService;
+            _orleansClient = orleansClient;
             _logger = logger;
         }
 
         [HttpPost("")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
-        public Task<BingoGame> PostGame([FromBody] BingoGameCreationParams gameParams)
+        public async Task<BingoGame> PostGame([FromBody] BingoGameCreationParams gameParams)
         {
+            var gameId = Guid.NewGuid();
+            var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
+            await grain.CreateGame();
+
             var channelClaim = User.Claims.First(c => c.Type == "channel_id");
-            return _gameService.CreateGame(channelClaim.Value, gameParams);
+            return await _gameService.CreateGame(channelClaim.Value, gameParams);
         }
 
         [HttpDelete("{gameId}")]

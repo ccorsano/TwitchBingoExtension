@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchBingoService", "TwitchBingoService\TwitchBingoService.csproj", "{1E09D3A7-DA6E-4DD7-98D9-BE13E3EED0EA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchBingoServiceTests", "TwitchBingoServiceTests\TwitchBingoServiceTests.csproj", "{B564CBCA-F50F-4FE3-8583-BA951516C166}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoWorker", "BingoWorker\BingoWorker.csproj", "{A7CB9ABE-6B8D-4921-AC78-52A0BAEBCA32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoGrains", "BingoGrains\BingoGrains.csproj", "{16B5D576-33AF-41CB-A62F-B5DEF60FD9FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoGrainInterfaces", "BingoGrainInterfaces\BingoGrainInterfaces.csproj", "{ACA0C236-76C8-4241-ABDF-1A0591C0D3CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{B564CBCA-F50F-4FE3-8583-BA951516C166}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B564CBCA-F50F-4FE3-8583-BA951516C166}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B564CBCA-F50F-4FE3-8583-BA951516C166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7CB9ABE-6B8D-4921-AC78-52A0BAEBCA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7CB9ABE-6B8D-4921-AC78-52A0BAEBCA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7CB9ABE-6B8D-4921-AC78-52A0BAEBCA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7CB9ABE-6B8D-4921-AC78-52A0BAEBCA32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B5D576-33AF-41CB-A62F-B5DEF60FD9FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B5D576-33AF-41CB-A62F-B5DEF60FD9FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B5D576-33AF-41CB-A62F-B5DEF60FD9FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B5D576-33AF-41CB-A62F-B5DEF60FD9FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA0C236-76C8-4241-ABDF-1A0591C0D3CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA0C236-76C8-4241-ABDF-1A0591C0D3CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA0C236-76C8-4241-ABDF-1A0591C0D3CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA0C236-76C8-4241-ABDF-1A0591C0D3CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,3 +1,4 @@
+using BingoGrainInterfaces;
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
@@ -15,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Orleans;
+using Orleans.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -141,6 +144,23 @@ namespace TwitchBingoService
                 .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
             services.AddTransient<ITwitchAPIClient, TwitchAPIClient>();
             services.AddMemoryCache();
+
+            services.AddSingleton(services =>
+            {
+                var client = new ClientBuilder()
+                    // Clustering information
+                    .Configure<ClusterOptions>(options =>
+                    {
+                        options.ClusterId = "dev";
+                        options.ServiceId = "BingoService";
+                    })
+                    // Clustering provider
+                    .UseLocalhostClustering()
+                    // Application parts: just reference one of the grain interfaces that we use
+                    .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(IBingoGameGrain).Assembly))
+                    .Build();
+                return client;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
