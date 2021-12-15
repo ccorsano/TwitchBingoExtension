@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using BingoGrain.Model;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -130,7 +131,7 @@ namespace TwitchBingoService.Storage
             var userTentativeTable = client.GetTableReference(TentativesTableName);
             var pendingTentativeTable = client.GetTableReference(PendingTentativesTableName);
             var userTentative = TableOperation.InsertOrReplace(new BingoTentativeEntity(gameId, tentative.playerId, tentative));
-            var pendingTentative = TableOperation.InsertOrReplace(new BingoTentativeEntity(gameId, tentative.entryKey, tentative));
+            var pendingTentative = TableOperation.InsertOrReplace(new BingoTentativeEntity(gameId, tentative.Key, tentative));
             var userTask = userTentativeTable.ExecuteAsync(userTentative);
             var pendingTask = pendingTentativeTable.ExecuteAsync(pendingTentative);
             var result = await userTask;
@@ -142,7 +143,7 @@ namespace TwitchBingoService.Storage
             result = await pendingTask;
             if (result.HttpStatusCode / 100 != 2)
             {
-                _logger.LogError("Failed to write pending tentative for game {gameId}, key {entryKey}", gameId, tentative.entryKey);
+                _logger.LogError("Failed to write pending tentative for game {gameId}, key {entryKey}", gameId, tentative.Key);
                 throw new Exception("Failed to write user tentative");
             }
         }

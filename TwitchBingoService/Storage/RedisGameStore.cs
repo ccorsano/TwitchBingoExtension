@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BingoGrain.Model;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
 using System.Buffers;
@@ -80,7 +81,7 @@ namespace TwitchBingoService.Storage
 
         public async Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            _logger.LogInformation("Save bingo game {gameId} tentatives for player.", gameId, tentative?.playerId);
+            _logger.LogInformation("Save bingo game {gameId} tentatives for player {playerId}.", gameId, tentative?.playerId);
 
             var db = _connection.GetDatabase();
             var buffer = ArrayPool<byte>.Shared.Rent(256);
@@ -90,9 +91,9 @@ namespace TwitchBingoService.Storage
                 stream.Flush();
                 var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
                 await Task.WhenAll(
-                    db.ListRightPushAsync(GetPendingTentativeKey(gameId, tentative.entryKey), serializedTentative),
-                    db.HashSetAsync(GetTentativeKey(gameId, tentative.playerId), (int) tentative.entryKey, serializedTentative),
-                    db.KeyExpireAsync(GetPendingTentativeKey(gameId, tentative.entryKey), TimeSpan.FromDays(7)),
+                    db.ListRightPushAsync(GetPendingTentativeKey(gameId, tentative.Key), serializedTentative),
+                    db.HashSetAsync(GetTentativeKey(gameId, tentative.playerId), (int) tentative.Key, serializedTentative),
+                    db.KeyExpireAsync(GetPendingTentativeKey(gameId, tentative.Key), TimeSpan.FromDays(7)),
                     db.KeyExpireAsync(GetTentativeKey(gameId, tentative.playerId), TimeSpan.FromDays(7))
                 );
             }
@@ -118,7 +119,7 @@ namespace TwitchBingoService.Storage
                 for(int i = 0; i < results.Length; ++i)
                 {
                     var tentative = ProtoBuf.Serializer.Deserialize<BingoTentative>(results[i]);
-                    if (tentative.tentativeTime < deletionCutoff)
+                    if (tentative.TentativeTime < deletionCutoff)
                     {
                         indexToDelete.Add(index + i);
                     }

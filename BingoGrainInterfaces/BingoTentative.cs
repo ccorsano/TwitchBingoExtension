@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,16 @@ namespace BingoGrain.Model
 {
     public class BingoTentative
     {
-        public int Key { get; set; }
+        [ProtoMember(1)]
+        public string playerId { get; set; } = null!;
+
+        [ProtoMember(2)]
+        public ushort Key { get; set; }
+
+        [ProtoMember(3)]
         public DateTime TentativeTime { get; set; }
+
+        [ProtoMember(4)]
         public bool Confirmed { get; set; }
     }
 }

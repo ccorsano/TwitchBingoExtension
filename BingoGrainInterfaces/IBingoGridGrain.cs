@@ -9,6 +9,7 @@ namespace BingoGrain
 {
     public interface IBingoGridGrain : Orleans.IGrainWithStringKey
     {
+        public static string PrimaryKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";
         public Task<BingoGrid> GetGrid();
     }
 }

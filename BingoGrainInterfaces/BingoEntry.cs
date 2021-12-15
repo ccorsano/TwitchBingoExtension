@@ -13,7 +13,7 @@ namespace BingoGrain.Model
         public UInt16 key { get; set; }
 
         [ProtoMember(2)]
-        public string text { get; set; }
+        public string text { get; set; } = null!;
 
         [ProtoMember(3)]
         public DateTime? confirmedAt { get; set; }

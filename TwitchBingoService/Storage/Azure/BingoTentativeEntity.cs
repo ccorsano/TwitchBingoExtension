@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using BingoGrain.Model;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,22 +18,22 @@ namespace TwitchBingoService.Storage.Azure
 
         }
 
-        public BingoTentativeEntity(Guid gameId, string playerId, BingoTentative tentative) : base(TentativePartitionKey(gameId, playerId), tentative.entryKey.ToString("00000"))
+        public BingoTentativeEntity(Guid gameId, string playerId, BingoTentative tentative) : base(TentativePartitionKey(gameId, playerId), tentative.Key.ToString("00000"))
         {
             GameId = gameId;
             PlayerId = tentative.playerId;
-            EntryKey = tentative.entryKey;
-            Confirmed = tentative.confirmed;
-            TentativeTime = tentative.tentativeTime;
+            EntryKey = tentative.Key;
+            Confirmed = tentative.Confirmed;
+            TentativeTime = tentative.TentativeTime;
         }
 
         public BingoTentativeEntity(Guid gameId, ushort entryKey, BingoTentative tentative) : base(TentativePartitionKey(gameId, entryKey), tentative.playerId)
         {
             GameId = gameId;
             PlayerId = tentative.playerId;
-            EntryKey = tentative.entryKey;
-            Confirmed = tentative.confirmed;
-            TentativeTime = tentative.tentativeTime;
+            EntryKey = tentative.Key;
+            Confirmed = tentative.Confirmed;
+            TentativeTime = tentative.TentativeTime;
         }
 
         public BingoTentative ToTentative()
@@ -40,9 +41,9 @@ namespace TwitchBingoService.Storage.Azure
             return new BingoTentative
             {
                 playerId = PlayerId,
-                entryKey = (ushort) EntryKey,
-                confirmed = Confirmed,
-                tentativeTime = TentativeTime,
+                Key = (ushort) EntryKey,
+                Confirmed = Confirmed,
+                TentativeTime = TentativeTime,
             };
         }
 

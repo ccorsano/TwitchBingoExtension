@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace BingoGrain
 {
-    public class BingoScore : IComparable<BingoScore>
+    public record BingoScore : IComparable<BingoScore>
     {
         public uint Rank { get; set; }
         public uint Score { get; set; }
-        public string PlayerId { get; set; }
+        public string PlayerId { get; set; } = null!;
 
         public int CompareTo(BingoScore? other) => Score.CompareTo(other?.Score ?? 0);
     }

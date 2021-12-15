@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using BingoGrain.Model;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace TwitchBingoService.Storage.Azure
             }
             if (Game != null && !string.IsNullOrEmpty(SerializedModerators))
             {
-                Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(SerializedModerators);
+                Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(SerializedModerators).ToList();
             }
         }
 

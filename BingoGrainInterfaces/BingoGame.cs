@@ -11,10 +11,10 @@ namespace BingoGrain.Model
         public Guid gameId { get; set; }
 
         [ProtoMember(2)]
-        public string channelId { get; set; }
+        public string channelId { get; set; } = null!;
 
         [ProtoMember(3)]
-        public BingoEntry[] entries { get; set; }
+        public BingoEntry[] entries { get; set; } = new BingoEntry[0];
 
         [ProtoMember(4)]
         public Byte rows { get; set; }
@@ -28,7 +28,7 @@ namespace BingoGrain.Model
 
         [ProtoMember(7)]
         [JsonIgnore]
-        public List<string> moderators { get; set; }
+        public List<string> moderators { get; set; } = new List<string>();
 
         [ProtoMember(8)]
         public bool hasChatIntegration { get; set; } = false;

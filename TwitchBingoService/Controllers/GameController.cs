@@ -1,8 +1,8 @@
-﻿using BingoGrainInterfaces;
+﻿using BingoGrain;
+using BingoGrain.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using System;
@@ -32,26 +32,25 @@ namespace TwitchBingoService.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
         public async Task<BingoGame> PostGame([FromBody] BingoGameCreationParams gameParams)
         {
+            var channelClaim = User.Claims.First(c => c.Type == "channel_id");
             var gameId = Guid.NewGuid();
             var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
-            await grain.CreateGame();
-
-            var channelClaim = User.Claims.First(c => c.Type == "channel_id");
-            return await _gameService.CreateGame(channelClaim.Value, gameParams);
+            return await grain.CreateGame(channelClaim.Value, gameParams); ;
         }
 
         [HttpDelete("{gameId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
         public Task DeleteGame(Guid gameId)
         {
-            return _gameService.DeleteGame(gameId);
+            var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
+            return grain.DeleteGame();
         }
 
         [HttpGet("{gameId}")]
         public Task<BingoGame> GetGame(Guid gameId)
         {
-            var channelClaim = User.Claims.First(c => c.Type == "channel_id");
-            return _gameService.GetGame(gameId);
+            var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
+            return grain.GetGame();
         }
 
         [HttpGet("{gameId}/grid")]
@@ -69,7 +68,8 @@ namespace TwitchBingoService.Controllers
                 await _gameService.RegisterModerator(gameId, opaqueId);
             }
             var userTask = _gameService.RegisterPlayer(userId);
-            return await _gameService.GetGrid(gameId, userId);
+            var grain = _orleansClient.GetGrain<IBingoGridGrain>(IBingoGridGrain.PrimaryKey(gameId, userId));
+            return await grain.GetGrid();
         }
 
         [HttpPost("{gameId}/{key}/tentative")]
@@ -81,6 +81,7 @@ namespace TwitchBingoService.Controllers
             {
                 throw new ArgumentOutOfRangeException("Missing user id");
             }
+            var grain = _orleansClient.GetGrain<IBingoGridGrain>(IBingoGridGrain.PrimaryKey(gameId, userId));
             return _gameService.AddTentative(gameId, key, userId);
         }
 

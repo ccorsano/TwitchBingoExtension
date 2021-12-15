@@ -1,3 +1,4 @@
+using BingoGrain.Model;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Microsoft.Extensions.Caching.Memory;
@@ -122,7 +123,7 @@ namespace TwitchBingoServiceTests
             var cell_0_0 = grid01.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
             // Add a tentative from player on cell 0,0
             var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
-            Assert.False(tentative01.confirmed);
+            Assert.False(tentative01.Confirmed);
 
             // Confirm entry from moderator
             var confirmedEntry = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
@@ -178,17 +179,17 @@ namespace TwitchBingoServiceTests
             var cell_0_2 = grid01.cells.FirstOrDefault(c => c.col == 2 && c.row == 0);
             // Add a tentative from player on cell 0,0
             var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
-            Assert.False(tentative01.confirmed);
+            Assert.False(tentative01.Confirmed);
 
             // Confirm entry from moderator
             var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
             await Task.Delay(201);
             var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
-            Assert.False(tentative02.confirmed);
+            Assert.False(tentative02.Confirmed);
             var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
             await Task.Delay(201);
             var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
-            Assert.False(tentative03.confirmed);
+            Assert.False(tentative03.Confirmed);
             var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
             await Task.Delay(201);
 
@@ -237,8 +238,8 @@ namespace TwitchBingoServiceTests
             // Add a tentative from player on cell 0,0
             var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
             var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
-            Assert.False(tentative01.confirmed);
-            Assert.False(tentative03.confirmed);
+            Assert.False(tentative01.Confirmed);
+            Assert.False(tentative03.Confirmed);
 
             // Confirm entry from moderator
             var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");

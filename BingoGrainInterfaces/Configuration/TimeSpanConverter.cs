@@ -17,7 +17,10 @@ namespace BingoGrain.Configuration
             {
                 throw new FormatException("Unexpected JSON token for a TimeSpan value");
             }
-            return TimeSpan.ParseExact(reader.GetString(), "c", CultureInfo.InvariantCulture);
+            var timespan = reader.GetString();
+#pragma warning disable CS8604 // Cannot be null if JsonTokenType == JsonTokenType.String
+            return TimeSpan.ParseExact(timespan, "c", CultureInfo.InvariantCulture);
+#pragma warning restore CS8604 // Cannot be null if JsonTokenType == JsonTokenType.String
         }
 
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)

@@ -1,4 +1,5 @@
-﻿using Conceptoire.Twitch.API;
+﻿using BingoGrain.Model;
+using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Force.Crc32;
 using Microsoft.Extensions.Caching.Memory;
@@ -104,7 +105,7 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            game.moderators = game.moderators?.Append(opaqueId)?.ToArray() ?? new string[] { opaqueId };
+            game.moderators = game.moderators?.Append(opaqueId)?.ToList() ?? new List<string> { opaqueId };
 
             await _storage.WriteGame(game);
 
@@ -158,7 +159,7 @@ namespace TwitchBingoService.Services
                 // Tentative submitted, either it's in, or it's out, depending when it was submitted
                 else
                 {
-                    var isInValidationWindow = tentative.tentativeTime > validationWindowStart && tentative.tentativeTime < validationWindowEnd;
+                    var isInValidationWindow = tentative.TentativeTime > validationWindowStart && tentative.TentativeTime < validationWindowEnd;
                     return isInValidationWindow ? BingoCellState.Confirmed : BingoCellState.Rejected;
                 }
             }
@@ -173,7 +174,7 @@ namespace TwitchBingoService.Services
                 // Else, we might be still in the validation window
                 else
                 {
-                    var validationWindowEnd = tentative.tentativeTime.Add(threshold);
+                    var validationWindowEnd = tentative.TentativeTime.Add(threshold);
                     return validationWindowEnd > DateTime.UtcNow ? BingoCellState.Pending : BingoCellState.Rejected;
                 }
             }
@@ -220,7 +221,7 @@ namespace TwitchBingoService.Services
                         var index = random.Next(0, drawSet.Count);
                         var entry = drawSet[index];
                         drawSet.RemoveAt(index);
-                        var tentative = user.FirstOrDefault(t => t.entryKey == entry.key);
+                        var tentative = user.FirstOrDefault(t => t.Key == entry.key);
 
                         cell.key = entry.key;
                         cell.state = GetCellState(entry, tentative, game.confirmationThreshold);
@@ -271,9 +272,9 @@ namespace TwitchBingoService.Services
             var tentative = new BingoTentative
             {
                 playerId = userId,
-                confirmed = false,
-                entryKey = key,
-                tentativeTime = DateTime.UtcNow,
+                Confirmed = false,
+                Key = key,
+                TentativeTime = DateTime.UtcNow,
             };
             await _storage.WriteTentative(gameId, tentative);
             await ProcessTentative(game, tentative, entry);
@@ -321,7 +322,7 @@ namespace TwitchBingoService.Services
             if (game.moderators?.Any() ?? false)
             {
                 _logger.LogWarning($"Sending confirmation notification to {string.Join(",", game.moderators)}");
-                tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators,
+                tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators.ToArray(),
                     new
                     {
                         type = "confirm",
@@ -357,9 +358,9 @@ namespace TwitchBingoService.Services
                        select new BingoTentative
                        {
                            playerId = perPlayer.Key,
-                           tentativeTime = perPlayer.Min(t => t.tentativeTime),
-                           entryKey = perPlayer.First().entryKey,
-                           confirmed = perPlayer.Max(t => t.confirmed)
+                           TentativeTime = perPlayer.Min(t => t.TentativeTime),
+                           Key = perPlayer.First().Key,
+                           Confirmed = perPlayer.Max(t => t.Confirmed)
                        };
 
             foreach (var tentative in earliestTentatives)
@@ -378,24 +379,24 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            var deletionCutoff = tentative.tentativeTime.Add(-game.confirmationThreshold);
-            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.entryKey, deletionCutoff);
+            var deletionCutoff = tentative.TentativeTime.Add(-game.confirmationThreshold);
+            var tentatives = await _storage.ReadPendingTentatives(game.gameId, tentative.Key, deletionCutoff);
 
             var tasks = new List<Task>();
 
             Task moderationTask = Task.CompletedTask;
-            if (tentatives.Length == 1 && (game.moderators?.Length ?? 0) > 0)
+            if (tentatives.Length == 1 && (game.moderators?.Count ?? 0) > 0)
             {
                 _logger.LogWarning($"Sending tentative notification to {string.Join(",", game.moderators)}");
-                tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators,
+                tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators.ToArray(),
                     new
                     {
                         type = "tentative",
                         payload = new
                         {
                             gameId = game.gameId,
-                            key = tentative.entryKey,
-                            tentativeTime = new DateTimeOffset(tentatives.FirstOrDefault()?.tentativeTime ?? tentative.tentativeTime),
+                            key = tentative.Key,
+                            tentativeTime = new DateTimeOffset(tentatives.FirstOrDefault()?.TentativeTime ?? tentative.TentativeTime),
                         }
                     }
                 ));
@@ -403,7 +404,7 @@ namespace TwitchBingoService.Services
 
             if (state == BingoCellState.Confirmed)
             {
-                var cell = grid.cells.First(c => c.key == tentative.entryKey);
+                var cell = grid.cells.First(c => c.key == tentative.Key);
                 var isRowConfirmed = grid.completedRows.Contains(cell.row);
                 var isColConfirmed = grid.completedCols.Contains(cell.col);
 
@@ -415,7 +416,7 @@ namespace TwitchBingoService.Services
                         type = grid.isCompleted ? NotificationType.CompletedGrid : isRowConfirmed ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
                         playerId = tentative.playerId,
                     };
-                    tasks.Add(_storage.QueueNotification(game.gameId, tentative.entryKey, notification));
+                    tasks.Add(_storage.QueueNotification(game.gameId, tentative.Key, notification));
                 }
             }
 

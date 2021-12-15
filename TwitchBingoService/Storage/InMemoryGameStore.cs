@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BingoGrain.Model;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +81,7 @@ namespace TwitchBingoService.Storage
 
             tentatives = PendingTentatives.GetValueOrDefault(pendingKey);
 
-            var updatedTentatives = tentatives.Where(t => t.tentativeTime >= deletionCutoff).ToArray();
+            var updatedTentatives = tentatives.Where(t => t.TentativeTime >= deletionCutoff).ToArray();
 
             PendingTentatives.TryUpdate(pendingKey, updatedTentatives, tentatives);
 
@@ -101,11 +102,11 @@ namespace TwitchBingoService.Storage
 
         public Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            PendingTentatives.AddOrUpdate(GetPendingTentativeKey(gameId, tentative.entryKey), new BingoTentative[] { tentative }, (key, existing) =>
-                existing.Where(e => tentative.entryKey != e.entryKey).Concat(new BingoTentative[] { tentative }).ToArray()
+            PendingTentatives.AddOrUpdate(GetPendingTentativeKey(gameId, tentative.Key), new BingoTentative[] { tentative }, (key, existing) =>
+                existing.Where(e => tentative.Key != e.Key).Concat(new BingoTentative[] { tentative }).ToArray()
             );
             Tentatives.AddOrUpdate(GetTentativeKey(gameId, tentative.playerId), new BingoTentative[] { tentative }, (key, existing) =>
-                existing.Where(e => tentative.entryKey != e.entryKey).Concat(new BingoTentative[] { tentative }).ToArray()
+                existing.Where(e => tentative.Key != e.Key).Concat(new BingoTentative[] { tentative }).ToArray()
             );
 
             return Task.CompletedTask;

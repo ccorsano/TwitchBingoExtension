@@ -39,6 +39,9 @@ namespace BingoGrain
         {
             var gameGrain = GrainFactory.GetGrain<IBingoGameGrain>(_gameId);
             var game = await gameGrain.GetGame();
+            if (game == null)
+                throw new InvalidOperationException($"Invalid game {_gameId}");
+
             GenerateGrid(game);
 
             return new BingoGrid

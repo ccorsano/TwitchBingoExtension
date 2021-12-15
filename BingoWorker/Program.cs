@@ -1,6 +1,4 @@
-using BingoGrains;
-using BingoWorker;
-using Microsoft.Extensions.Hosting;
+using BingoGrain;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;

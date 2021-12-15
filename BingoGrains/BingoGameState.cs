@@ -9,7 +9,8 @@ namespace BingoGrain
 {
     public class BingoGameState
     {
-        public BingoGame GameState { get; set; }
-        public BingoLeaderboard Leaderboard { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        public BingoGame? GameState { get; set; }
+        public BingoLeaderboard? Leaderboard { get; set; }
     }
 }

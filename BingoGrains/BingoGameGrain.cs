@@ -18,7 +18,7 @@ namespace BingoGrain
             _logger = logger;
         }
 
-        public Task<bool> CreateGame(string channelId, BingoGameCreationParams creationParams)
+        public Task<BingoGame> CreateGame(string channelId, BingoGameCreationParams creationParams)
         {
             State.GameState = new BingoGame
             {
@@ -26,22 +26,28 @@ namespace BingoGrain
                 rows = creationParams.rows,
                 columns = creationParams.columns,
                 entries = creationParams.entries,
-                confirmationThreshold = creationParams.confirmationThreshold ?? _,
+                confirmationThreshold = creationParams.confirmationThreshold ?? _options.DefaultConfirmationThreshold,
                 gameId = this.GetPrimaryKey(),
                 hasChatIntegration = creationParams.enableChatIntegration,
                 moderators = new List<string>(),
             };
-            return Task.FromResult(true);
+            return Task.FromResult(State.GameState);
         }
 
-        public Task<BingoGame> GetGame()
+        public Task DeleteGame()
+        {
+            State.IsDeleted = true;
+            return Task.CompletedTask;
+        }
+
+        public Task<BingoGame?> GetGame()
         {
             return Task.FromResult(State.GameState);
         }
 
         public Task<BingoScore[]> GetLeaderboard()
         {
-            return Task.FromResult(State.Leaderboard.Scores.ToArray());
+            return Task.FromResult(State.Leaderboard?.Scores?.ToArray() ?? new BingoScore[0]);
         }
     }
 }
