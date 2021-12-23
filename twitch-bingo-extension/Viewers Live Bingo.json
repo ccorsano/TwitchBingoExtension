@@ -188,7 +188,7 @@
     "canInstall": true,
     "configUrl": "https://localhost:8180/config.html",
     "configurationLocation": "hosted",
-    "description": "Features and improvements are in the work, check regularly for updates.\n\nGraphical design by twitch.tv/fastoche and the help of the twitch.tv/esiwok community ❤\n\nCustomizable & interactive bingo games for streamers communities\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have a the same configurable grace period to report it\n\nNew in 2021.3\n- Redesign by twitch.tv/fastoche !\n- Backend ready for scale\n- Bug fix & polish\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
+    "description": "Features and improvements are in the work, check regularly for updates.\n\nMade with the help of twitch.tv/fastoche and the twitch.tv/esiwok community ❤\n\nCustomizable & interactive bingo games for streamers & communities\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have the same grace period to report it\n\nNew in 2021.3\n- Redesign by twitch.tv/fastoche !\n- Backend ready to scale\n- Game Log on live config panel\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
     "eulaTosUrl": "",
     "hasChatSupport": true,
     "iconUrl": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/logo7937242e-fbfa-4228-9263-036c55bcb37b",
@@ -206,10 +206,11 @@
     "requestIdentityLink": true,
     "requiredBroadcasterAbilities": [],
     "screenshotUrls": [
-      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshotd7c60283-d541-4710-b944-0483e7753e91",
-      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot3a174ad1-82fa-4d8c-9a96-9d93c9490dea",
-      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot6a63b241-e5db-4750-88b9-dc3abe6bbac3",
-      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshotff8102e9-7037-4914-954d-ac535dd21e23"
+      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot2180dd36-1ba4-44b2-86fc-5e5a56ea49b0",
+      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot91394508-35bf-4b7f-92b4-086d1cea0711",
+      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot8b5a751d-1036-4b39-af80-4b107fc6eab8",
+      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot283154d6-5cac-4f6e-bb87-2b0334284e92",
+      "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/screenshot1dce0526-43f8-491a-ac5f-c17ca05c0016"
     ],
     "sku": "",
     "state": "Testing",
@@ -217,8 +218,8 @@
     "summary": "Setup an interactive Bingo game for your most attentive viewers",
     "supportEmail": "twitchext@conceptoire.com",
     "vendorCode": "",
-    "version": "2021.03",
-    "viewerSummary": "Participate in a live Bingo with your favorite streamer",
+    "version": "2021.03.2",
+    "viewerSummary": "Participate in a customized Bingo with your favorite streamer",
     "viewerUrl": "",
     "viewerUrls": {
       "mobile": "https://localhost:8180/mobile.html",
