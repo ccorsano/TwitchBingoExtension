@@ -14,7 +14,12 @@ WORKDIR "/src/TwitchBingoService"
 RUN dotnet build "TwitchBingoService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "TwitchBingoService.csproj" -c Release -o /app/publish
+RUN dotnet publish "TwitchBingoService.csproj" \
+            --configuration Release \ 
+            --runtime linux-x64 \
+            --self-contained false \ 
+            --output /app/publish \
+            -p:PublishReadyToRun=true  
 
 FROM base AS final
 WORKDIR /app
