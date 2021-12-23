@@ -32,6 +32,7 @@ export default function Config() {
     const loadConfig = React.useCallback((broadcasterConfig: TwitchExtensionConfiguration) => {
         if (! broadcasterConfig?.content)
         {
+            setLoading(false)
             return;
         }
         TwitchExtHelper.rig.log(broadcasterConfig.content);
@@ -137,7 +138,7 @@ export default function Config() {
             rows: rows,
             columns: columns,
             confirmationThreshold: confirmationThresholdSeconds,
-            activeGameId: activeGame.gameId,
+            activeGameId: activeGame?.gameId,
         }
         const serializedConfig = JSON.stringify(config);
         TwitchExtHelper.configuration.set('broadcaster', EBSVersion, serializedConfig);
@@ -164,7 +165,8 @@ export default function Config() {
     }, [selectedEntries])
 
     const onStart = React.useCallback((): void => {
-        setStarting(true);
+        onSave()
+        setStarting(true)
         BingoEBS.createGame({
             rows: rows,
             columns: columns,
