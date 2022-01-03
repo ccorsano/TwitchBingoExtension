@@ -26,6 +26,7 @@ The extension will celebrate the most attentive viewers by posting messages on t
 
 - Hotfix: configuration page was not loading when broadcaster configuration segment was cleared
 - Configuration page: also save configuration when clicking "Start"
+- Set connect-src CSP base URL for backend
 
 # Feature summary
 
