@@ -1,3 +1,4 @@
+using BingoWorker;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ namespace TwitchBingoService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices(sp =>
                 {
-                    sp.AddSingleton<IHostedService, >
+                    sp.AddSingleton<IHostedService, BingoSiloService>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

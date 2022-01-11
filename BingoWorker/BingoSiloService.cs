@@ -22,24 +22,27 @@ namespace BingoWorker
             _configuration = configuration;
             _logger = logger;
 
-            var clientBuilder = new ClientBuilder();
-            Client = clientBuilder.Build();
+            //var clientBuilder = new ClientBuilder();
+            //Client = clientBuilder.Build();
             _siloHost = BuildSiloHost();
         }
 
         private ISiloHost BuildSiloHost()
         {
             var builder = new SiloHostBuilder()
-                .Configure<ClusterOptions>(opts =>
+                .Configure<ClusterOptions>(options =>
                 {
-
+                    options.ClusterId = "dev";
+                    options.ServiceId = "BingoService";
                 })
+                .UseLocalhostClustering()
                 .ConfigureApplicationParts(app => app.AddApplicationPart(typeof(BingoGameGrain).Assembly).WithReferences());
             return builder.Build();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            //return Task.Run(() => _siloHost.StartAsync(cancellationToken));
             return _siloHost.StartAsync(cancellationToken);
         }
 
