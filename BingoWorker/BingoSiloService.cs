@@ -56,6 +56,7 @@ namespace BingoWorker
             {
                 builder.UseLocalhostClustering();
             }
+            builder.AddMemoryGrainStorageAsDefault();
             builder.ConfigureApplicationParts(app => app.AddApplicationPart(typeof(BingoGameGrain).Assembly).WithReferences());
 
             return builder.Build();
@@ -63,6 +64,7 @@ namespace BingoWorker
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Starting Orleans silo");
             //return Task.Run(() => _siloHost.StartAsync(cancellationToken));
             return _siloHost.StartAsync(cancellationToken);
         }
