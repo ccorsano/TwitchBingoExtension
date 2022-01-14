@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BingoServices\BingoServices.csproj" />
     <ProjectReference Include="..\TwitchBingoService\TwitchBingoService.csproj" />
   </ItemGroup>
 

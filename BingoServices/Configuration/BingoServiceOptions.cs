@@ -1,4 +1,9 @@
-﻿namespace BingoGrain.Configuration
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BingoServices.Configuration
 {
     public class BingoServiceOptions
     {

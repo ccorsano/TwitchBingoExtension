@@ -1,5 +1,5 @@
-﻿using BingoGrain;
-using BingoGrain.Model;
+﻿using BingoGrainInterfaces;
+using BingoServices.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using TwitchBingoService.Model;
-using TwitchBingoService.Services;
 
 namespace TwitchBingoService.Controllers
 {
@@ -17,14 +16,17 @@ namespace TwitchBingoService.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GameController : Controller
     {
-        private readonly BingoService _gameService;
         private readonly IClusterClient _orleansClient;
+        private readonly TwitchEBSService _twitterEBSService;
         private readonly ILogger _logger;
 
-        public GameController(BingoService gameService, IClusterClient orleansClient, ILogger<GameController> logger)
+        public GameController(
+            IClusterClient orleansClient,
+            TwitchEBSService twitchEBSService,
+            ILogger<GameController> logger)
         {
-            _gameService = gameService;
             _orleansClient = orleansClient;
+            _twitterEBSService = twitchEBSService;
             _logger = logger;
         }
 
@@ -65,16 +67,18 @@ namespace TwitchBingoService.Controllers
             var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
             if (User.IsInRole("moderator") || User.IsInRole("broadcaster"))
             {
-                await _gameService.RegisterModerator(gameId, opaqueId);
+                var gameGrain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
+                await gameGrain.RegisterModerator(opaqueId, await _twitterEBSService.GetUserDisplayName(userId));
             }
-            var userTask = _gameService.RegisterPlayer(userId);
-            var grain = _orleansClient.GetGrain<IBingoGridGrain>(IBingoGridGrain.PrimaryKey(gameId, userId));
-            return await grain.GetGrid();
+            var gridKey = IBingoGridGrain.PrimaryKey(gameId, userId);
+            var gridGrain = _orleansClient.GetGrain<IBingoGridGrain>(gridKey);
+            await gridGrain.SetOpaqueId(opaqueId);
+            return await gridGrain.GetGrid();
         }
 
         [HttpPost("{gameId}/{key}/tentative")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "viewer,broadcaster,moderator")]
-        public Task<BingoTentative> PostTentative(Guid gameId, ushort key)
+        public async Task<BingoTentative> PostTentative(Guid gameId, ushort key)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
             if (userId == null)
@@ -82,7 +86,7 @@ namespace TwitchBingoService.Controllers
                 throw new ArgumentOutOfRangeException("Missing user id");
             }
             var grain = _orleansClient.GetGrain<IBingoGridGrain>(IBingoGridGrain.PrimaryKey(gameId, userId));
-            return _gameService.AddTentative(gameId, key, userId);
+            return await grain.AddTentative(key);
         }
 
         [HttpPost("{gameId}/{key}/confirm")]
@@ -91,9 +95,10 @@ namespace TwitchBingoService.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
         public async Task<IActionResult> PostConfirmation(Guid gameId, ushort key)
         {
+            var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
             try
             {
-                return new ObjectResult(await _gameService.Confirm(gameId, key, User.Identity.Name));
+                return new ObjectResult(await grain.Confirm(key, User.Identity.Name));
             }
             catch(InvalidOperationException ex)
             {
@@ -112,7 +117,8 @@ namespace TwitchBingoService.Controllers
         {
             try
             {
-                await _gameService.HandleNotifications(gameId, key);
+                var gameGrain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
+                await gameGrain.HandleNotifications(key);
                 return new EmptyResult();
             }
             catch (InvalidOperationException ex)
@@ -129,7 +135,9 @@ namespace TwitchBingoService.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "broadcaster,moderator")]
         public Task<BingoLogEntry[]> GetGameLog(Guid gameId)
         {
-            return _gameService.GetGameLog(gameId);
+            var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
+            return grain.GetLog();
+
         }
     }
 }

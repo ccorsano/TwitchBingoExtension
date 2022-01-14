@@ -1,4 +1,8 @@
-﻿using BingoGrain;
+﻿using BingoGrains;
+using BingoServices.Configuration;
+using BingoServices.Services;
+using Conceptoire.Twitch.API;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -13,18 +17,16 @@ namespace BingoWorker
 {
     public class BingoSiloService : IHostedService
     {
+        private readonly IServiceProvider _hostServiceProvider;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
         private ISiloHost _siloHost;
-        public IClusterClient Client { get; private set; }
 
-        public BingoSiloService(IConfiguration configuration, ILogger<BingoSiloService> logger)
+        public BingoSiloService(IServiceProvider hostServiceProvider, IConfiguration configuration, ILogger<BingoSiloService> logger)
         {
+            _hostServiceProvider = hostServiceProvider;
             _configuration = configuration;
             _logger = logger;
-
-            //var clientBuilder = new ClientBuilder();
-            //Client = clientBuilder.Build();
             _siloHost = BuildSiloHost();
         }
 
@@ -56,8 +58,32 @@ namespace BingoWorker
             {
                 builder.UseLocalhostClustering();
             }
-            builder.AddMemoryGrainStorageAsDefault();
+
+            var azureConnectionString = _configuration.GetValue<string>("azure:ConnectionString");
+            if (string.IsNullOrEmpty(azureConnectionString))
+            {
+                builder.AddMemoryGrainStorage("gameStore");
+            }
+            else
+            {
+                builder.AddAzureBlobGrainStorage("gameStore", configure =>
+                {
+                    configure.ConnectionString = azureConnectionString;
+                    configure.UseJson = false;
+                });
+            }
+
             builder.ConfigureApplicationParts(app => app.AddApplicationPart(typeof(BingoGameGrain).Assembly).WithReferences());
+
+            // Inject services from parent host container
+            builder.ConfigureServices((ctx, services) =>
+            {
+                services.AddTransient(s => _hostServiceProvider.GetRequiredService<TwitchEBSService>());
+                services.AddTransient(s => _hostServiceProvider.GetRequiredService<IOptions<BingoServiceOptions>>());
+                services.AddTransient(s => _hostServiceProvider.GetRequiredService<IOptions<TwitchOptions>>());
+                services.AddTransient(s => _hostServiceProvider.GetRequiredService<IOptions<AzureStorageOptions>>());
+                services.AddTransient(s => _hostServiceProvider.GetRequiredService<IOptions<ITwitchAPIClient>>());
+            });
 
             return builder.Build();
         }

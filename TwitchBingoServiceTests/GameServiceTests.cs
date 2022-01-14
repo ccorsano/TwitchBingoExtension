@@ -1,4 +1,6 @@
-using BingoGrain.Model;
+using BingoGrainInterfaces;
+using BingoServices.Configuration;
+using BingoServices.Services;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,9 +15,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using TwitchAchievementTrackerBackend.Configuration;
-using TwitchBingoService.Configuration;
-using TwitchBingoService.Model;
 using TwitchBingoService.Services;
 using TwitchBingoService.Storage;
 using Xunit;

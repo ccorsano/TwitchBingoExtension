@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TwitchBingoService.Model
+namespace BingoGrainInterfaces
 {
     [ProtoContract]
     public class BingoLogEntry
@@ -17,7 +17,7 @@ namespace TwitchBingoService.Model
         [ProtoMember(3)]
         public int playersCount { get; set; }
         [ProtoMember(4)]
-        public string[] playerNames { get; set; }
+        public string[] playerNames { get; set; } = new string[0];
         [ProtoMember(5)]
         public DateTime timestamp { get; set; }
     }

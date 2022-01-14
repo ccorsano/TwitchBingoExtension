@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BingoGrainInterfaces\BingoGrainInterfaces.csproj" />
+    <ProjectReference Include="..\BingoServices\BingoServices.csproj" />
     <ProjectReference Include="..\BingoWorker\BingoWorker.csproj" />
   </ItemGroup>
 

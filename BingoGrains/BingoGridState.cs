@@ -1,14 +1,16 @@
-﻿using BingoGrain.Model;
+﻿using BingoGrainInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BingoGrain
+namespace BingoGrains
 {
     public class BingoGridState
     {
+        public string? userDisplayName { get; set; }
+        public string? userOpaqueId { get; set; }
         public ushort rows { get; set; }
         public ushort cols { get; set; }
         public BingoGridCell[] cells { get; set; } = new BingoGridCell[0];

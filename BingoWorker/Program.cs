@@ -1,4 +1,4 @@
-using BingoGrain;
+using BingoGrains;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -18,6 +18,20 @@ IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args)
             .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
             .ConfigureLogging(logging => logging.AddConsole());
         builder.AddMemoryGrainStorageAsDefault();
+
+        var azureConnectionString = hostContext.Configuration.GetValue<string>("azure:ConnectionString");
+        if (string.IsNullOrEmpty(azureConnectionString))
+        {
+            builder.AddMemoryGrainStorage("gameStore");
+        }
+        else
+        {
+            builder.AddAzureBlobGrainStorage("gameStore", configure =>
+            {
+                configure.ConnectionString = azureConnectionString;
+                configure.UseJson = true;
+            });
+        }
         builder.ConfigureApplicationParts(options =>
             options.AddApplicationPart(typeof(BingoGameGrain).Assembly).WithReferences()
         );

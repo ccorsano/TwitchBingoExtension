@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TwitchBingoService.Model
+namespace BingoGrainInterfaces
 {
     public enum NotificationType
     {
@@ -27,6 +27,6 @@ namespace TwitchBingoService.Model
         public NotificationType type { get; set; }
 
         [ProtoMember(3)]
-        public string playerId { get; set; }
+        public string? playerId { get; set; }
     }
 }

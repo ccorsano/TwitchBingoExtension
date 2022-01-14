@@ -1,4 +1,4 @@
-﻿using BingoGrain.Model;
+﻿using BingoGrainInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

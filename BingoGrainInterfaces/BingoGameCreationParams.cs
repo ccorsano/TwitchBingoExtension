@@ -1,12 +1,12 @@
-﻿using BingoGrain.Configuration;
+﻿using BingoGrainInterfaces.Configuration;
 using System.Text.Json.Serialization;
 
-namespace BingoGrain.Model
+namespace BingoGrainInterfaces
 {
     public class BingoGameCreationParams
     {
-        public Byte rows { get; set; }
-        public Byte columns { get; set; }
+        public byte rows { get; set; }
+        public byte columns { get; set; }
         public BingoEntry[] entries { get; set; } = new BingoEntry[0];
 
         [JsonConverter(typeof(TimeSpanConverter))]

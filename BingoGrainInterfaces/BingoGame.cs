@@ -1,8 +1,8 @@
-﻿using BingoGrain.Configuration;
+﻿using BingoGrainInterfaces.Configuration;
 using ProtoBuf;
 using System.Text.Json.Serialization;
 
-namespace BingoGrain.Model
+namespace BingoGrainInterfaces
 {
     [ProtoContract]
     public class BingoGame
@@ -17,10 +17,10 @@ namespace BingoGrain.Model
         public BingoEntry[] entries { get; set; } = new BingoEntry[0];
 
         [ProtoMember(4)]
-        public Byte rows { get; set; }
+        public byte rows { get; set; }
 
         [ProtoMember(5)]
-        public Byte columns { get; set; }
+        public byte columns { get; set; }
 
         [ProtoMember(6)]
         [JsonConverter(typeof(TimeSpanConverter))]

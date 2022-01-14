@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BingoGrain.Configuration
+namespace BingoGrainInterfaces.Configuration
 {
     public class TimeSpanConverter : JsonConverter<TimeSpan>
     {

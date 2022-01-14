@@ -1,4 +1,5 @@
-﻿using BingoGrain.Model;
+﻿using BingoGrainInterfaces;
+using BingoServices.Configuration;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

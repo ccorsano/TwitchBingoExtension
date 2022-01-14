@@ -1,4 +1,4 @@
-﻿using BingoGrain.Model;
+﻿using BingoGrainInterfaces;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;

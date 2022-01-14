@@ -1,9 +1,10 @@
-﻿using BingoGrain.Configuration;
-using BingoGrain.Model;
+﻿using BingoGrainInterfaces;
+using BingoServices.Services;
 using Force.Crc32;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,35 @@ using System.Text;
 using System.Threading.Tasks;
 using Troschuetz.Random.Generators;
 
-namespace BingoGrain
+namespace BingoGrains
 {
-    public class BingoGridGrain : Orleans.Grain<BingoGridState>, IBingoGridGrain
+    public class BingoGridGrain : Grain, IBingoGridGrain
     {
+        private readonly IPersistentState<BingoGridState> _grid;
+        private readonly TwitchEBSService _twitchEBSService;
         private readonly ILogger _logger;
         private Guid _gameId;
         private string _playerId;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public BingoGridGrain(ILogger<BingoGridGrain> logger)
+        public BingoGridGrain(
+            [PersistentState("grid", "gameStore")] IPersistentState<BingoGridState> grid,
+            TwitchEBSService ebsService,
+            ILogger<BingoGridGrain> logger)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
+            _grid = grid;
+            _twitchEBSService = ebsService;
             _logger = logger;
+        }
+
+        public async Task SetOpaqueId(string opaqueId)
+        {
+            _grid.State.userOpaqueId = opaqueId;
+            if (_grid.State.userDisplayName == null)
+            {
+                _grid.State.userDisplayName = await _twitchEBSService.GetUserDisplayName(_playerId);
+            }
         }
 
         public override Task OnActivateAsync()
@@ -50,10 +67,10 @@ namespace BingoGrain
                 playerId = _playerId,
                 rows = game.rows,
                 cols = game.columns,
-                cells = State.cells.ToArray(),
-                completedCols = State.completedCols,
-                completedRows = State.completedRows,
-                isCompleted = State.isCompleted,
+                cells = _grid.State.cells.ToArray(),
+                completedCols = _grid.State.completedCols,
+                completedRows = _grid.State.completedRows,
+                isCompleted = _grid.State.isCompleted,
             };
         }
 
@@ -81,7 +98,7 @@ namespace BingoGrain
                     };
                     if (drawSet.Count == 0)
                     {
-                        cell.key = (ushort)(ushort.MaxValue - ((y * game.columns) + x + 100));
+                        cell.key = (ushort)(ushort.MaxValue - (y * game.columns + x + 100));
                         cell.state = BingoCellState.Idle;
                     }
                     else
@@ -89,7 +106,7 @@ namespace BingoGrain
                         var index = random.Next(0, drawSet.Count);
                         var entry = drawSet[index];
                         drawSet.RemoveAt(index);
-                        var tentative = State.tentatives.FirstOrDefault(t => t.Key == entry.key);
+                        var tentative = _grid.State.tentatives.FirstOrDefault(t => t.Key == entry.key);
 
                         cell.key = entry.key;
                         cell.state = GetCellState(entry, tentative, game.confirmationThreshold);
@@ -119,12 +136,12 @@ namespace BingoGrain
                 }
             }
 
-            State.cols = game.columns;
-            State.rows = game.rows;
-            State.cells = cells.ToArray();
-            State.completedRows = completedRows.ToArray();
-            State.completedCols = completedCols.ToArray();
-            State.isCompleted = isGridCompleted;
+            _grid.State.cols = game.columns;
+            _grid.State.rows = game.rows;
+            _grid.State.cells = cells.ToArray();
+            _grid.State.completedRows = completedRows.ToArray();
+            _grid.State.completedCols = completedCols.ToArray();
+            _grid.State.isCompleted = isGridCompleted;
         }
 
         private BingoCellState GetCellState(BingoEntry gameEntry, BingoTentative? tentative, TimeSpan threshold)
@@ -161,6 +178,25 @@ namespace BingoGrain
                     return validationWindowEnd > DateTime.UtcNow ? BingoCellState.Pending : BingoCellState.Rejected;
                 }
             }
+        }
+
+        public async Task<BingoTentative> AddTentative(ushort key)
+        {
+            var tentative = new BingoTentative
+            {
+                Key = key,
+                TentativeTime = DateTime.UtcNow,
+            };
+            _grid.State.tentatives.Add(tentative);
+            await _grid.WriteStateAsync();
+
+            return new BingoTentative
+            {
+                playerId = _playerId,
+                Key = key,
+                TentativeTime = tentative.TentativeTime,
+                Confirmed = false,
+            };
         }
     }
 }

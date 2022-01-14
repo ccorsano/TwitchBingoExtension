@@ -1,4 +1,5 @@
-using BingoGrain;
+using BingoGrainInterfaces;
+using BingoServices.Configuration;
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
@@ -20,10 +21,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using TwitchAchievementTrackerBackend.Configuration;
-using TwitchBingoService.Configuration;
 using TwitchBingoService.Services;
-using TwitchBingoService.Storage;
 
 namespace TwitchBingoService
 {
@@ -39,12 +37,6 @@ namespace TwitchBingoService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient();
-            services.AddSingleton<TwitchEBSService>();
-            services.AddSingleton<BingoService>();
-            services.Configure<BingoServiceOptions>(Configuration.GetSection("bingo"));
-            services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
-            services.Configure<AzureStorageOptions>(Configuration.GetSection("azure"));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -108,38 +100,6 @@ namespace TwitchBingoService
                     };
                 });
 
-            var azureConnectionString = Configuration.GetValue<string>("azure:ConnectionString");
-            if (string.IsNullOrEmpty(azureConnectionString))
-            {
-                var redisUrl = Configuration.GetValue<string>("REDIS_URL");
-                if (string.IsNullOrEmpty(redisUrl))
-                {
-                    services.AddSingleton<IGameStorage, InMemoryGameStore>();
-                }
-                else
-                {
-                    services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(services => StackExchange.Redis.ConnectionMultiplexer.Connect(redisUrl));
-                    services.AddSingleton<IGameStorage, RedisGameStore>();
-                }
-            }
-            else
-            {
-                services.AddSingleton<IGameStorage, AzureGameStore>();
-            }
-            services.AddSingleton(s =>
-                Twitch.Authenticate()
-                    .FromAppCredentials(
-                        s.GetService<IOptions<TwitchOptions>>().Value.ClientId,
-                        s.GetService<IOptions<TwitchOptions>>().Value.ClientSecret)
-                    .Build()
-            );
-            services.Configure<TwitchChatClientOptions>(Configuration.GetSection("twitch").GetSection("IrcOptions"));
-            services.AddTransient(s => TwitchChatClientBuilder.Create()
-                .WithOAuthToken(s.GetService<IOptions<TwitchChatClientOptions>>().Value.OAuthToken)
-                .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
-            services.AddTransient<ITwitchAPIClient, TwitchAPIClient>();
-            services.AddMemoryCache();
-
             services.AddTransient<Func<IClusterClient>>(s =>
                 () => new ClientBuilder()
                         // Clustering information
@@ -153,7 +113,7 @@ namespace TwitchBingoService
                         // Application parts: just reference one of the grain interfaces that we use
                         .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(IBingoGameGrain).Assembly))
                         .Build());
-            services.AddTransient(s => s.GetService<StartupService>().ClusterClient);
+            services.AddSingleton(s => s.GetService<StartupService>().ClusterClient);
             services.AddSingleton<StartupService>();
             services.AddHostedService(s => s.GetService<StartupService>());
         }
