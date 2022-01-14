@@ -61,6 +61,10 @@ export default function Config() {
                     setLoading(false)
                 })
         }
+        else
+        {
+            setLoading(false)
+        }
     }, [activeGame])
 
     React.useEffect(() => {
