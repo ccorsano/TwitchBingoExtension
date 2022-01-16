@@ -1,4 +1,4 @@
-﻿using BingoGrainInterfaces;
+﻿using BingoGrainInterfaces.Model;
 using BingoServices.Configuration;
 using BingoServices.Services;
 using Conceptoire.Twitch.IRC;

@@ -1,4 +1,4 @@
-﻿using BingoGrainInterfaces;
+﻿using BingoGrainInterfaces.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +14,7 @@ namespace BingoGrains
         public BingoLeaderboard? Leaderboard { get; set; }
         public List<BingoLogEntry> LogEntries { get; set; } = new List<BingoLogEntry>();
         public Dictionary<string, string> Moderators { get; set; } = new Dictionary<string, string>();
+        public List<BingoTentative> PendingTentatives { get; set; } = new List<BingoTentative>();
+        public Dictionary<ushort, List<BingoNotification>> PendingNotifications { get; set; } = new Dictionary<ushort, List<BingoNotification>>();
     }
 }

@@ -74,6 +74,7 @@ namespace BingoWorker
             }
 
             builder.ConfigureApplicationParts(app => app.AddApplicationPart(typeof(BingoGameGrain).Assembly).WithReferences());
+            builder.AddSimpleMessageStreamProvider(BingoGrainInterfaces.Constants.NotificationsProvider).AddMemoryGrainStorage("PubSubStore");
 
             // Inject services from parent host container
             builder.ConfigureServices((ctx, services) =>

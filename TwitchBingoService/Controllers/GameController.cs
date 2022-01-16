@@ -1,4 +1,5 @@
 ﻿using BingoGrainInterfaces;
+using BingoGrainInterfaces.Model;
 using BingoServices.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -98,7 +99,8 @@ namespace TwitchBingoService.Controllers
             var grain = _orleansClient.GetGrain<IBingoGameGrain>(gameId);
             try
             {
-                return new ObjectResult(await grain.Confirm(key, User.Identity.Name));
+                var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
+                return new ObjectResult(await grain.Confirm(key, opaqueId));
             }
             catch(InvalidOperationException ex)
             {

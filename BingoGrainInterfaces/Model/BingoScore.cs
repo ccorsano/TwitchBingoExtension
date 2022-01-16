@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BingoGrainInterfaces
+namespace BingoGrainInterfaces.Model
 {
     public record BingoScore : IComparable<BingoScore>
     {

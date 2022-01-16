@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BingoGrainInterfaces
+namespace BingoGrainInterfaces.Model
 {
     public class BingoTentative
     {

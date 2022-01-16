@@ -1,4 +1,6 @@
-﻿namespace BingoGrainInterfaces
+﻿using BingoGrainInterfaces.Model;
+
+namespace BingoGrainInterfaces
 {
     public interface IBingoGameGrain : Orleans.IGrainWithGuidKey
     {

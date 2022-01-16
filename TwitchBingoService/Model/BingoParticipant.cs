@@ -1,4 +1,4 @@
-﻿using BingoGrainInterfaces;
+﻿using BingoGrainInterfaces.Model;
 using ProtoBuf;
 
 namespace TwitchBingoService.Model

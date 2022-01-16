@@ -1,4 +1,5 @@
 ﻿using BingoGrainInterfaces;
+using BingoGrainInterfaces.Model;
 using NBomber;
 using NBomber.Contracts;
 using NBomber.CSharp;

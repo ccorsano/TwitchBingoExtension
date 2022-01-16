@@ -1,4 +1,4 @@
-﻿using BingoGrainInterfaces;
+﻿using BingoGrainInterfaces.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +18,6 @@ namespace BingoGrains
         public bool isCompleted { get; set; }
         public ushort[] completedRows { get; set; } = new ushort[0];
         public ushort[] completedCols { get; set; } = new ushort[0];
+        public TimeSpan confirmationThreshold { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BingoGrainInterfaces
+namespace BingoGrainInterfaces.Model
 {
     public enum NotificationType
     {
@@ -14,6 +14,7 @@ namespace BingoGrainInterfaces
         Confirmation = 3,
         Missed = 4,
         Start = 5,
+        Tentative = 6,
     }
 
     [ProtoContract]
@@ -28,5 +29,8 @@ namespace BingoGrainInterfaces
 
         [ProtoMember(3)]
         public string? playerId { get; set; }
+
+        [ProtoMember(4)]
+        public DateTime notificationTime { get; set; }
     }
 }

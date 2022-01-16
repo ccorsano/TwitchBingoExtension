@@ -1,7 +1,7 @@
 ﻿using BingoGrainInterfaces.Configuration;
 using System.Text.Json.Serialization;
 
-namespace BingoGrainInterfaces
+namespace BingoGrainInterfaces.Model
 {
     public class BingoGameCreationParams
     {

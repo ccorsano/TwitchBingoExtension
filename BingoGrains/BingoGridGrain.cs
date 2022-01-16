@@ -1,10 +1,12 @@
 ﻿using BingoGrainInterfaces;
+using BingoGrainInterfaces.Model;
 using BingoServices.Services;
 using Force.Crc32;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Runtime;
+using Orleans.Streams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ using Troschuetz.Random.Generators;
 
 namespace BingoGrains
 {
+    [ImplicitStreamSubscription("PlayerNotifications")]
     public class BingoGridGrain : Grain, IBingoGridGrain
     {
         private readonly IPersistentState<BingoGridState> _grid;
@@ -21,6 +24,7 @@ namespace BingoGrains
         private readonly ILogger _logger;
         private Guid _gameId;
         private string _playerId;
+        private IAsyncStream<BingoNotification> _notificationsStream;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public BingoGridGrain(
@@ -48,6 +52,30 @@ namespace BingoGrains
             var keySegments = this.GetPrimaryKeyString().Split(":");
             _gameId = Guid.Parse(keySegments[0]);
             _playerId = keySegments[1];
+
+            var streamProvider = GetStreamProvider(Constants.NotificationsProvider);
+            _notificationsStream = streamProvider.GetStream<BingoNotification>(_gameId, Constants.GameNotificationsNamespace);
+            _notificationsStream.SubscribeAsync<BingoNotification>(async (notification, token) =>
+            {
+                switch (notification.type)
+                {
+                    case NotificationType.CompletedRow:
+                        break;
+                    case NotificationType.CompletedColumn:
+                        break;
+                    case NotificationType.CompletedGrid:
+                        break;
+                    case NotificationType.Confirmation:
+                        await OnConfirmed(notification.key, notification.notificationTime, notification.playerId ?? "");
+                        break;
+                    case NotificationType.Missed:
+                        break;
+                    case NotificationType.Start:
+                        break;
+                    default:
+                        break;
+                }
+            });
 
             return base.OnActivateAsync();
         }
@@ -142,6 +170,7 @@ namespace BingoGrains
             _grid.State.completedRows = completedRows.ToArray();
             _grid.State.completedCols = completedCols.ToArray();
             _grid.State.isCompleted = isGridCompleted;
+            _grid.State.confirmationThreshold = game.confirmationThreshold;
         }
 
         private BingoCellState GetCellState(BingoEntry gameEntry, BingoTentative? tentative, TimeSpan threshold)
@@ -190,6 +219,14 @@ namespace BingoGrains
             _grid.State.tentatives.Add(tentative);
             await _grid.WriteStateAsync();
 
+            await _notificationsStream.OnNextAsync(new BingoNotification
+            {
+                key = key,
+                notificationTime = DateTime.UtcNow,
+                playerId = _playerId,
+                type = NotificationType.Tentative,
+            });
+
             return new BingoTentative
             {
                 playerId = _playerId,
@@ -197,6 +234,35 @@ namespace BingoGrains
                 TentativeTime = tentative.TentativeTime,
                 Confirmed = false,
             };
+        }
+
+        public async Task OnConfirmed(ushort key, DateTime confirmedAt, string confirmedBy)
+        {
+            var entry = _grid.State.cells.First(c => c.key == key);
+            var tentatives = _grid.State.tentatives.Where(t => t.Key == key && !t.Confirmed).ToList();
+            if (!tentatives.Any())
+            {
+                entry.state = BingoCellState.Missed;
+            }
+            else if (tentatives.Any(t => t.TentativeTime >  confirmedAt - _grid.State.confirmationThreshold && t.TentativeTime < confirmedAt + _grid.State.confirmationThreshold))
+            {
+                entry.state = BingoCellState.Confirmed;
+
+                var hasCompletedGrid = _grid.State.cells.All(c => c.state == BingoCellState.Confirmed);
+                var hasCompletedRow = _grid.State.cells.All(c => c.row == entry.row && c.state == BingoCellState.Confirmed);
+                var hasCompletedCol = _grid.State.cells.All(c => c.col == entry.col && c.state == BingoCellState.Confirmed);
+
+                if (hasCompletedGrid || hasCompletedRow || hasCompletedCol)
+                {
+                    var notification = new BingoNotification
+                    {
+                        key = entry.key,
+                        type = hasCompletedGrid ? NotificationType.CompletedGrid : hasCompletedRow ? NotificationType.CompletedRow : NotificationType.CompletedColumn,
+                        playerId = _playerId,
+                    };
+                    await _notificationsStream.OnNextAsync(notification);
+                }
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using BingoGrainInterfaces;
+﻿using BingoGrainInterfaces.Model;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;

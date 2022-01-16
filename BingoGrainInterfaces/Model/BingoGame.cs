@@ -2,7 +2,7 @@
 using ProtoBuf;
 using System.Text.Json.Serialization;
 
-namespace BingoGrainInterfaces
+namespace BingoGrainInterfaces.Model
 {
     [ProtoContract]
     public class BingoGame
