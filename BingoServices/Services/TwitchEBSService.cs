@@ -53,7 +53,8 @@ namespace BingoServices.Services
             var token = new JwtSecurityToken(null, null, null, null, DateTime.UtcNow.AddDays(1), _jwtSigningCredentials);
             token.Payload["channel_id"] = channelId;
             token.Payload["role"] = role;
-            token.Payload["opaque_user_id"] = userId;
+            token.Payload["user_id"] = userId;
+            token.Payload["opaque_user_id"] = $"U{userId}";
             token.Payload["iat"] = (int) iat.TotalSeconds;
             token.Payload["pubsub_perms"] = new
             {
@@ -182,7 +183,7 @@ namespace BingoServices.Services
 
         public async Task<string?> GetUserDisplayName(string userId)
         {
-            return (await _apiClient.GetUsersByIdAsync(new string[] { userId })).FirstOrDefault()?.DisplayName;
+            return (await _apiClient.GetUsersByIdAsync(new string[] { userId }))?.FirstOrDefault()?.DisplayName;
         }
     }
 }
