@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 15.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -30,8 +30,8 @@ jobs:
     - name: Package Extension
       working-directory: ./twitch-bingo-extension
       run: |
-        rm -rf node_modules && yarn install --frozen-lockfile
-        yarn run build
+        rm -rf node_modules && npm ci
+        npm run build
     - name: Upload Twitch Extension Package
       uses: actions/upload-artifact@v2
       with:
