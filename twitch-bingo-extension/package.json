@@ -7,9 +7,14 @@
   "license": "ISC",
   "scripts": {
     "test": "jest",
-    "watch": "webpack --watch",
-    "build": "webpack --mode=production",
-    "start": "webpack serve --progress"
+    "typesafe-i18n": "typesafe-i18n",
+    "typesafe-i18n-build": "typesafe-i18n --no-watch",
+    "webpack-watch": "webpack --watch",
+    "webpack-serve": "webpack serve --progress",
+    "webpack-build": "webpack --mode=production",
+    "watch": "npm-run-all --parallel webpack-watch typesafe-i18n",
+    "build": "npm-run-all --sequential typesafe-i18n-build webpack-build",
+    "start": "npm-run-all --parallel webpack-serve typesafe-i18n"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.4",
@@ -17,19 +22,23 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "dayjs": "^1.10.7",
     "jest": "^27.0.6",
+    "npm-run-all": "^4.1.5",
     "react": "^17.0.2",
     "react-countdown-circle-timer": "^2.5.3",
     "react-dom": "^17.0.2",
     "spinthatshit": "^1.0.4",
-    "typesafe-i18n": "^2.36.0"
+    "typesafe-i18n": "^5.5.2"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.6",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2",
     "css-loader": "^6.2.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^6.2.10",
     "html-webpack-plugin": "^5.3.1",
     "mini-css-extract-plugin": "^2.1.0",
+    "nth-check": "^2.0.1",
     "sass": "^1.34.1",
     "sass-loader": "^12.0.0",
     "style-loader": "^3.2.1",
@@ -39,8 +48,7 @@
     "webpack": "^5.38.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^4.0.0-rc.0",
-    "nth-check": "^2.0.1"
+    "webpack-dev-server": "^4.0.0-rc.0"
   },
   "jest": {
     "transform": {

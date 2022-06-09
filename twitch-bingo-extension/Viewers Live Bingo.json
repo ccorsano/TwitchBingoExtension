@@ -178,6 +178,28 @@
       "orientation": "Landscape",
       "type": "mobile",
       "viewerType": "Broadcaster"
+    },
+    {
+      "channelId": "158511925",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "miekyld",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "8",
+      "isPopout": false,
+      "label": "",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "video_overlay",
+      "viewerType": "Logged-Out Viewer"
     }
   ],
   "manifest": {
@@ -249,7 +271,7 @@
       ""
     ]
   },
-  "frontendCommand": "yarn start",
+  "frontendCommand": "npm run start",
   "frontendFolderName": "",
   "name": "Viewers Live Bingo",
   "usingRandomFrontendHostingPort": false,

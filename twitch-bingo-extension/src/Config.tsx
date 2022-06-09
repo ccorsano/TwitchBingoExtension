@@ -5,7 +5,7 @@ import Config from './components/Config/Config'
 import TypesafeI18n from './i18n/i18n-react'
 
 ReactDOM.render(
-    <TypesafeI18n initialLocale={GetCurrentLanguage()}>
+    <TypesafeI18n locale={GetCurrentLanguage()}>
         <Config />
     </TypesafeI18n>,
     document.getElementById("root") as HTMLElement
