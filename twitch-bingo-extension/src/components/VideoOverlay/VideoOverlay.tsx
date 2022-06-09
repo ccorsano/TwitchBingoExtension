@@ -12,13 +12,25 @@ import { I18nContext } from '../../i18n/i18n-react';
 import OverlayBingoGrid from './OverlayBingoGrid';
 const ModerationPane = React.lazy(() => import('./ModerationPane'));
 import VideoOverlayTabWidget from './TabWidget';
+import { GetCurrentLanguage } from '../../common/ExtensionUtils';
+import { loadLocaleAsync } from '../../i18n/i18n-util.async';
 require('./VideoOverlay.scss');
 require('../../common/BingoStyles.scss');
 require('../../common/BingoViewerEntry.scss');
 
 export default function VideoOverlay()
 {
-    const { LL } = React.useContext(I18nContext)
+    // Deal with locale selection
+	const { LL, setLocale } = React.useContext(I18nContext)
+    const [wasLocLoaded, setWasLocLoaded] = React.useState(false)
+
+    React.useEffect(() => {
+        var locale = GetCurrentLanguage()
+		loadLocaleAsync(locale).then(() => {
+            setLocale(locale)
+            setWasLocLoaded(true)
+        })
+	}, [])
     
     const [isCollapsed, setCollapsed] = React.useState(true)
     const [moderationDrawerOpen, setModerationDrawerOpen] = React.useState(false)
@@ -81,6 +93,8 @@ export default function VideoOverlay()
             setCollapsed(true)
         }
     }, [isShowingIdentityPrompt, isCollapsed])
+
+    if (!wasLocLoaded) return null;
 
     return (
         <BingoGameComponent onSharedIdentity={onSharedIdentityChange}>

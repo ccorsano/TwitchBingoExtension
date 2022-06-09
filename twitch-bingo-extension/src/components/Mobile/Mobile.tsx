@@ -8,13 +8,25 @@ import { I18nContext } from '../../i18n/i18n-react';
 import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
 import BingoMobileEntryList from './BingoMobileEntryList';
 import BingoMobileMiniGrid from './BingoMobileMiniGrid';
+import { loadLocaleAsync } from '../../i18n/i18n-util.async';
+import { GetCurrentLanguage } from '../../common/ExtensionUtils';
 require('./Mobile.scss');
 require('./BingoMobileEntryList.scss');
 
 
 export default function Mobile()
 {
-    const { LL } = React.useContext(I18nContext)
+    // Deal with locale selection
+	const { LL, setLocale } = React.useContext(I18nContext)
+    const [wasLocLoaded, setWasLocLoaded] = React.useState(false)
+
+    React.useEffect(() => {
+        var locale = GetCurrentLanguage()
+		loadLocaleAsync(locale).then(() => {
+            setLocale(locale)
+            setWasLocLoaded(true)
+        })
+	}, [])
     
     const [selectedCell, setSelectedCell] = React.useState(null)
     const [sortedEntries, setSortedEntries] = React.useState<BingoGridCell[]>()
@@ -65,6 +77,8 @@ export default function Mobile()
         })
         setSortedEntries(sortedEntries)
     }
+
+    if (!wasLocLoaded) return null
 
     return (
         <BingoGameComponent onRefreshGrid={onRefreshGrid}>
