@@ -5,7 +5,7 @@ import VideoOverlay from './components/VideoOverlay/VideoOverlay'
 import TypesafeI18n from './i18n/i18n-react'
 
 ReactDOM.render(
-    <TypesafeI18n initialLocale={GetCurrentLanguage()}>
+    <TypesafeI18n locale={GetCurrentLanguage()}>
         <VideoOverlay />
     </TypesafeI18n>,
     document.getElementById("root") as HTMLElement

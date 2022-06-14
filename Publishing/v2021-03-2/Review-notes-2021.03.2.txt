@@ -1,0 +1,123 @@
+Review channel: https://www.twitch.tv/blipbloopbot
+
+# Description
+
+Features and improvements are in the work, check regularly for updates.
+
+Graphical design by twitch.tv/fastoche and the made with the help of the twitch.tv/esiwok community ❤
+
+Customizable & interactive bingo games for streamers communities
+- Have yourself or your moderation team come up with stream events viewers should pay attention to.
+- Let viewers spot and report the events as they appear on your stream
+- Moderators as well as yourself can confirm or reject reported events
+- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened
+- After the event is confirmed, viewers have the same grace period to report it
+
+New in 2021.3
+- Redesign by twitch.tv/fastoche !
+- Backend ready for scale
+- Game Log on live config panel
+New in 2021.3.2
+- Hotfix for configuration page not loading
+
+The extension will celebrate the most attentive viewers by posting messages on the chat.
+
+# Changelog v2021.03.2
+
+- Hotfix: configuration page was not loading when broadcaster configuration segment was cleared
+- Configuration page: also save configuration when clicking "Start"
+- Set connect-src CSP base URL for backend
+
+# Feature summary
+
+- Broadcaster can configure a number of bingo entries, meant to represent funny occurrences that happen regularly on his stream
+- These entries will be presented (randomized) on a configurable Bingo grid, to each participating Viewer
+- Viewers will report the funny occurrences as they occur
+- Moderators and the broadcaster will then confirm the occurrence
+- Viewers should pay extra attention to the stream to complete their grid !
+- An EBS is used to keep track of the game and send notifications to moderators and viewers
+- A Live Configuration view is provided for convenience, and mirror the features of the static Configuration page.
+- Mobile is supported, with an adapted UI (developer account info submitted for iOS support)
+
+# Format of the archive
+
+This extension is built with React + Typescript and distributed with included Webpack sourcemaps.
+
+## Source code
+Source code for this release is available on
+ https://github.com/ccorsano/TwitchBingoExtension/releases/tag/2021.03.2-rc1, or upon explicit request.
+
+To build, download the release source code above, decompress, then:
+> cd twitch-bingo-extension
+> yarn install --frozen-lockfile
+> yarn run build
+
+# Testing walkthrough
+
+1- Configure the Bingo entries & grid
+  1.1 - Populate entries, either:
+    1.1.a - click the import button. Select a text file, one line per entry.
+    1.1.b - click the + button, type-in the entry text.
+    1.1.c - you can also remove or edit entries using the corresponding icons
+  1.2 - Select entries for the next game
+    - Click the + button next to the entries you want to select for the next game.
+    - Remove entries you want to remove from the selected list, using the "-" button
+  1.3 - Configure the Bingo grid
+    - Configure the number of rows & columns you want for the game
+    - Number of cells in the grid need to be lesser or equal to the number selected entries
+    - Time to allow before and after confirmation to consider a player's tentative to be valid
+    - Make sure that the number of selected items is large enough to at least fill the configured grid.
+      The grid will contain red cells and an error message will be displayed if that's not the case.
+  1.4 - Save the configuration
+    - Click Save
+  1.5 - Launch the game
+    - Check that the start button is enabled, if not verify if there are any errors displayed on the configuration panel.
+    - Click Start game
+    - Note that the view will show a Game Log section, with the "Start" event shown
+  
+2- Play as a viewer
+  - On the stream, unfold the grid by clicking the widget on the top-left corner
+    - If prompted, allow identity sharing first to see the grid
+  - If only a "Waiting to start the game" message appear, check that the game is active on the configuration panel.
+  - Click one of the cell and confirm your observation with the tick button
+  - Observe that a countdown is now ticking, waiting for a moderator confirmation
+
+3- Confirm as a moderator
+  - On the stream, as a moderator, observe the moderation pane open when a viewer makes a tentative
+  - If needed, click the moderation widget below the grid widget to unfold the moderation pane
+  - Pending confirmations are displayed on top, with their countdown ticking
+  - All the other entries are available for confirmation below, if viewers haven't spotted them yet
+
+4- See the result
+  - On the viewer's overlay, observe the cell either turn gold or grey depending whether a moderator confirmed it
+  - On the chat, once the confirmation grace period is over, the EBS will post a notification that the entry was confirmed
+  - On the chat, if a viewer has completed a row, a column, or the full grid, a celebration will be sent from the EBS.
+  - The broadcaster can also visualize these events in the Game Log on the configuration and Dashboard configuration view.
+  - Viewers are expected to celebrate on the chat on their own initiative as well, of course
+
+5 - Play as a Mobile viewer
+  - On the Mobile extension panel, select entries either from the grid view or the list
+  - Tap the selected entry to open the confirmation prompt
+  - Tap the confirm button to confirm the entry
+  - Observe that a countdown is now ticking, waiting for a moderator confirmation
+  - Refer to 3 to confirm the entry using a moderator account, on a normal browser
+  - Observe that the grid and list reflect whether the entry was confirmed or not
+
+6- Stop the game
+  - Use the static configuration page or the live configuration pane to stop the game and clear it from the EBS (if not all data expires within 7 days).
+
+
+# Sample entry file to import
+
+As an example, you can save the following lines to a separate file and use the import feature on the configuration page:
+
+Green screen is glitching.
+Streamer makes a pretty bad joke, nobody gets it
+OBS CRASH. BOOM. move along.
+It's not me ! My gamepad has issues !!!
+Sound is missing but we still have video... Nani ?!
+Full crash. Take a pancake.
+Streamer is lost, coop player is confused.
+Will you please send the INVITE ???!
+Streamer's character died in a stupid way
+Moderators clearly wish they could ban the streamer

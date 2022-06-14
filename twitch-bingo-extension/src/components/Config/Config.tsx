@@ -1,19 +1,34 @@
-import * as React from 'react';
-import { TwitchExtensionConfiguration, TwitchExtHelper, TwitchExtQuery } from '../../common/TwitchExtension';
-import { BingoEBS } from '../../EBS/BingoService/EBSBingoService';
-import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes';
-import { Twitch } from '../../services/TwitchService';
-import { BingoEntry, BingoGame } from '../../EBS/BingoService/EBSBingoTypes';
-import { BingoEditableEntry } from '../../model/BingoEntry';
-import { BingoBroadcastEventType, BingoConfiguration } from '../../model/BingoConfiguration';
-import { EBSVersion } from '../../EBS/EBSConfig';
-import StatusCard from './StatusCard';
-import LibraryEditor from './LibraryEditor';
-import EntrySelectionView from './EntrySelectionView';
-import GridConfigurationView from './GridConfigurationView';
+import * as React from 'react'
+import { TwitchExtensionConfiguration, TwitchExtHelper, TwitchExtQuery } from '../../common/TwitchExtension'
+import { BingoEBS } from '../../EBS/BingoService/EBSBingoService'
+import * as EBSBingo from '../../EBS/BingoService/EBSBingoTypes'
+import { Twitch } from '../../services/TwitchService'
+import { BingoEntry, BingoGame } from '../../EBS/BingoService/EBSBingoTypes'
+import { BingoEditableEntry } from '../../model/BingoEntry'
+import { BingoBroadcastEventType, BingoConfiguration } from '../../model/BingoConfiguration'
+import { EBSVersion } from '../../EBS/EBSConfig'
+import StatusCard from './StatusCard'
+import LibraryEditor from './LibraryEditor'
+import EntrySelectionView from './EntrySelectionView'
+import GridConfigurationView from './GridConfigurationView'
+import { I18nContext } from "../../i18n/i18n-react"
+import { loadLocaleAsync } from '../../i18n/i18n-util.async'
+import { GetCurrentLanguage } from '../../common/ExtensionUtils'
 require('./Config.scss')
 
 export default function Config() {
+    // Deal with locale selection
+	const { setLocale } = React.useContext(I18nContext)
+    const [wasLoaded, setWasLoaded] = React.useState(false)
+
+    React.useEffect(() => {
+        var locale = GetCurrentLanguage()
+		loadLocaleAsync(locale).then(() => {
+            setLocale(locale)
+            setWasLoaded(true)
+        })
+	}, [])
+
     const [nextKey, setNextKey] = React.useState(0)
     const [columns, setColumns] = React.useState(3)
     const [rows, setRows] = React.useState(3)
@@ -32,6 +47,7 @@ export default function Config() {
     const loadConfig = React.useCallback((broadcasterConfig: TwitchExtensionConfiguration) => {
         if (! broadcasterConfig?.content)
         {
+            setLoading(false)
             return;
         }
         TwitchExtHelper.rig.log(broadcasterConfig.content);
@@ -59,6 +75,10 @@ export default function Config() {
                 .finally(() => {
                     setLoading(false)
                 })
+        }
+        else
+        {
+            setLoading(false)
         }
     }, [activeGame])
 
@@ -137,7 +157,7 @@ export default function Config() {
             rows: rows,
             columns: columns,
             confirmationThreshold: confirmationThresholdSeconds,
-            activeGameId: activeGame.gameId,
+            activeGameId: activeGame?.gameId,
         }
         const serializedConfig = JSON.stringify(config);
         TwitchExtHelper.configuration.set('broadcaster', EBSVersion, serializedConfig);
@@ -164,7 +184,8 @@ export default function Config() {
     }, [selectedEntries])
 
     const onStart = React.useCallback((): void => {
-        setStarting(true);
+        onSave()
+        setStarting(true)
         BingoEBS.createGame({
             rows: rows,
             columns: columns,
@@ -265,6 +286,8 @@ export default function Config() {
         };
         reader.readAsText(file);
     }
+
+    if (!wasLoaded) return null
 
     return (
         <React.Fragment>

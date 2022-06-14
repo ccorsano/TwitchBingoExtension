@@ -5,7 +5,7 @@ import Mobile from './components/Mobile/Mobile'
 import TypesafeI18n from './i18n/i18n-react'
 
 ReactDOM.render(
-    <TypesafeI18n initialLocale={GetCurrentLanguage()}>
+    <TypesafeI18n locale={GetCurrentLanguage()}>
         <Mobile />
     </TypesafeI18n>,
     document.getElementById("root") as HTMLElement

@@ -33,10 +33,10 @@ The extension will celebrate the most attentive viewers by posting messages on t
 ## Stack
 
 ### Twitch Extension
-- yarn
 - Webpack for bundling
 - React
 - Typescript
+- typesafe-i18n
 - MaterialUI (trying to limit its use)
 
 ### Extension Backend Service
@@ -46,8 +46,7 @@ The extension will celebrate the most attentive viewers by posting messages on t
 
 ## How to run
 ### Prerequisite
-- node 14.x (or 15.x)
-- yarn
+- node 18.x
 - .net 5 for the backend
 
 ### Configuration
@@ -94,5 +93,5 @@ cd TwitchBingoService
 dotnet watch run
 
 cd twitch-bingo-extension
-yarn start
+npm run start
 ```
