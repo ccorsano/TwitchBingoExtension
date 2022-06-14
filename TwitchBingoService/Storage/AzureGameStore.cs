@@ -240,7 +240,7 @@ namespace TwitchBingoService.Storage
             try
             {
                 var result = await notificationsTable.UpsertEntityAsync(entity);
-                if (result.Status / 200 != 0)
+                if (result.Status / 100 != 2)
                 {
                     _logger.LogError("Failed to write notification for game {gameId}, key {entryKey}", gameId, key);
                     throw new Exception("Failed to write notification");
