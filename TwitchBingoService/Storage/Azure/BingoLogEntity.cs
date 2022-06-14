@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using Azure;
+using Azure.Data.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,14 @@ using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
-    public class BingoLogEntity : TableEntity
+    public class BingoLogEntity : ITableEntity
     {
-        public BingoLogEntity()
-        {
+        public BingoLogEntity() { }
 
-        }
-
-        public BingoLogEntity(Guid gameId, BingoLogEntry log) : base(gameId.ToString(), log.timestamp.InvertedTicks())
+        public BingoLogEntity(Guid gameId, BingoLogEntry log)
         {
+            PartitionKey = gameId.ToString();
+            RowKey = log.timestamp.InvertedTicks();
             GameId = gameId;
             NotificationTime = log.timestamp;
             Key = log.key;
@@ -49,5 +49,12 @@ namespace TwitchBingoService.Storage.Azure
         public Int32 PlayersCount { get; set; }
 
         public string PlayersNames { get; set; }
+
+        public string PartitionKey { get; set; }
+
+        public string RowKey { get; set; }
+
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using Azure;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -16,14 +17,14 @@ namespace TwitchBingoService.Storage
     {
         private readonly AzureStorageOptions _storageOptions;
         private readonly ILogger _logger;
-        private readonly CloudStorageAccount _storageAccount;
+        private readonly TableServiceClient _tableClient;
         private readonly string _tablesPrefix;
 
         public AzureGameStore(IOptions<AzureStorageOptions> storageOptions, ILogger<AzureGameStore> logger)
         {
             _storageOptions = storageOptions.Value;
             _logger = logger;
-            _storageAccount = CloudStorageAccount.Parse(_storageOptions.ConnectionString);
+            _tableClient = new TableServiceClient(_storageOptions.ConnectionString);
             _tablesPrefix = _storageOptions.Prefix.ToLowerInvariant() ?? "";
 
             // TODO: move storage init to an external function with tighter security
@@ -49,11 +50,9 @@ namespace TwitchBingoService.Storage
 
         public async Task WriteGame(BingoGame bingoGame)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(GameTableName);
-            var insert = TableOperation.InsertOrReplace(new BingoGameEntity(bingoGame));
-            var result = await table.ExecuteAsync(insert);
-            if (result.HttpStatusCode / 100 != 2)
+            var table = _tableClient.GetTableClient(GameTableName);
+            var result = await table.UpsertEntityAsync(new BingoGameEntity { Game = bingoGame });
+            if (result.Status / 100 != 2)
             {
                 throw new Exception("Could not save game to storage");
             }
@@ -61,133 +60,142 @@ namespace TwitchBingoService.Storage
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(GameTableName);
-            var retrieve = TableOperation.Retrieve<BingoGameEntity>(gameId.ToString(), "");
-            var result = await table.ExecuteAsync(retrieve);
-            if (result.HttpStatusCode == 404)
+            var table = _tableClient.GetTableClient(GameTableName);
+            try
+            {
+                var result = await table.GetEntityAsync<BingoGameEntity>(gameId.ToString(), "");
+                return result.Value.Game;
+            } catch(RequestFailedException ex) when (ex.Status == 404)
             {
                 _logger.LogError("Bingo game {gameId} not found", gameId);
                 return null;
-            }
-            if (result.HttpStatusCode / 100 != 2)
+            } catch (RequestFailedException ex) when (ex.Status / 100 != 2)
             {
                 throw new Exception($"Could not read game {gameId} from storage");
             }
-            return (result.Result as BingoGameEntity).Game;
         }
 
         public async Task DeleteGame(Guid gameId)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(GameTableName);
-            var retrieve = TableOperation.Retrieve<BingoGameEntity>(gameId.ToString(), "");
-            var result = await table.ExecuteAsync(retrieve);
-            if (result.HttpStatusCode == 404)
+            var table = _tableClient.GetTableClient(GameTableName);
+            try
+            {
+                var result = await table.DeleteEntityAsync(gameId.ToString(), "");
+                if (result.IsError)
+                {
+                    _logger.LogError("Error returned trying to delete game {gameId}", gameId);
+                    if (result.Status == 404)
+                    {
+                        throw new ArgumentOutOfRangeException($"Game to delete {gameId} does not exist in storage");
+                    }
+                    throw new Exception($"Could not delete game {gameId} from storage  ");
+                }
+            }
+            catch (RequestFailedException ex) when (ex.Status == 404)
             {
                 throw new ArgumentOutOfRangeException($"Game to delete {gameId} does not exist in storage");
             }
-            if (result.HttpStatusCode / 100 != 2)
+            catch (RequestFailedException ex) when (ex.Status / 100 != 2)
             {
-                throw new Exception($"Could not fetch game { gameId } for deletion ({result.HttpStatusCode})");
-            }
-            var delete = TableOperation.Delete(result.Result as BingoGameEntity);
-            result = await table.ExecuteAsync(delete);
-            if (result.HttpStatusCode / 100 != 2)
-            {
-                throw new Exception($"Could not delete game {gameId} from storage ({result.HttpStatusCode})");
+                throw new Exception($"Could not delete game {gameId} from storage ({ex.Status})");
             }
         }
 
         public async Task<string> ReadUserName(string userId)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(UserNameTableName);
-            var retrieve = TableOperation.Retrieve<BingoUserName>(userId.ToLowerInvariant(), "");
-            var result = await table.ExecuteAsync(retrieve);
-            if (result.HttpStatusCode / 100 != 2)
+            var table = _tableClient.GetTableClient(UserNameTableName);
+            try
+            {
+                var result = await table.GetEntityAsync<BingoUserName>(userId.ToLowerInvariant(), "");
+                return result.Value.UserName;
+            } catch (RequestFailedException)
             {
                 return null;
             }
-            return (result.Result as BingoUserName).UserName;
         }
 
         public async Task WriteUserName(string userId, string userName)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(UserNameTableName);
-            var insert = TableOperation.InsertOrReplace(new BingoUserName(userId, userName));
-            var result = await table.ExecuteAsync(insert);
-            if (result.HttpStatusCode / 100 != 2)
+            var table = _tableClient.GetTableClient(UserNameTableName);
+            try
             {
+                var entity = new BingoUserName
+                {
+                    UserId = userId,
+                    UserName = userName,
+                };
+                var result = await table.UpsertEntityAsync(entity);
+
+                if (result.IsError)
+                {
+                    _logger.LogError("Error saving username to storage ({status}, {reasonPhrase})", result.Status, result.ReasonPhrase);
+                    throw new Exception("Could not save username to storage");
+                }
+            } catch(RequestFailedException ex)
+            {
+                _logger.LogError(ex, "Error saving username to storage");
                 throw new Exception("Could not save username to storage");
             }
         }
 
         public async Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var userTentativeTable = client.GetTableReference(TentativesTableName);
-            var pendingTentativeTable = client.GetTableReference(PendingTentativesTableName);
-            var userTentative = TableOperation.InsertOrReplace(new BingoTentativeEntity(gameId, tentative.playerId, tentative));
-            var pendingTentative = TableOperation.InsertOrReplace(new BingoTentativeEntity(gameId, tentative.entryKey, tentative));
-            var userTask = userTentativeTable.ExecuteAsync(userTentative);
-            var pendingTask = pendingTentativeTable.ExecuteAsync(pendingTentative);
-            var result = await userTask;
-            if (result.HttpStatusCode / 100 != 2)
+            var tentativesTable = _tableClient.GetTableClient(TentativesTableName);
+            var pendingTable = _tableClient.GetTableClient(PendingTentativesTableName);
+
+            var userTentativeTask = tentativesTable.UpsertEntityAsync(new BingoTentativeEntity(gameId, tentative.playerId, tentative));
+            var pendingTentativeTask = pendingTable.UpsertEntityAsync(new BingoTentativeEntity(gameId, tentative.entryKey, tentative));
+
+            var userTentativeResult = await userTentativeTask;
+            if (userTentativeResult.IsError)
             {
-                _logger.LogError("Failed to write user tentative for game {gameId}, player {playerId}", gameId, tentative.playerId);
+                _logger.LogError("Failed to write user tentative for game {gameId}, player {playerId} ({status}, {reasonPhrase})", gameId, tentative.playerId, userTentativeResult.Status, userTentativeResult.ReasonPhrase);
                 throw new Exception("Failed to write user tentative");
             }
-            result = await pendingTask;
-            if (result.HttpStatusCode / 100 != 2)
+
+            var pendingTentativeResult = await pendingTentativeTask;
+
+            if (pendingTentativeResult.IsError)
             {
-                _logger.LogError("Failed to write pending tentative for game {gameId}, key {entryKey}", gameId, tentative.entryKey);
+                _logger.LogError("Failed to write pending tentative for game {gameId}, key {entryKey} ({status}, {reasonPhrase})", gameId, tentative.entryKey, pendingTentativeResult.Status, pendingTentativeResult.ReasonPhrase);
                 throw new Exception("Failed to write user tentative");
             }
         }
 
         public async Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime deletionCutoff)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(PendingTentativesTableName);
+            var pendingTable = _tableClient.GetTableClient(PendingTentativesTableName);
+
             try
             {
-                var query = new TableQuery<BingoTentativeEntity>();
-                query.FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", BingoTentativeEntity.TentativePartitionKey(gameId, key));
-
-                TableQuerySegment<BingoTentativeEntity> querySegment = null;
+                var results = pendingTable.QueryAsync<BingoTentativeEntity>(filter: $"PartitionKey eq '{BingoTentativeEntity.TentativePartitionKey(gameId, key)}'");
                 var entityList = new List<BingoTentativeEntity>();
                 var toBeDeleted = new List<BingoTentativeEntity>();
-                while (querySegment == null || querySegment.ContinuationToken != null)
+                await foreach(var result in results)
                 {
-                    querySegment = await table.ExecuteQuerySegmentedAsync(query, querySegment != null ?
-                                                     querySegment.ContinuationToken : null);
-                    foreach(var entity in querySegment)
+                    if (result.TentativeTime < deletionCutoff)
                     {
-                        if (entity.TentativeTime < deletionCutoff)
-                        {
-                            toBeDeleted.Add(entity);
-                        }
-                        else
-                        {
-                            entityList.Add(entity);
-                        }
+                        toBeDeleted.Add(result);
+                    }
+                    else
+                    {
+                        entityList.Add(result);
                     }
                 }
 
                 // Delete expired tentatives
                 if (toBeDeleted.Count > 0)
                 {
-                    var batch = new TableBatchOperation();
+                    var batch = new List<TableTransactionAction>();
                     foreach(var entity in toBeDeleted)
                     {
-                        batch.Add(TableOperation.Delete(entity));
+                        batch.Add(new TableTransactionAction(TableTransactionActionType.Delete, entity));
                     }
+
                     try
                     {
-                        await table.ExecuteBatchAsync(batch);
-                    } catch(StorageException e)
+                        await pendingTable.SubmitTransactionAsync(batch);
+                    } catch(RequestFailedException e)
                     {
                         _logger.LogError(e, "Failed to clean expired pending tentatives for game {gameId}, key {entryKey}", gameId, key);
                     }
@@ -195,7 +203,7 @@ namespace TwitchBingoService.Storage
 
                 return entityList.Select(e => e.ToTentative()).ToArray();
             }
-            catch (StorageException e)
+            catch (RequestFailedException e)
             {
                 _logger.LogError(e, "Failed to read pending tentatives for game {gameId}, key {entryKey}", gameId, key);
                 throw;
@@ -204,25 +212,19 @@ namespace TwitchBingoService.Storage
 
         public async Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(TentativesTableName);
+            var tentativesTable = _tableClient.GetTableClient(PendingTentativesTableName);
             try
             {
-                var query = new TableQuery<BingoTentativeEntity>();
-                query.FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", BingoTentativeEntity.TentativePartitionKey(gameId, playerId));
-
-                TableQuerySegment<BingoTentativeEntity> querySegment = null;
+                var results = tentativesTable.QueryAsync<BingoTentativeEntity>(filter: $"PartitionKey eq '{BingoTentativeEntity.TentativePartitionKey(gameId, playerId)}'");
                 var entityList = new List<BingoTentativeEntity>();
-                while (querySegment == null || querySegment.ContinuationToken != null)
+                await foreach(var result in results)
                 {
-                    querySegment = await table.ExecuteQuerySegmentedAsync(query, querySegment != null ?
-                                                     querySegment.ContinuationToken : null);
-                    entityList.AddRange(querySegment);
+                    entityList.Add(result);
                 }
 
                 return entityList.Select(e => e.ToTentative()).ToArray();
             }
-            catch (StorageException e)
+            catch (RequestFailedException e)
             {
                 _logger.LogError(e, "Failed to read tentatives for game {gameId}, player {playerId}", gameId, playerId);
                 throw;
@@ -233,57 +235,56 @@ namespace TwitchBingoService.Storage
         {
             _logger.LogInformation($"Queue: {gameId}, {key}, {notification.playerId}");
 
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(NotificationsTableName);
+            var notificationsTable = _tableClient.GetTableClient(NotificationsTableName);
             var entity = new BingoNotificationEntity(gameId, DateTime.UtcNow, notification);
-            var notificationInsert = TableOperation.InsertOrReplace(entity);
-
-            var result = await table.ExecuteAsync(notificationInsert);
-            if (result.HttpStatusCode / 100 != 2)
+            try
             {
-                _logger.LogError("Failed to write notification for game {gameId}, key {entryKey}", gameId, key);
+                var result = await notificationsTable.UpsertEntityAsync(entity);
+                if (result.Status / 200 != 0)
+                {
+                    _logger.LogError("Failed to write notification for game {gameId}, key {entryKey}", gameId, key);
+                    throw new Exception("Failed to write notification");
+                }
+            } catch(RequestFailedException ex)
+            {
+                _logger.LogError(ex, "Failed to write notification for game {gameId}, key {entryKey}", gameId, key);
                 throw new Exception("Failed to write notification");
             }
         }
 
         public async Task<BingoNotification[]> UnqueueNotifications(Guid gameId, ushort key)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(NotificationsTableName);
+            var notificationsTable = _tableClient.GetTableClient(NotificationsTableName);
+
             try
             {
-                var query = new TableQuery<BingoNotificationEntity>();
-                query.FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", gameId.ToString());
-
-                TableQuerySegment<BingoNotificationEntity> querySegment = null;
+                var results = notificationsTable.QueryAsync<BingoNotificationEntity>(filter: $"PartitionKey eq '{gameId}'");
                 var entityList = new List<BingoNotificationEntity>();
-                while (querySegment == null || querySegment.ContinuationToken != null)
+                await foreach (var result in results)
                 {
-                    querySegment = await table.ExecuteQuerySegmentedAsync(query, querySegment != null ?
-                                                     querySegment.ContinuationToken : null);
-                    entityList.AddRange(querySegment);
+                    entityList.Add(result);
                 }
 
-                var batchDelete = new TableBatchOperation();
-                foreach(var entity in entityList)
+                var batchDelete = new List<TableTransactionAction>();
+                foreach (var entity in entityList)
                 {
-                    batchDelete.Add(TableOperation.Delete(entity));
+                    batchDelete.Add(new TableTransactionAction(TableTransactionActionType.Delete, entity));
                 }
                 if (batchDelete.Count > 0)
                 {
                     try
                     {
-                        await table.ExecuteBatchAsync(batchDelete);
+                        await notificationsTable.SubmitTransactionAsync(batchDelete);
                     }
-                    catch (StorageException ex)
+                    catch (RequestFailedException e)
                     {
-                        _logger.LogError(ex, "Failed to cleanup retrieved notifications for game {gameId} key {key}", gameId, key);
+                        _logger.LogError(e, "Failed to clean expired pending tentatives for game {gameId}, key {entryKey}", gameId, key);
                     }
                 }
 
                 return entityList.Select(e => e.ToNotification()).ToArray();
             }
-            catch (StorageException e)
+            catch (RequestFailedException e)
             {
                 _logger.LogError(e, "Failed to read tentatives for game {gameId}, key {key}", gameId, key);
                 throw;
@@ -294,13 +295,13 @@ namespace TwitchBingoService.Storage
         {
             _logger.LogInformation($"Log: {gameId}, {entry.key}, {entry.type}");
 
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(LogTableName);
+            var logTable = _tableClient.GetTableClient(LogTableName);
             var entity = new BingoLogEntity(gameId, entry);
-            var notificationInsert = TableOperation.InsertOrReplace(entity);
-
-            var result = await table.ExecuteAsync(notificationInsert);
-            if (result.HttpStatusCode / 100 != 2)
+            try
+            {
+                await logTable.UpsertEntityAsync(entity);
+            }
+            catch (RequestFailedException e)
             {
                 _logger.LogError("Failed to write log for game {gameId}, log {log}", gameId, JsonSerializer.Serialize(entry));
                 throw new Exception("Failed to write log");
@@ -309,25 +310,20 @@ namespace TwitchBingoService.Storage
 
         public async Task<BingoLogEntry[]> ReadLog(Guid gameId)
         {
-            var client = _storageAccount.CreateCloudTableClient();
-            var table = client.GetTableReference(LogTableName);
+            var logTable = _tableClient.GetTableClient(LogTableName);
             try
             {
-                var query = new TableQuery<BingoLogEntity>();
-                query.FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", gameId.ToString());
+                var results = logTable.QueryAsync<BingoLogEntity>(filter: $"PartitionKey eq '{gameId}'");
 
-                TableQuerySegment<BingoLogEntity> querySegment = null;
                 var entityList = new List<BingoLogEntity>();
-                while (querySegment == null || querySegment.ContinuationToken != null)
+                await foreach (var result in results)
                 {
-                    querySegment = await table.ExecuteQuerySegmentedAsync(query, querySegment != null ?
-                                                     querySegment.ContinuationToken : null);
-                    entityList.AddRange(querySegment);
+                    entityList.Add(result);
                 }
 
                 return entityList.Select(e => e.ToLogEntry()).ToArray();
             }
-            catch (StorageException e)
+            catch (RequestFailedException e)
             {
                 _logger.LogError(e, "Failed to read logs for game {gameId}", gameId);
                 throw;
