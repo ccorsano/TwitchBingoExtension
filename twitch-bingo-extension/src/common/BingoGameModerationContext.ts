@@ -1,5 +1,5 @@
-import { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes";
-import { BingoGameContext } from "./BingoGameContext";
+import type { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes"
+import type { BingoGameContext } from "./BingoGameContext"
 
 export type BingoGameModerationContext = {
     gameContext: BingoGameContext;

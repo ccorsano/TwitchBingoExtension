@@ -1,4 +1,5 @@
-import { TwitchAuthCallbackContext, TwitchExtensionConfiguration, TwitchExtHelper } from "../common/TwitchExtension";
+import type { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
+import { TwitchExtHelper } from "../common/TwitchExtension";
 
 // Array with a callback on push, used to automatically call callback on registration if needed
 class CallbackArray<T> extends Array<T> {

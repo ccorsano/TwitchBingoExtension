@@ -1,5 +1,5 @@
-import { BingoGame } from "../EBS/BingoService/EBSBingoTypes";
-import { BingoEditableEntry } from "./BingoEntry";
+import type { BingoGame } from "../EBS/BingoService/EBSBingoTypes";
+import type { BingoEditableEntry } from "./BingoEntry";
 
 export type BingoConfiguration = {
     nextKey: number

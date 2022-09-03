@@ -1,4 +1,4 @@
-import { BingoEntry, BingoGame } from "../EBS/BingoService/EBSBingoTypes";
+import type { BingoEntry, BingoGame } from "../EBS/BingoService/EBSBingoTypes";
 
 export type BingoGameContext = {
     isStarted: boolean,

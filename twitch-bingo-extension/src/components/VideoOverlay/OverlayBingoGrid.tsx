@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { ActiveGameContext, ActiveGridContext } from "../../common/BingoGameComponent";
 import BingoViewerEntry from "../../common/BingoViewerEntry";
 import LinearIndeterminateLoader from "../../common/LinearIndeterminateLoader";
-import { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
+import type { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../../i18n/i18n-react";
 import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
 import { jasminePalette, getRGB } from "../../common/BingoThemes";

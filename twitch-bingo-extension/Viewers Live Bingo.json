@@ -210,7 +210,7 @@
     "canInstall": true,
     "configUrl": "https://localhost:8180/config.html",
     "configurationLocation": "hosted",
-    "description": "Features and improvements are in the work, check regularly for updates.\n\nMade with the help of twitch.tv/fastoche and the twitch.tv/esiwok community ❤\n\nCustomizable & interactive bingo games for streamers & communities\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have the same grace period to report it\n\nNew in 2021.3.2\n- Hot fix for configuration page not loading\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
+    "description": "Features and improvements are in the work, check regularly for updates.\n\nMade with the help of twitch.tv/fastoche and the twitch.tv/esiwok community ❤\n\nCustomizable & interactive bingo games for streamers & communities\n- Have yourself or your moderation team come up with stream events viewers should pay attention to.\n- Let viewers spot and report the events as they appear on your stream\n- Moderators as well as yourself can confirm or reject reported events\n- When an event is reported, moderators have 2 minutes (configurable) to confirm it actually happened\n- After the event is confirmed, viewers have the same grace period to report it\n\nNew in 2022.1\n- Additional fix for games not starting\n\nThe extension will celebrate the most attentive viewers by posting messages on the chat.",
     "eulaTosUrl": "",
     "hasChatSupport": true,
     "iconUrl": "https://extensions-discovery-images.twitch.tv/sbx8c4432ntycy25vv256341lp1ug3/2021.03/logo7937242e-fbfa-4228-9263-036c55bcb37b",
@@ -240,7 +240,7 @@
     "summary": "Setup an interactive Bingo game for your most attentive viewers",
     "supportEmail": "twitchext@conceptoire.com",
     "vendorCode": "",
-    "version": "2022.01",
+    "version": "2022.02",
     "viewerSummary": "Participate in a customized Bingo with your favorite streamer",
     "viewerUrl": "",
     "viewerUrls": {

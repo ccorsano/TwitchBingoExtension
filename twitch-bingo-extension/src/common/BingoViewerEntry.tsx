@@ -2,7 +2,7 @@ import React from "react";
 import clsx from 'clsx';
 import { BingoEntryState } from "../model/BingoEntry";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
+import type { BingoEntry, FormatTimeout } from "../EBS/BingoService/EBSBingoTypes";
 import { I18nContext } from "../i18n/i18n-react";
 require('./BingoStyles.scss')
 require('./BingoViewerEntry.scss')

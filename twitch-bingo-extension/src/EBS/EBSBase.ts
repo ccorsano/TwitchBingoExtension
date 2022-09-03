@@ -1,6 +1,5 @@
 import { Twitch } from '../services/TwitchService';
-import { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
-require('../common/TwitchExtension')
+import type { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
 
 export interface EBSError {
     status: number,
