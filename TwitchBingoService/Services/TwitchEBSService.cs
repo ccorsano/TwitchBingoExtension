@@ -32,7 +32,7 @@ namespace TwitchBingoService.Services
             _options = options.Value;
             _logger = logger;
             _twitchExtensionClient = httpClientFactory.CreateClient("twitchExt");
-            _twitchExtensionClient.BaseAddress = new Uri("https://api.twitch.tv/extensions/");
+            _twitchExtensionClient.BaseAddress = new Uri("https://api.twitch.tv/helix/extensions/");
             _twitchExtensionClient.DefaultRequestHeaders.Add("client-id", _options.ExtensionId);
             _apiClient = apiClient;
 
@@ -74,12 +74,12 @@ namespace TwitchBingoService.Services
             var exp = DateTimeOffset.UtcNow - EPOCH;
 
             var token = new JwtSecurityToken(null, null, null, null, DateTime.UtcNow.AddDays(1), _jwtSigningCredentials);
+            token.Payload["user_id"] = channelId;
             token.Payload["channel_id"] = channelId;
             token.Payload["role"] = "external";
             token.Payload["pubsub_perms"] = new
             {
-                listen = new string[] { "broadcast" },
-                send = new string[] { "*" }
+                send = new string[] { "broadcast", "whisper-*" }
             };
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -127,10 +127,11 @@ namespace TwitchBingoService.Services
             {
                 content_type = "application/json",
                 message = jsonPayload,
-                targets = targets,
+                target = targets,
+                broadcaster_id = channelId
             };
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
-            var message = new HttpRequestMessage(HttpMethod.Post, $"message/{channelId}");
+            var message = new HttpRequestMessage(HttpMethod.Post, "pubsub");
             message.Content = content;
             message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var response = await _twitchExtensionClient.SendAsync(message);
