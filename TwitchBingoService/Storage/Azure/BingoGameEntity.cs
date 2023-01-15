@@ -31,24 +31,24 @@ namespace TwitchBingoService.Storage.Azure
         public string ChannelId { get; set; }
         public string SerializedGame {
             get {
-                return System.Text.Json.JsonSerializer.Serialize(Game);
+                return System.Text.Json.JsonSerializer.Serialize(Game, JsonContext.Default.BingoGame);
             }
             set
             {
-                Game = System.Text.Json.JsonSerializer.Deserialize<BingoGame>(value);
+                Game = System.Text.Json.JsonSerializer.Deserialize(value, JsonContext.Default.BingoGame);
             }
         }
         public string SerializedModerators
         {
             get
             {
-                return System.Text.Json.JsonSerializer.Serialize(Game?.moderators);
+                return System.Text.Json.JsonSerializer.Serialize(Game?.moderators, JsonContext.Default.StringArray);
             }
             set
             {
                 if (Game != null && !string.IsNullOrEmpty(value))
                 {
-                    Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(value);
+                    Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(value, JsonContext.Default.StringArray);
                 }
             }
         }

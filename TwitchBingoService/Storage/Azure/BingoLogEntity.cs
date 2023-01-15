@@ -21,7 +21,7 @@ namespace TwitchBingoService.Storage.Azure
             Key = log.key;
             Type = (byte)log.type;
             PlayersCount = log.playersCount;
-            PlayersNames = JsonSerializer.Serialize(log.playerNames);
+            PlayersNames = JsonSerializer.Serialize(log.playerNames, JsonContext.Default.StringArray);
         }
 
         public string PartitionKey
@@ -60,7 +60,7 @@ namespace TwitchBingoService.Storage.Azure
                 key = (ushort)Key,
                 type = (NotificationType)Type,
                 playersCount = PlayersCount,
-                playerNames = JsonSerializer.Deserialize<string[]>(PlayersNames),
+                playerNames = JsonSerializer.Deserialize(PlayersNames, JsonContext.Default.StringArray)
             };
         }
     }

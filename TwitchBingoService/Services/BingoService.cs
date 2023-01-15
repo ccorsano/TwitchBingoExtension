@@ -1,9 +1,11 @@
 ﻿using Conceptoire.Twitch.API;
+using Conceptoire.Twitch.IGDB.Generated;
 using Conceptoire.Twitch.IRC;
 using Force.Crc32;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,7 @@ namespace TwitchBingoService.Services
         private readonly ITwitchChatClientBuilder _chatBuilder;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
+        private readonly AsyncPolicy _gameUpdatePolicy;
 
         public BingoService(IGameStorage gameStorage, TwitchEBSService ebsService, ITwitchChatClientBuilder chatBuilder, IMemoryCache memoryCache, IOptions<BingoServiceOptions> options, ILogger<BingoService> logger)
         {
@@ -34,6 +37,8 @@ namespace TwitchBingoService.Services
             _memoryCache = memoryCache;
             _options = options.Value;
             _logger = logger;
+            _gameUpdatePolicy = Policy.Handle<ConcurrentGameUpdateException>()
+                .RetryAsync(5);
         }
 
         private async Task<ITwitchChatClient> ConnectBot(string channelId, CancellationToken cancelationToken)
@@ -94,21 +99,29 @@ namespace TwitchBingoService.Services
 
         public async Task RegisterModerator(Guid gameId, string opaqueId)
         {
-            var game = await _storage.ReadGame(gameId);
-            if (game == null)
+            var game = await _gameUpdatePolicy.ExecuteAsync(async () =>
             {
-                throw new ArgumentOutOfRangeException("gameId");
-            }
-            if (game?.moderators?.Contains(opaqueId) ?? false)
+                var updatedGame = await _storage.ReadGame(gameId);
+                if (updatedGame == null)
+                {
+                    throw new ArgumentOutOfRangeException("gameId");
+                }
+                if (updatedGame?.moderators?.Contains(opaqueId) ?? false)
+                {
+                    return null;
+                }
+
+                updatedGame.moderators = updatedGame.moderators?.Append(opaqueId)?.ToArray() ?? new string[] { opaqueId };
+
+                await _storage.WriteGame(updatedGame);
+
+                return updatedGame;
+            });
+
+            if (game != null)
             {
-                return;
+                _logger.LogWarning("Moderators in game {gameId} of channel {channelId}: {moderators}", game.gameId, game.channelId, string.Join(',', game.moderators));
             }
-
-            game.moderators = game.moderators?.Append(opaqueId)?.ToArray() ?? new string[] { opaqueId };
-
-            await _storage.WriteGame(game);
-
-            _logger.LogWarning("Moderators in game {gameId} of channel {channelId}: {moderators}", game.gameId, game.channelId, string.Join(',', game.moderators));
         }
 
         public async Task<BingoGame> GetGame(Guid gameId)
@@ -283,23 +296,29 @@ namespace TwitchBingoService.Services
 
         public async Task<BingoEntry> Confirm(Guid gameId, ushort key, string userId)
         {
-            var game = await _storage.ReadGame(gameId);
-            if (game == null)
+            (BingoGame game, BingoEntry entry) = await _gameUpdatePolicy.ExecuteAsync(async () =>
             {
-                throw new ArgumentOutOfRangeException("gameId");
-            }
+                var updatedGame = await _storage.ReadGame(gameId);
+                if (updatedGame == null)
+                {
+                    throw new ArgumentOutOfRangeException("gameId");
+                }
 
-            var entry = game.entries.First(e => e.key == key);
-            if (entry.confirmedAt != null)
-            {
-                // Signal conflict
-                throw new InvalidOperationException("Entry already confirmed");
-            }
-            entry.confirmedAt = DateTime.UtcNow;
-            entry.confirmedBy = await _ebsService.GetUserDisplayName(userId);
+                var entry = updatedGame.entries.First(e => e.key == key);
+                if (entry.confirmedAt != null)
+                {
+                    // Signal conflict
+                    throw new InvalidOperationException("Entry already confirmed");
+                }
+                entry.confirmedAt = DateTime.UtcNow;
+                entry.confirmedBy = await _ebsService.GetUserDisplayName(userId);
+
+                await _storage.WriteGame(updatedGame);
+
+                return (updatedGame, entry);
+            });
 
             await Task.WhenAll(
-                _storage.WriteGame(game),
                 _storage.QueueNotification(gameId, key, new BingoNotification
                 {
                     key = key,

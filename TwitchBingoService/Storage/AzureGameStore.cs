@@ -52,11 +52,28 @@ namespace TwitchBingoService.Storage
         public async Task WriteGame(BingoGame bingoGame)
         {
             var client = _storageAccount.GetTableClient(GameTableName);
-            var result = await client.UpsertEntityAsync(new BingoGameEntity(bingoGame));
+            var entity = new BingoGameEntity(bingoGame);
+            Response result;
+            ETag? etagValue = (ETag?)bingoGame.StorageObject;
+            if (etagValue.HasValue)
+            {
+                try
+                {
+                    result = await client.UpdateEntityAsync(entity, etagValue.Value, TableUpdateMode.Replace);
+                } catch (RequestFailedException ex) when (ex.Status == 412)
+                {
+                    throw new ConcurrentGameUpdateException();
+                }
+            }
+            else
+            {
+                result = await client.AddEntityAsync(entity);
+            }
             if (result.IsError)
             {
                 throw new Exception("Could not save game to storage");
             }
+            bingoGame.StorageObject = result.Headers.ETag;
         }
 
         public async Task<BingoGame> ReadGame(Guid gameId)
@@ -72,6 +89,7 @@ namespace TwitchBingoService.Storage
             {
                 throw new Exception($"Could not read game {gameId} from storage");
             }
+            result.Value.Game.StorageObject = result.GetRawResponse().Headers.ETag;
             return result.Value.Game;
         }
 
