@@ -53,3 +53,8 @@ div.tabWidget.shown
     left: 0px;
     opacity: 1.0;
 }
+
+div.tabWidget > span
+{
+    font-size: '2rem';
+}

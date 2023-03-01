@@ -3,6 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import sveltePreprocess from 'svelte-preprocess';
 import { resolve } from 'path';
+import { svelteSVG } from "rollup-plugin-svelte-svg";
 
 
 export default defineConfig({
@@ -24,6 +25,9 @@ export default defineConfig({
     },
     plugins: [
         svelte(),
-        basicSsl()
+        basicSsl(),
+        svelteSVG({
+            svgo:{}
+        }),
     ]
 });

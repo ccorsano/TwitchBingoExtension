@@ -54,3 +54,14 @@
 body {
     margin: 0;
 }
+
+.identityPrompt
+{
+    background-color: getRGB(jasminePalette);
+    width: '100%';
+    text-align: 'center';
+    padding-top: '1vw';
+    padding-bottom: '1vw';
+    border-radius: '0.25vw';
+    transition: 'opacity 0.5s';
+}
