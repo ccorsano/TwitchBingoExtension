@@ -32,12 +32,12 @@ export default function VideoOverlay()
         })
 	}, [])
     
-    const [isCollapsed, setCollapsed] = React.useState(true)
+    const [isCollapsed, setCollapsed] = React.useState(false)
     const [moderationDrawerOpen, setModerationDrawerOpen] = React.useState(false)
     const [isWidgetShown, setWidgetShown] = React.useState(true)
     const [hasModNotifications, setHasModNotifications] = React.useState(false)
     const [isModDrawerAutoOpened, setModDrawerAutoOpened] = React.useState(false)
-    const [isShowingIdentityPrompt, setShowingIdentityPrompt] = React.useState(false)
+    const [isShowingIdentityPrompt, setShowingIdentityPrompt] = React.useState(true)
 
     React.useEffect(() => {
         const onContext = (context, _) => {
