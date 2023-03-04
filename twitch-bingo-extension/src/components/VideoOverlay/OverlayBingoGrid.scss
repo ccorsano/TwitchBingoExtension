@@ -7,6 +7,12 @@
     border-style: solid;
     box-shadow: 0px 0px 0.45vh 0px rgba(0,0,0,0.5);
     padding-bottom: 2.5vh;
+    opacity: 1.0;
+}
+
+.collapsed
+{
+    opacity: 0.0;
 }
 
 .gridHeaderBox
@@ -62,4 +68,15 @@
     &:hover {
         z-index: 10;
     }
+}
+
+.loadingGridBox {
+    background-color: whitesmoke;
+    width: '100%';
+    text-align: 'center';
+    padding-top: '1vw';
+    padding-bottom: '1vw';
+    border-radius: '0.25vw';
+    opacity: 1.0;
+    transition: 'opacity 0.5s'
 }

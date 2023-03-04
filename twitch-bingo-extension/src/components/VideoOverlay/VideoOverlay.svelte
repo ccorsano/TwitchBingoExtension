@@ -4,6 +4,7 @@
     import type { BingoEntry } from "src/EBS/BingoService/EBSBingoTypes";
     import OverlayBingoGrid from "./OverlayBingoGrid.svelte";
     import LL from '../../i18n/i18n-svelte';
+    import BingoGameComponent from "../../common/BingoGameComponent.svelte";
 
     let layoutClass = "wide" // todo
 
@@ -44,13 +45,22 @@
         console.log(isCollapsed ? "collapsed" : "not collapsed")
     }
     let onToggleModerationPane = () => {}
+
+    let onSharedIdentityChange = (isShared: boolean) => {
+        if (isShared && isShowingIdentityPrompt) {
+            isShowingIdentityPrompt = false
+        }
+        if (!isShared && !isCollapsed) {
+            isCollapsed = true
+        }
+    }
 </script>
 
 <style lang="scss">
     @import "./VideoOverlay.scss"
 </style>
 
-
+<BingoGameComponent onSharedIdentity={onSharedIdentityChange}>
 <div id="bingoRenderingArea" class={layoutClass}>
     <div id="safeAreaTop" style="grid-column-start: 1; grid-column-end: 4; grid-row: 1; height: '14vh'; width: '100%';" on:click|self={drawingAreaClick}></div>
     <div style="grid-column: 1; grid-row: 2; height: '75vh'" on:click|self={drawingAreaClick}>
@@ -83,3 +93,4 @@
     </div>
     <div id="safeAreaBottom" style="grid-column-start: 1; grid-column-end: 4; grid-row: 3; height: '9vh', width: '100%'" on:click={drawingAreaClick}></div>
 </div>
+</BingoGameComponent>

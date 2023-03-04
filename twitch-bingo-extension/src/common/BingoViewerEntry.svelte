@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { FormatTimeout, type BingoEntry } from "src/EBS/BingoService/EBSBingoTypes";
-    import { BingoEntryState } from "src/model/BingoEntry";
-    import LL from "src/i18n/i18n-svelte";
+    import { FormatTimeout, type BingoEntry } from "../EBS/BingoService/EBSBingoTypes";
+    import { BingoEntryState } from "../model/BingoEntry";
+    import { Moon } from 'svelte-loading-spinners'
+    import LL from "../i18n/i18n-svelte";
 
 
     export let config: BingoEntry
     export let state: BingoEntryState
-    export let canInteract: boolean
-    export let canConfirm: boolean
     export let isRowCompleted: boolean
     export let isColCompleted: boolean
     export let onTentative: (entry: BingoEntry) => void
-    export let countdown: Date
+    export let countdown: Date = null
     export let fontSize: string
     export let isShown: boolean
 
@@ -41,6 +40,13 @@
     let entryVariantType = `type${config.key % 10}`
     let stateClass = confirmationPrompt ? "prompt" : "idle";
 
+    let showTimer = countdown != null
+    let duration = 0
+    if (showTimer)
+    {
+        duration = (countdown.getTime() - Date.now()) / 1000
+        showTimer &&= duration > 0
+    }
 </script>
 
 <style lang="scss">
@@ -65,6 +71,22 @@
             on:click={(isShown && confirmationPrompt) ? handleTentative : null} >
             {LL.BingoViewerEntry.ConfirmButtonLabel()}
         </div>
-        /* { timerComponent } */
+        {#if showTimer}
+            <div class="countdownPrompt bingoCellPrompt bingoCellPromptVisible">
+                <div style="font-size: '16px'">
+                    <Moon size="70" color="#EA4E7A" duration={`{duration}s`} unit="px"/>
+                    /* <CountdownCircleTimer
+                        isPlaying
+                        size={70}
+                        isLinearGradient={true}
+                        duration={duration}
+                        children={renderTime}
+                        strokeWidth={12}
+                        trailColor={"#F4A4BB"}
+                        colors={"#EA4E7A"}
+                    /> */
+                </div>
+            </div>
+        {/if}
     </div>
 </div>

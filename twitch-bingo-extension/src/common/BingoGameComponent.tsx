@@ -31,16 +31,16 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
     const [isAuthorized, setAuthorized] = React.useState(false)
 
     const onLoadConfig = React.useCallback((configContent: BingoConfiguration) => {
-        const activeGameId: string = configContent.activeGameId ?? configContent.activeGame?.gameId
+        const activeGameId: string = configContent.activeGameId ?? configContent.activeGame?.gameId ?? ""
         if (activeGame?.gameId !== activeGameId)
         {
             BingoEBS.getGame(activeGameId)
                 .then(game => {
                     setActiveGame(game)
                     onStart(game)
-                    if (props.onReceiveGame)
+                    if (onReceiveGame)
                     {
-                        props.onReceiveGame(configContent.activeGame);
+                        onReceiveGame(configContent.activeGame);
                     }
                 })
                 .catch(error => {

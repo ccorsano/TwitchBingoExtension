@@ -23,6 +23,10 @@ export default defineConfig({
         https: true,
         port: 8180,
     },
+    preview: {
+        https: true,
+        port: 8180,
+    },
     plugins: [
         svelte(),
         basicSsl(),
