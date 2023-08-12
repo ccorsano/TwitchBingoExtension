@@ -75,13 +75,13 @@
         {#if isShowingIdentityPrompt }
             <div class="identityPrompt">
                     <div style="margin-bottom: '2rem'; margin-top: '1rem'">
-                        {LL.OverlayBingoGrid.IdentityPromptMessage()}
+                        {$LL.OverlayBingoGrid.IdentityPromptMessage()}
                     </div>
                     <div
                         class="bandeauPrompt bandeauPromptVisible"
                         style="position: 'unset'"
                         on:click={(_) => gameContext.promptIdentity()}>
-                        {LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
+                        {$LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                     </div>
                 </div>
         {/if}

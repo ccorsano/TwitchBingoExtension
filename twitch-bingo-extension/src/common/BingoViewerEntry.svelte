@@ -69,12 +69,13 @@
         <div
             class="bingoCellPrompt" class:bingoCellPromptVisible={confirmationPrompt} class:bingoCellPromptHidden={!confirmationPrompt}
             on:click={(isShown && confirmationPrompt) ? handleTentative : null} >
-            {LL.BingoViewerEntry.ConfirmButtonLabel()}
+            {$LL.BingoViewerEntry.ConfirmButtonLabel()}
         </div>
         {#if showTimer}
             <div class="countdownPrompt bingoCellPrompt bingoCellPromptVisible">
                 <div style="font-size: '16px'">
                     <Moon size="70" color="#EA4E7A" duration={`{duration}s`} unit="px"/>
+                    <!--
                     /* <CountdownCircleTimer
                         isPlaying
                         size={70}
@@ -85,6 +86,7 @@
                         trailColor={"#F4A4BB"}
                         colors={"#EA4E7A"}
                     /> */
+                    -->
                 </div>
             </div>
         {/if}

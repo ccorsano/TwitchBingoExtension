@@ -36,13 +36,13 @@ export let onStop: () => void
     </Content>
     <Actions>
         {#if isActive}
-            <Button variant="unelevated" color="secondary" on:click={onStop}>{LL.Config.StatusCard.StopButton()}</Button>
+            <Button variant="unelevated" color="secondary" on:click={onStop}>{$LL.Config.StatusCard.StopButton()}</Button>
         {/if}
     </Actions>
     <Content>
         {#if !isLoading && isActive}
         <h2 class="mdc-typography--h5">
-            {LL.Config.GameLog.Header()}
+            {$LL.Config.GameLog.Header()}
             <IconButton on:click={onRefreshLog} disabled={isLoadingLog}>
                 refresh
             </IconButton>

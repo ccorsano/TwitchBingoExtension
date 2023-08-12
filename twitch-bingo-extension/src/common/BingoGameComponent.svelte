@@ -109,6 +109,8 @@
                         text: entry.text,
                         state: cell.state,
                         timer: pending?.expireAt,
+                        isColCompleted: false,
+                        isRowCompleted: false,
                     },
                     entry
                 ];
@@ -131,6 +133,8 @@
                 text: "",
                 state: BingoEntryState.Idle,
                 timer: null,
+                isColCompleted: false,
+                isRowCompleted: false,
             },
             null
         ]
