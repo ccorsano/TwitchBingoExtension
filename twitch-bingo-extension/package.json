@@ -48,7 +48,8 @@
     "webpack": "^5.95.0",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^4.9.2"
+    "webpack-dev-server": "^4.9.2",
+    "ws": ">=8.17.1"
   },
   "jest": {
     "transform": {
