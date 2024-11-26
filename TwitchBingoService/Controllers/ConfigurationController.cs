@@ -23,7 +23,7 @@ namespace TwitchBingoService.Controllers
             {
                 var content = await reader.ReadToEndAsync();
                 Response.ContentType = "text/plain";
-                Response.Headers.Add("Content-Disposition", "attachment; filename=\"bingoEntries.txt\"");
+                Response.Headers.ContentDisposition = "attachment; filename=\"bingoEntries.txt\"";
                 return new OkObjectResult(content);
             }
         }
