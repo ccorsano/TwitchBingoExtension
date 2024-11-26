@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 #if !RELEASE
 using Microsoft.OpenApi.Models;
@@ -78,18 +79,18 @@ namespace TwitchBingoService
                     {
                         OnTokenValidated = (validationContext) =>
                         {
-                            var token = validationContext.SecurityToken as JwtSecurityToken;
+                            var token = validationContext.SecurityToken as JsonWebToken;
 
                             var claims = new List<Claim>
                             {
-                                new Claim(ClaimTypes.Role, token.Payload["role"].ToString())
+                                new Claim(ClaimTypes.Role, token.GetPayloadValue<string>("role"))
                             };
-                            if (token.Payload.ContainsKey("user_id"))
+                            if (token.TryGetPayloadValue("user_id", out string userId))
                             {
                                 claims.Add(new Claim(ClaimTypes.Role, "viewer"));
                             }
 
-                            validationContext.Request.HttpContext.Items.Add("jwtPayload", token.RawPayload);
+                            validationContext.Request.HttpContext.Items.Add("jwtPayload", System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(token.EncodedPayload)));
 
                             var identity = new ClaimsIdentity(claims);
                             validationContext.Principal.AddIdentity(identity);
@@ -106,8 +107,8 @@ namespace TwitchBingoService
 
                     options.TokenValidationParameters.NameClaimTypeRetriever = (token, _) =>
                     {
-                        var jwtToken = token as JwtSecurityToken;
-                        if (jwtToken.Payload.ContainsKey("user_id"))
+                        var jwtToken = token as JsonWebToken;
+                        if (jwtToken.TryGetPayloadValue("user_id", out string userId))
                         {
                             return "user_id";
                         }

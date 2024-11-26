@@ -61,9 +61,9 @@ namespace TwitchBingoService.Services
             token.Payload["role"] = role;
             token.Payload["opaque_user_id"] = userId;
             token.Payload["iat"] = (int) iat.TotalSeconds;
-            token.Payload["pubsub_perms"] = new
+            token.Payload["pubsub_perms"] = new Dictionary<string, string[]>
             {
-                listen = new string[] { "broadcast", "global" }
+                { "listen", new string[] { "broadcast", "global" } }
             };
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -77,9 +77,9 @@ namespace TwitchBingoService.Services
             token.Payload["user_id"] = channelId;
             token.Payload["channel_id"] = channelId;
             token.Payload["role"] = "external";
-            token.Payload["pubsub_perms"] = new
+            token.Payload["pubsub_perms"] = new Dictionary<string, string[]>
             {
-                send = new string[] { "broadcast", "whisper-*" }
+                { "send", new string[] { "broadcast", "whisper-*" } }
             };
 
             return new JwtSecurityTokenHandler().WriteToken(token);
