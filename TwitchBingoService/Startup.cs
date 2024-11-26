@@ -89,6 +89,8 @@ namespace TwitchBingoService
                                 claims.Add(new Claim(ClaimTypes.Role, "viewer"));
                             }
 
+                            validationContext.Request.HttpContext.Items.Add("jwtPayload", token.RawPayload);
+
                             var identity = new ClaimsIdentity(claims);
                             validationContext.Principal.AddIdentity(identity);
 
