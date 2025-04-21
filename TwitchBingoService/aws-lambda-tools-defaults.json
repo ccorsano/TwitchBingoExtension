@@ -12,7 +12,7 @@
     "s3-prefix"     : "TwitchBingoService/",
     "template"      : "serverless.template",
     "template-parameters" : "",
-    "docker-host-build-output-dir" : "./bin/Release/net5.0/linux-x64/publish",
+    "docker-host-build-output-dir" : "./bin/Release/net7.0/linux-x64/publish",
     "s3-bucket"                    : "twitch-bingo-ebs-test",
     "stack-name"                   : "twitch-bingo-ebs-test"
 }

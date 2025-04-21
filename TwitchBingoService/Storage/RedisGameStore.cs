@@ -80,7 +80,7 @@ namespace TwitchBingoService.Storage
 
         public async Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            _logger.LogInformation("Save bingo game {gameId} tentatives for player.", gameId, tentative?.playerId);
+            _logger.LogInformation("Save bingo game {gameId} tentatives for player {playerId}.", gameId, tentative?.playerId);
 
             var db = _connection.GetDatabase();
             var buffer = ArrayPool<byte>.Shared.Rent(256);

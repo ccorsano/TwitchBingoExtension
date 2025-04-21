@@ -13,7 +13,7 @@ namespace TwitchBingoService.Model
         public Byte columns { get; set; }
         public BingoEntry[] entries { get; set; }
 
-        [JsonConverter(typeof(TimeSpanConverter))]
+        [JsonConverter(typeof(NullableTimeSpanConverter))]
         public TimeSpan? confirmationThreshold { get; set; }
         public bool enableChatIntegration { get; set; }
     }

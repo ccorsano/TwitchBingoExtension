@@ -6,8 +6,19 @@ using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage
 {
+    public class ConcurrentGameUpdateException : Exception
+    {
+        public ConcurrentGameUpdateException() { }
+    }
+
     public interface IGameStorage
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="ConcurrentGameUpdateException">If the write fails because the game got modified concurrently</exception>
+        /// <param name="bingoGame"></param>
+        /// <returns></returns>
         public Task WriteGame(BingoGame bingoGame);
         public Task<BingoGame> ReadGame(Guid gameId);
         public Task DeleteGame(Guid gameId);

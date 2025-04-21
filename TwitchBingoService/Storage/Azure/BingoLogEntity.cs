@@ -1,42 +1,43 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using Azure;
+using Azure.Data.Tables;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
-    public class BingoLogEntity : TableEntity
+    public class BingoLogEntity : ITableEntity
     {
         public BingoLogEntity()
         {
 
         }
 
-        public BingoLogEntity(Guid gameId, BingoLogEntry log) : base(gameId.ToString(), log.timestamp.InvertedTicks())
+        public BingoLogEntity(Guid gameId, BingoLogEntry log)
         {
             GameId = gameId;
+            RowKey = log.timestamp.InvertedTicks();
             NotificationTime = log.timestamp;
             Key = log.key;
             Type = (byte)log.type;
             PlayersCount = log.playersCount;
-            PlayersNames = JsonSerializer.Serialize(log.playerNames);
+            PlayersNames = JsonSerializer.Serialize(log.playerNames, JsonContext.Default.StringArray);
         }
 
-        public BingoLogEntry ToLogEntry()
+        public string PartitionKey
         {
-            return new BingoLogEntry
+            get
             {
-                gameId = GameId,
-                timestamp = NotificationTime,
-                key = (ushort)Key,
-                type = (NotificationType)Type,
-                playersCount = PlayersCount,
-                playerNames = JsonSerializer.Deserialize<string[]>(PlayersNames),
-            };
+                return GameId.ToString();
+            }
+            set
+            {
+                GameId = Guid.Parse(value);
+            }
         }
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
 
         public Guid GameId { get; set; }
 
@@ -49,5 +50,18 @@ namespace TwitchBingoService.Storage.Azure
         public Int32 PlayersCount { get; set; }
 
         public string PlayersNames { get; set; }
+
+        public BingoLogEntry ToLogEntry()
+        {
+            return new BingoLogEntry
+            {
+                gameId = GameId,
+                timestamp = NotificationTime,
+                key = (ushort)Key,
+                type = (NotificationType)Type,
+                playersCount = PlayersCount,
+                playerNames = JsonSerializer.Deserialize(PlayersNames, JsonContext.Default.StringArray)
+            };
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using Azure;
+using Azure.Data.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
-    public class BingoTentativeEntity : TableEntity
+    public class BingoTentativeEntity : ITableEntity
     {
         public static string TentativePartitionKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";
         public static string TentativePartitionKey(Guid gameId, ushort entryKey) => $"{gameId}:{entryKey.ToString("00000")}";
@@ -17,8 +18,10 @@ namespace TwitchBingoService.Storage.Azure
 
         }
 
-        public BingoTentativeEntity(Guid gameId, string playerId, BingoTentative tentative) : base(TentativePartitionKey(gameId, playerId), tentative.entryKey.ToString("00000"))
+        public BingoTentativeEntity(Guid gameId, string playerId, BingoTentative tentative)
         {
+            PartitionKey = TentativePartitionKey(gameId, playerId);
+            RowKey = tentative.entryKey.ToString("00000");
             GameId = gameId;
             PlayerId = tentative.playerId;
             EntryKey = tentative.entryKey;
@@ -26,14 +29,21 @@ namespace TwitchBingoService.Storage.Azure
             TentativeTime = tentative.tentativeTime;
         }
 
-        public BingoTentativeEntity(Guid gameId, ushort entryKey, BingoTentative tentative) : base(TentativePartitionKey(gameId, entryKey), tentative.playerId)
+        public BingoTentativeEntity(Guid gameId, ushort entryKey, BingoTentative tentative)
         {
+            PartitionKey = TentativePartitionKey(gameId, entryKey);
+            RowKey = tentative.playerId;
             GameId = gameId;
             PlayerId = tentative.playerId;
             EntryKey = tentative.entryKey;
             Confirmed = tentative.confirmed;
             TentativeTime = tentative.tentativeTime;
         }
+
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
 
         public BingoTentative ToTentative()
         {

@@ -16,17 +16,12 @@ namespace TwitchBingoService.Model
         Start = 5,
     }
 
-    [ProtoContract]
     public class BingoNotification
     {
-
-        [ProtoMember(1)]
         public ushort key { get; set; }
 
-        [ProtoMember(2)]
         public NotificationType type { get; set; }
 
-        [ProtoMember(3)]
         public string playerId { get; set; }
     }
 }

@@ -53,6 +53,7 @@ namespace TwitchBingoService.Controllers
             var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
             if (userId == null)
             {
+                _logger.LogError("Missing user id, token payload: {tokenPayload}", HttpContext.Items.TryGetValue("jwtPayload", out object? payload) ? payload : "empty");
                 throw new ArgumentOutOfRangeException("Missing user id");
             }
             var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;

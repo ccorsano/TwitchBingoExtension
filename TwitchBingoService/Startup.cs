@@ -14,7 +14,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+#if !RELEASE
 using Microsoft.OpenApi.Models;
+#endif
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -49,10 +51,14 @@ namespace TwitchBingoService
             services.Configure<AzureStorageOptions>(Configuration.GetSection("azure"));
 
             services.AddControllers();
+
+#if !RELEASE
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TwitchBingoService", Version = "v1" });
             });
+#endif
+
             services.AddApplicationInsightsTelemetry();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -82,6 +88,8 @@ namespace TwitchBingoService
                             {
                                 claims.Add(new Claim(ClaimTypes.Role, "viewer"));
                             }
+
+                            validationContext.Request.HttpContext.Items.Add("jwtPayload", token.RawPayload);
 
                             var identity = new ClaimsIdentity(claims);
                             validationContext.Principal.AddIdentity(identity);
@@ -149,8 +157,10 @@ namespace TwitchBingoService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+#if !RELEASE
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TwitchBingoService v1"));
+#endif
             }
 
             var basePath = Configuration.GetValue<string>("HostBasePath");
