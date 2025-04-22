@@ -15,6 +15,11 @@
     let isStarted:boolean = false
     let entries:BingoEntry[] = Array(0)
     let canModerate:boolean = false
+    let isAuthorized:boolean = false
+    
+    Twitch.onAuthorized.push((context) => {
+        isAuthorized = true;
+    })
 
     let activeGame = writable<BingoGame>(null)
     setContext("game", activeGame)
@@ -33,6 +38,11 @@
         if (! game)
         {
             console.error("No game provided to refreshGrid")
+            return
+        }
+        if (! isAuthorized)
+        {
+            console.error("Unidentified user, aborting refresh")
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {

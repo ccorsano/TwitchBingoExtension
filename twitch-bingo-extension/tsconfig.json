@@ -1,25 +1,26 @@
 {
-    "extends": "@tsconfig/svelte/tsconfig.json",
-    "compilerOptions": {
-      "target": "ES2022",
-      "useDefineForClassFields": true,
-      "module": "ES2022",
-      "resolveJsonModule": true,
-      "baseUrl": ".",
-      "allowJs": true,
-      "checkJs": true,
-      "isolatedModules": true,
-      "composite": true,
-      "moduleResolution": "node",
-      "esModuleInterop": true
-    },
-    "include": [
-      "src/**/*.d.ts",
-      "src/**/*.ts",
-      "src/**/*.js",
-      "src/**/*.svelte",
-      "vite.config.ts",
-      "custom.d.ts"
-    ]
-  }
-  
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "_version": "5.0.0",
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ES2022",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true,
+    "composite": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "vite.config.ts",
+    "custom.d.ts"
+  ]
+}

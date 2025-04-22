@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount, onDestroy } from "svelte/internal"
+import { onMount, onDestroy } from "svelte"
 import type { BingoEntry, BingoGame, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes"
 import { FormatTimespan } from "../../EBS/BingoService/EBSBingoTypes"
 import { BingoEditableEntry } from "../../model/BingoEntry";
@@ -22,7 +22,7 @@ let rows: number = 3
 let entries: BingoEditableEntry[] = new Array(0)
 let selectedEntries: number[] = new Array(0)
 let confirmationThresholdSeconds: number = 120
-let activeGame: BingoGame = null
+let activeGame: BingoGame | null = null
 let isStarting: boolean = false
 let isLoading: boolean = true
 let canEnableChat: boolean = false
@@ -89,7 +89,7 @@ function refreshLog(game: BingoGame)
 
 function onReceiveUpdate()
 {
-    refreshLog(activeGame)
+    refreshLog(activeGame!)
 }
 
 // Setup gameLog refresh whenever a message is received, either broadcast or whisper
@@ -100,7 +100,7 @@ let timer: NodeJS.Timer
 onMount(() => {
     Twitch.onConfiguration.push(loadConfig)
     // Initial refresh when game updates
-    refreshLog(activeGame)
+    refreshLog(activeGame!)
     Twitch.listen('broadcast', onReceiveUpdate)
     Twitch.listen(whisperChannel, onReceiveUpdate)
 
@@ -109,7 +109,7 @@ onMount(() => {
         console.log("Registering test polling for logs, activeGame " + activeGame)
         timer = setInterval(() => 
         {
-            refreshLog(activeGame)
+            refreshLog(activeGame!)
         }, 1000)
     }
 })
