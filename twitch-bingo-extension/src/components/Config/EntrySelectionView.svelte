@@ -12,7 +12,11 @@
     export let onRemoveFromSelection: (entry: BingoEditableEntry) => void
 
     function onRemoveFromSelectionKey(key: number) {
-        onRemoveFromSelection(getEntry(key))
+        const entry = getEntry(key)
+        if (entry != null)
+        {
+            onRemoveFromSelection(entry)
+        }
     }
 
     function getEntry(key: number){
@@ -29,11 +33,11 @@
         {:else}
         <List>
             {#each selectedEntries as key, index (key)}
-                <Item on:click={() => onRemoveFromSelectionKey(key)}>
-                    <Text>{`${index}) ${getEntry(key).text}`}</Text>
+                <Item onclick={() => onRemoveFromSelectionKey(key)}>
+                    <Text>{`${index}) ${getEntry(key)?.text}`}</Text>
                 </Item>
                 <Meta>
-                    <IconButton on:click={() => onRemoveFromSelectionKey(key)} sizes="small">
+                    <IconButton onclick={() => onRemoveFromSelectionKey(key)} sizes="small">
                         <Icon class="material-icons">do_not_disturb_on</Icon>
                     </IconButton>
                 </Meta>

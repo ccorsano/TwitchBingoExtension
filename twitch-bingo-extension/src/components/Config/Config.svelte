@@ -72,9 +72,9 @@ function loadConfig(broadcasterConfig: TwitchExtensionConfiguration)
     }
 }
 
-function refreshLog(game: BingoGame)
+function refreshLog(game: BingoGame | null)
 {
-    if (game)
+    if (game != null)
     {
         isLoadingLog = true
         BingoEBS.getGameLog(game.gameId)
@@ -126,10 +126,7 @@ onDestroy(() => {
 
 function onAdd(): void
 {
-    var newEntry = new BingoEditableEntry()
-    newEntry.text = ""
-    newEntry.isNew = true
-    newEntry.key = nextKey
+    var newEntry = new BingoEditableEntry(nextKey, "", true)
     nextKey = nextKey + 1
     entries = entries.concat([newEntry])
 }
@@ -179,8 +176,8 @@ function onStart(): void
         rows: rows,
         columns: columns,
         entries: selectedEntries.map<BingoEntry>((entryKey: number, index: number) => {
-            var entry:BingoEntry = entries.find(b => b.key == entryKey);
-            if (! entry)
+            let entry:BingoEntry | undefined = entries.find(b => b.key == entryKey);
+            if (entry === undefined)
             {
                 throw "Missing entry with key " + entryKey;
             }
@@ -255,22 +252,20 @@ function onDeleteEntry(key: number): void
     selectedEntries = selectedEntries.filter(s => s != key)
 }
 
-function onEntriesUpload(evt: React.ChangeEvent<HTMLInputElement>): void
+function onEntriesUpload(evt: Event): void
 {
-    var file = evt.target.files[0];
+    const target = evt.target as HTMLInputElement;
+    var file = target.files![0];
     var reader = new FileReader();
     reader.onload = (ev: ProgressEvent<FileReader>) => {
-        var content = ev.target.result as string;
+        var content = ev.target!.result as string;
 
         var entries:BingoEditableEntry[] = new Array(0);
 
         content.split('\n').forEach((line, index) => {
             if(! line) return;
 
-            var newEntry = new BingoEditableEntry();
-            newEntry.text = line;
-            newEntry.isNew = false;
-            newEntry.key = index;
+            var newEntry = new BingoEditableEntry(index, line, false)
             entries.push(newEntry);
         });
         selectedEntries = new Array(0)

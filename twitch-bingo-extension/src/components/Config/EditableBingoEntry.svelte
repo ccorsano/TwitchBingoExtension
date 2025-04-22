@@ -1,12 +1,11 @@
-<script type="ts">
+<script lang="ts">
 import type { BingoEditableEntry } from '../../model/BingoEntry';
 import { Item, Text, PrimaryText } from '@smui/list';
-import IconButton, { Icon } from '@smui/icon-button';
 import LL from '../../i18n/i18n-svelte';
 import Textfield  from '@smui/textfield';
 import HelperText from '@smui/textfield/helper-text';
-import type { TextfieldComponentDev } from  '@smui/textfield';
 import { onMount } from 'svelte';
+import IconButton from '@smui/icon-button';
 
 export let item: BingoEditableEntry
 export let selected: boolean
@@ -18,7 +17,7 @@ let isEditing = item.isNew
 let value = item.text
 let editingValue = item.isNew ? item.text : ""
 
-let editField: TextfieldComponentDev
+let editField: Textfield
 
 onMount(() => {
     if (item.isNew)
@@ -78,7 +77,7 @@ function onClick(e: any) {
 {#if isEditing}
 <Item>
     <IconButton
-        on:click={deleteCallback}
+        onclick={deleteCallback}
         disabled={selected}
         title={selected ? $LL.Config.EditableBingoEntry.DeleteLabelCantRemove() : $LL.Config.EditableBingoEntry.DeleteLabel()}
         sizes="small"
@@ -90,25 +89,25 @@ function onClick(e: any) {
         on:keyup={onKeyUp}>
         <HelperText slot="helper">{$LL.Config.EditableBingoEntry.TextFieldPlaceholder()}</HelperText>
     </Textfield>
-    <IconButton on:click={endEdit} sizes="small" class="material-icons">check</IconButton>
+    <IconButton onclick={endEdit} sizes="small" class="material-icons">check</IconButton>
 </Item>
 {:else}
 <Item button>
     <IconButton
-        on:click={deleteCallback}
+        onclick={deleteCallback}
         disabled={selected}
         title={selected ? $LL.Config.EditableBingoEntry.DeleteLabelCantRemove() : $LL.Config.EditableBingoEntry.DeleteLabel()}
         sizes="small"
         class="material-icons">delete
     </IconButton>
     <Text
-        on:click={onSelectItem}
+        onclick={onSelectItem}
         on:dblclick={onClick} >
         <PrimaryText>{value}</PrimaryText>
     </Text>
     {#if selected} 
     <IconButton
-        on:click={onSelectItem}
+        onclick={onSelectItem}
         sizes="small"
         title={$LL.Config.EditableBingoEntry.AddSelectionLabel()}
         class="material-icons">
@@ -116,7 +115,7 @@ function onClick(e: any) {
     </IconButton>
     {/if}
     <IconButton
-        on:click={onClick}
+        onclick={onClick}
         sizes="small"
         title={$LL.Config.EditableBingoEntry.EditLabel()}
         class="material-icons">

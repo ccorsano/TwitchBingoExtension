@@ -27,7 +27,7 @@ export let isLoading: boolean
 <GameLogItem
     log={log}
     index={index}
-    entry={entries.find(e => e.key === log.key)}
+    entry={entries.find(e => e.key === log.key)!}
     parsedTime={dayjs(log.timestamp)} />
 {/key}
 {/each}

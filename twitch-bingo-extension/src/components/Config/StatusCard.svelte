@@ -9,7 +9,7 @@ import LL from "../../i18n/i18n-svelte";
 
 export let isLoading: boolean
 export let isActive: boolean
-export let entries: BingoEntry[]
+export let entries: BingoEntry[] | undefined
 export let logEntries: BingoLogEntry[]
 export let isLoadingLog: boolean
 export let onRefreshLog: () => void
@@ -43,13 +43,13 @@ export let onStop: () => void
         {#if !isLoading && isActive}
         <h2 class="mdc-typography--h5">
             {$LL.Config.GameLog.Header()}
-            <IconButton on:click={onRefreshLog} disabled={isLoadingLog}>
+            <IconButton onclick={onRefreshLog} disabled={isLoadingLog}>
                 refresh
             </IconButton>
         </h2>
         <GameLogView
             isLoading={isLoadingLog && logEntries.length == 0}
-            entries={entries}
+            entries={entries!}
             logEntries={logEntries} />
         {/if}
     </Content>

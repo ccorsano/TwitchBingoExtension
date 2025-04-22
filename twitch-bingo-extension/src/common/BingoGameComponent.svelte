@@ -21,9 +21,9 @@
         isAuthorized = true;
     })
 
-    let activeGame = writable<BingoGame>(null)
+    let activeGame = writable<BingoGame>(undefined)
     setContext("game", activeGame)
-    let activeGrid = writable<BingoGrid>(null)
+    let activeGrid = writable<BingoGrid>(undefined)
     setContext("grid", activeGrid)
     let pendingResults:BingoPendingResult[] = new Array(0)
 
@@ -101,7 +101,7 @@
         }
     }
 
-    const getCell = (row: number, col: number):[BingoGridCell,BingoEntry] => {
+    const getCell = (row: number, col: number):[BingoGridCell,BingoEntry | null] => {
         var cellResult = $activeGrid.cells.filter(c => c.row === row && c.col === col);
         if (cellResult.length == 1)
         {
@@ -110,7 +110,7 @@
             if (entryResult.length == 1)
             {
                 var entry = entryResult[0];
-                var pending: BingoPendingResult = pendingResults.find(p => p.key == cell.key);
+                var pending: BingoPendingResult | undefined = pendingResults.find(p => p.key == cell.key);
                 return [
                     {
                         row: row,
@@ -118,9 +118,9 @@
                         key: entry.key,
                         text: entry.text,
                         state: cell.state,
-                        timer: pending?.expireAt,
-                        isColCompleted: false,
-                        isRowCompleted: false,
+                        timer: pending?.expireAt ?? null,
+                        // isColCompleted: false,
+                        // isRowCompleted: false,
                     },
                     entry
                 ];
@@ -143,8 +143,8 @@
                 text: "",
                 state: BingoEntryState.Idle,
                 timer: null,
-                isColCompleted: false,
-                isRowCompleted: false,
+                // isColCompleted: false,
+                // isRowCompleted: false,
             },
             null
         ]

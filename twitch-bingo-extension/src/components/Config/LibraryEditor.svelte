@@ -1,15 +1,14 @@
 <script lang="ts">
 import Button, { Icon } from '@smui/button';
 
-import Card, { Content } from '@smui/card';
-import Actions from '@smui/card/src/Actions.svelte';
-import PrimaryAction from '@smui/card/src/PrimaryAction.svelte';
+import Card, { Actions, Content, PrimaryAction } from '@smui/card';
 import IconButton from '@smui/icon-button';
 import List from '@smui/list';
 import type { BingoEditableEntry } from '../../model/BingoEntry';
 import LL from '../../i18n/i18n-svelte';
 import EditableBingoEntry from './EditableBingoEntry.svelte'
 import type { BingoEntry } from '../../EBS/BingoService/EBSBingoTypes';
+    import type { ChangeEventHandler } from 'svelte/elements';
 
 export let entries: BingoEditableEntry[]
 export let selectedEntries: number[]
@@ -17,7 +16,7 @@ export let onAdd: () => void
 export let onDeleteEntry: (key: number) => void
 export let onChangeEntry: (key: number, changedEntry: BingoEditableEntry) => void
 export let onAddToSelection: (selectedEntry: BingoEditableEntry) => void
-export let onEntriesUpload: (evt: any) => void
+export let onEntriesUpload: (evt: Event) => void
 
 let textInputRef:HTMLInputElement
 
@@ -44,11 +43,11 @@ console.log("LibraryEditor")
             bind:this={textInputRef}
             type="file"
             style="display: 'none'"
-            onChange={onEntriesUpload} />
-        <IconButton on:click={(_) => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
+            on:change={onEntriesUpload} />
+        <IconButton onclick={(_:any) => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
             <Icon class="material-icons">cloud_upload</Icon>
         </IconButton>
-        <IconButton on:click={onAdd} aria-label={$LL.Config.LibraryEditor.AddEntryButtonLabel()} title={$LL.Config.LibraryEditor.AddEntryButtonTitle()}>
+        <IconButton onclick={onAdd} aria-label={$LL.Config.LibraryEditor.AddEntryButtonLabel()} title={$LL.Config.LibraryEditor.AddEntryButtonTitle()}>
             <Icon class="material-icons">library_add</Icon>
         </IconButton>
     </Actions>

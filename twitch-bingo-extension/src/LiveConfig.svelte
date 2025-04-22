@@ -10,7 +10,6 @@
         const currentLocale = GetCurrentLanguage()
         await loadLocaleAsync(currentLocale)
         setLocale(currentLocale)
-        console.log($LL.startup())
     })
 
 </script>

@@ -3,6 +3,7 @@
     import { BingoEntryState } from "../model/BingoEntry";
     import { Moon } from 'svelte-loading-spinners'
     import LL from "../i18n/i18n-svelte";
+    import Button from "@smui/button";
 
 
     export let config: BingoEntry
@@ -10,16 +11,16 @@
     export let isRowCompleted: boolean
     export let isColCompleted: boolean
     export let onTentative: (entry: BingoEntry) => void
-    export let countdown: Date = null
-    export let fontSize: string
+    export let countdown: Date | null = null
+    // export let fontSize: string //TODO
     export let isShown: boolean
 
     let confirmationPrompt:boolean = false
 
-    function renderTime(remainingTime)
-    {
-        return FormatTimeout(remainingTime)
-    }
+    // function renderTime(remainingTime)
+    // {
+    //     return FormatTimeout(remainingTime)
+    // }
 
     function handlePrompt(_:any) {
         if (!isShown)
@@ -44,7 +45,7 @@
     let duration = 0
     if (showTimer)
     {
-        duration = (countdown.getTime() - Date.now()) / 1000
+        duration = (countdown!.getTime() - Date.now()) / 1000
         showTimer &&= duration > 0
     }
 </script>
@@ -54,18 +55,21 @@
 </style>
 
 <div class={"entryGridCell " + entryVariantType}>
-    <div    class={"bingoCell paper " + stateClass}
+    <div class={"bingoCell paper " + stateClass} role="button" tabindex="0"
             class:visibleCell={isShown}
             class:hiddenCell={!isShown}
             class:colConfirmed={isColCompleted}
             class:rowConfirmed={isRowCompleted}
-            on:click={handlePrompt}>
+            on:click={handlePrompt}
+            on:keypress={handlePrompt}>
         <div class={"bingoCellOverlay " + stateClass}></div>
         <div class="bingoEntry">
             <div class="bingoEntryText" >
                 {config.text}
             </div>
         </div>
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
         <div
             class="bingoCellPrompt" class:bingoCellPromptVisible={confirmationPrompt} class:bingoCellPromptHidden={!confirmationPrompt}
             on:click={(isShown && confirmationPrompt) ? handleTentative : null} >
