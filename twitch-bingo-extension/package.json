@@ -41,7 +41,7 @@
     "nth-check": "^2.0.1",
     "sass": "^1.34.1",
     "sass-loader": "^16.0.0",
-    "style-loader": "^3.2.1",
+    "style-loader": "^4.0.0",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.2.2",
     "typescript": "^4.3.2",
