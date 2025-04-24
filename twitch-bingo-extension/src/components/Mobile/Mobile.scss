@@ -1,4 +1,4 @@
-@import "./MobileTheme.scss";
+@use "./MobileTheme.scss";
 
 body
 {
@@ -11,7 +11,7 @@ body
     max-height: 100vh;
 
     & > div {
-        background-color: $panel-fill-color;
+        background-color: MobileTheme.$panel-fill-color;
         width: 100vw;
         height: 100vh;
         overflow: hidden;

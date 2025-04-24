@@ -1,17 +1,18 @@
-@import './MobileTheme.scss';
+@use './MobileTheme.scss';
+@use "../../common/BingoTheme.scss";
 
 svg.mobileGrid {
-    background-color: $panel-fill-color;
+    background-color: MobileTheme.$panel-fill-color;
     max-height: 50vh;
 
     .gridBorder {
         stroke-width: 5;
-        stroke: $grid-border-color;
-        fill: $grid-fill-color
+        stroke: MobileTheme.$grid-border-color;
+        fill: MobileTheme.$grid-fill-color
     }
 
     g rect.background {
-        fill: $cell-fill-color-base;
+        fill: MobileTheme.$cell-fill-color-base;
         stroke-opacity: 0;
         stroke-width: 10;
         stroke: darkgray;
@@ -20,48 +21,48 @@ svg.mobileGrid {
     g text {
         z-index: 0;
         text-anchor: middle;
-        fill: $grid-text-color;
+        fill: MobileTheme.$grid-text-color;
     }
 
     g.confirmed circle {
-        fill: $strong-marker-color;
+        fill: BingoTheme.$strong-marker-color;
         z-index: 9;
     }
 
     g.missed rect.background {
-        fill: $cell-fill-color-missed;
+        fill: MobileTheme.$cell-fill-color-missed;
     }
 
     g.highlighted {
         rect.background {
-            fill: $cell-fill-color-highlighted;
-            stroke: $cell-stroke-color-highlighted;
+            fill: MobileTheme.$cell-fill-color-highlighted;
+            stroke: MobileTheme.$cell-stroke-color-highlighted;
             stroke-opacity: 1.0;
         }
         text {
-            fill: $grid-text-inverted;
+            fill: MobileTheme.$grid-text-inverted;
         }
     }
 
     g.highlighted.confirmed {
         rect.background {
-            fill: $cell-fill-color-base;
-            stroke: $cell-fill-color-missed;
+            fill: MobileTheme.$cell-fill-color-base;
+            stroke: MobileTheme.$cell-fill-color-missed;
             stroke-opacity: 1.0;
         }
         text {
-            fill: $grid-text-color;
+            fill: MobileTheme.$grid-text-color;
         }
     }
 
     g.highlighted.missed {
         rect.background {
-            fill: $cell-fill-color-missed;
-            stroke: $cell-stroke-color-highlighted;
+            fill: MobileTheme.$cell-fill-color-missed;
+            stroke: MobileTheme.$cell-stroke-color-highlighted;
             stroke-opacity: 1.0;
         }
         text {
-            fill: $cell-fill-color-highlighted;
+            fill: MobileTheme.$cell-fill-color-highlighted;
         }
     }
 }
