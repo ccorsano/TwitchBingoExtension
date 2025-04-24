@@ -19,7 +19,7 @@
         isAuthorized: true,
         hasSharedIdentity: true,
         promptIdentity: () => {},
-        game: null,
+        game: undefined,
         onTentative: (entry: BingoEntry) => {},
         canModerate: true,
         canVote: true,

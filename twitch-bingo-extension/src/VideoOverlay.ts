@@ -1,8 +1,7 @@
-import { mount } from 'svelte';
 import VideoOverlay from './VideoOverlay.svelte';
 // import './index.css';
 
-const app = mount(VideoOverlay, {
+const app = new VideoOverlay({
   target: document.getElementById('root')!
 })
 

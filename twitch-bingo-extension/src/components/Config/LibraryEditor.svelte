@@ -44,19 +44,19 @@ console.log("LibraryEditor")
             type="file"
             style="display: 'none'"
             on:change={onEntriesUpload} />
-        <IconButton onclick={(_:any) => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
+        <IconButton on:click={() => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
             <Icon class="material-icons">cloud_upload</Icon>
         </IconButton>
-        <IconButton onclick={onAdd} aria-label={$LL.Config.LibraryEditor.AddEntryButtonLabel()} title={$LL.Config.LibraryEditor.AddEntryButtonTitle()}>
+        <IconButton on:click={onAdd} aria-label={$LL.Config.LibraryEditor.AddEntryButtonLabel()} title={$LL.Config.LibraryEditor.AddEntryButtonTitle()}>
             <Icon class="material-icons">library_add</Icon>
         </IconButton>
     </Actions>
     <Content>
         {#if entries.length == 0}
         <em>{$LL.Config.LibraryEditor.MessageNoItems()}</em>
-        <Button variant="outlined" color="primary" onClick={onAdd} sizes="small" startIcon="library_add">
-            {$LL.Config.LibraryEditor.AddEntryButtonLabel()}
-        </Button>
+        <IconButton on:click={onAdd} size="mini" color="primary">
+            <Icon class="material-icons">library_add</Icon>
+        </IconButton>{$LL.Config.LibraryEditor.AddEntryButtonLabel()}
         {:else}
             <List>
                 {#each entries as value (value.key)}

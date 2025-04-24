@@ -96,7 +96,7 @@ function onReceiveUpdate()
 let whisperChannel: string
 $: whisperChannel = 'whisper-' + TwitchExtHelper.viewer.opaqueId
 
-let timer: NodeJS.Timer
+let timer: NodeJS.Timeout
 onMount(() => {
     Twitch.onConfiguration.push(loadConfig)
     // Initial refresh when game updates

@@ -125,10 +125,10 @@
         </div>
     </Content>
     <Actions>
-        <Button variant="unelevated" color="primary" onClick={onSave}>
+        <Button variant="unelevated" color="primary" on:click={onSave}>
             {$LL.Config.SaveGame()}
         </Button>
-        <Button variant="unelevated" color="primary" onClick={onStart} disabled={!canStart}>
+        <Button variant="unelevated" color="primary" on:click={onStart} disabled={!canStart}>
             {$LL.Config.StartGame()}
         </Button>
     </Actions>

@@ -25,7 +25,7 @@ export let onStop: () => void
     <Content>
         {#if isLoading}
         <div style="margin: '1vw'">
-            <LinearProgress variant="indeterminate" />
+            <LinearProgress indeterminate />
             <div class='mdc-typography--body1'>{$LL.Config.StatusCard.LoadingConfiguration()}</div>
         </div>
         {:else if isActive === true}
@@ -43,13 +43,13 @@ export let onStop: () => void
         {#if !isLoading && isActive}
         <h2 class="mdc-typography--h5">
             {$LL.Config.GameLog.Header()}
-            <IconButton onclick={onRefreshLog} disabled={isLoadingLog}>
+            <IconButton on:click={onRefreshLog} disabled={isLoadingLog}>
                 refresh
             </IconButton>
         </h2>
         <GameLogView
             isLoading={isLoadingLog && logEntries.length == 0}
-            entries={entries!}
+            entries={entries ?? []}
             logEntries={logEntries} />
         {/if}
     </Content>

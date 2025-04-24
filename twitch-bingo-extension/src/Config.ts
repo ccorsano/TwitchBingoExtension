@@ -1,8 +1,7 @@
-import { mount } from 'svelte';
 import Config from './Config.svelte';
 // import './index.css';
 
-const app = mount(Config,{
+const app = new Config({
   target: document.getElementById('root')!
 });
 
