@@ -17,7 +17,7 @@
     "start": "npm-run-all --parallel webpack-serve typesafe-i18n"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.4",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "dayjs": "^1.10.7",
