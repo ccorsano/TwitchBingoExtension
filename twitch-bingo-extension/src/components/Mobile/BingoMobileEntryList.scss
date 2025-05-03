@@ -1,4 +1,5 @@
-@import './MobileTheme.scss';
+@use './MobileTheme.scss';
+@use "../../common/BingoTheme.scss";
 
 .bingoEntry {
     display: grid;
@@ -9,7 +10,7 @@
     padding-right: 5px;
     min-height: 36px;
     overflow: hidden;
-    border: $grid-fill-color;
+    border: MobileTheme.$grid-fill-color;
     border-width: thick;
     border-style: solid;
     border-radius: 36px;
@@ -22,8 +23,8 @@
     transition: all 0.5s;
     div.key {
         border-radius: 36px;
-        background-color: $grid-fill-color;
-        color: $grid-text-inverted;
+        background-color: MobileTheme.$grid-fill-color;
+        color: MobileTheme.$grid-text-inverted;
         width: 36px;
         height: 36px;
         display: inline-block;
@@ -43,75 +44,75 @@
         text-overflow: ellipsis;
         grid-column-start: 2;
         grid-column-end: 4;
-        color: $grid-text-color;
+        color: MobileTheme.$grid-text-color;
     }
     cursor: pointer;
 }
 
 .idle {
-    background: $cell-fill-color-base;
+    background: MobileTheme.$cell-fill-color-base;
 };
 .prompt {
-    background: $cell-fill-color-base;
-    border-color: $list-missed-text;
+    background: MobileTheme.$cell-fill-color-base;
+    border-color: MobileTheme.$list-missed-text;
 };
 .pending {
-    background: $list-pending-background;
+    background: MobileTheme.$list-pending-background;
     min-height: 50px !important;
 };
 .confirmed {
-    background-color: $cell-fill-color-base;
+    background-color: MobileTheme.$cell-fill-color-base;
 
     div.key {
-        background-color: $marker-color;
+        background-color: BingoTheme.$marker-color;
     }
 
     div.text {
-        color: $grid-text-color;
+        color: MobileTheme.$grid-text-color;
     }
 };
 .confirmed.highlighted {
     div.key {
-        background-color: $marker-color;
+        background-color: BingoTheme.$marker-color;
     }
     div.text {
-        color: $grid-text-color;
+        color: MobileTheme.$grid-text-color;
     }
 }
 
 .missed {
-    background: $list-missed-background;
-    color: $list-missed-text;
+    background: MobileTheme.$list-missed-background;
+    color: MobileTheme.$list-missed-text;
     div.key {
-        background-color: $list-missed-key;
+        background-color: MobileTheme.$list-missed-key;
     }
 };
 
 .missed.highlighted {
-    background: $list-missed-background;
-    color: $list-missed-text;
+    background: MobileTheme.$list-missed-background;
+    color: MobileTheme.$list-missed-text;
 };
 
 .rejected {
-    background: $list-missed-background;
-    color: $list-missed-text;
+    background: MobileTheme.$list-missed-background;
+    color: MobileTheme.$list-missed-text;
     div.key {
-        background-color: $list-missed-key;
+        background-color: MobileTheme.$list-missed-key;
     }
 };
 
 .rejected.highlighted {
-    background: $list-missed-background;
-    color: $list-missed-text;
+    background: MobileTheme.$list-missed-background;
+    color: MobileTheme.$list-missed-text;
 };
 
 .highlighted {
     height: unset;
     min-height: 36px;
     div.key {
-        background-color: $cell-fill-color-base;
-        color: $grid-fill-color;
-        border: solid $grid-fill-color thin;
+        background-color: MobileTheme.$cell-fill-color-base;
+        color: MobileTheme.$grid-fill-color;
+        border: solid MobileTheme.$grid-fill-color thin;
     }
     .timer {
         height: unset;
@@ -150,9 +151,9 @@
 .bingoCellPrompt {
     transition: all 0.5s;
     height: 100%;
-    background-color: $grid-fill-color; // #fff3d6
+    background-color: MobileTheme.$grid-fill-color; // #fff3d6
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.8);
-    color: $grid-text-inverted;
+    color: MobileTheme.$grid-text-inverted;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     z-index: 10;
@@ -187,9 +188,9 @@
 .bingoCellTimer {
     transition: all 0.5s;
     height: 100%;
-    background-color: $grid-text-inverted; // #fff3d6
+    background-color: MobileTheme.$grid-text-inverted; // #fff3d6
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.8);
-    color: $grid-fill-color;
+    color: MobileTheme.$grid-fill-color;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     z-index: 10;

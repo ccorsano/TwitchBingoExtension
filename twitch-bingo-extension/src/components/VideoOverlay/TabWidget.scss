@@ -1,4 +1,4 @@
-@import '../../common/BingoTheme.scss';
+@use '../../common/BingoTheme.scss';
 
 div.tabWidgetContainer
 {
@@ -31,7 +31,7 @@ div.tabWidget > img
 
 div.tabWidget.pending
 {
-    background: $marker-color;
+    background: BingoTheme.$marker-color;
 }
 
 div.tabWidget.hidden

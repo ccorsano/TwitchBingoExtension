@@ -16,175 +16,175 @@ export type Translations = RootTranslation
 type RootTranslation = {
 	Mobile: {
 		/**
-		 * Confirm
+		 * C​o​n​f​i​r​m
 		 */
 		ConfirmButton: string
 		/**
-		 * Cancel
+		 * C​a​n​c​e​l
 		 */
 		CancelButton: string
 		/**
-		 * Missed
+		 * M​i​s​s​e​d
 		 */
 		MissedLabel: string
 		/**
-		 * Pending
+		 * P​e​n​d​i​n​g
 		 */
 		PendingLabel: string
 	}
 	OverlayBingoGrid: {
 		/**
-		 * Waiting for the game to start !
+		 * W​a​i​t​i​n​g​ ​f​o​r​ ​t​h​e​ ​g​a​m​e​ ​t​o​ ​s​t​a​r​t​ ​!
 		 */
 		WaitingMessage: string
 		/**
-		 * In order to join the game and get your own Bingo grid, you need to share your Twitch username with the extension.
+		 * I​n​ ​o​r​d​e​r​ ​t​o​ ​j​o​i​n​ ​t​h​e​ ​g​a​m​e​ ​a​n​d​ ​g​e​t​ ​y​o​u​r​ ​o​w​n​ ​B​i​n​g​o​ ​g​r​i​d​,​ ​y​o​u​ ​n​e​e​d​ ​t​o​ ​s​h​a​r​e​ ​y​o​u​r​ ​T​w​i​t​c​h​ ​u​s​e​r​n​a​m​e​ ​w​i​t​h​ ​t​h​e​ ​e​x​t​e​n​s​i​o​n​.
 		 */
 		IdentityPromptMessage: string
 		/**
-		 * Share
+		 * S​h​a​r​e
 		 */
 		ShareIdentityButtonLabel: string
 	}
 	BingoViewerEntry: {
 		/**
-		 * Confirm
+		 * C​o​n​f​i​r​m
 		 */
 		ConfirmButtonLabel: string
 		/**
-		 * Missed
+		 * M​i​s​s​e​d
 		 */
 		MissedRibbonLabel: string
 	}
 	BingoModeration: {
 		/**
-		 * Confirm
+		 * C​o​n​f​i​r​m
 		 */
 		ConfirmButtonLabel: string
 		/**
-		 * Confirm
+		 * C​o​n​f​i​r​m
 		 */
 		ConfirmButton: string
 		/**
-		 * No entries configured.
+		 * N​o​ ​e​n​t​r​i​e​s​ ​c​o​n​f​i​g​u​r​e​d​.
 		 */
 		NoEntriesMessage: string
 	}
 	Config: {
 		/**
-		 * Configure Grid
+		 * C​o​n​f​i​g​u​r​e​ ​G​r​i​d
 		 */
 		ConfigureGrid: string
 		/**
-		 * Columns
+		 * C​o​l​u​m​n​s
 		 */
 		Columns: string
 		/**
-		 * Rows
+		 * R​o​w​s
 		 */
 		Rows: string
 		/**
-		 * Not enough entries to fill the grid !
+		 * N​o​t​ ​e​n​o​u​g​h​ ​e​n​t​r​i​e​s​ ​t​o​ ​f​i​l​l​ ​t​h​e​ ​g​r​i​d​ ​!
 		 */
 		AlertNotEnoughEntriesToFillTheGrid: string
 		/**
-		 * Add entries or reduce grid dimensions to start the game.
+		 * A​d​d​ ​e​n​t​r​i​e​s​ ​o​r​ ​r​e​d​u​c​e​ ​g​r​i​d​ ​d​i​m​e​n​s​i​o​n​s​ ​t​o​ ​s​t​a​r​t​ ​t​h​e​ ​g​a​m​e​.
 		 */
 		AddEntriesOrReduceGridDimensionsToStartTheGame: string
 		/**
-		 * Confirmation time
+		 * C​o​n​f​i​r​m​a​t​i​o​n​ ​t​i​m​e
 		 */
 		ConfirmationTime: string
 		/**
-		 * Save
+		 * S​a​v​e
 		 */
 		SaveGame: string
 		/**
-		 * Start
+		 * S​t​a​r​t
 		 */
 		StartGame: string
 		LibraryEditor: {
 			/**
-			 * Library
+			 * L​i​b​r​a​r​y
 			 */
 			Title: string
 			/**
-			 * Load or add all your bingo entries here.
+			 * L​o​a​d​ ​o​r​ ​a​d​d​ ​a​l​l​ ​y​o​u​r​ ​b​i​n​g​o​ ​e​n​t​r​i​e​s​ ​h​e​r​e​.
 			 */
 			TitleSubHeader: string
 			/**
-			 * No items in Bingo, go add some !
+			 * N​o​ ​i​t​e​m​s​ ​i​n​ ​B​i​n​g​o​,​ ​g​o​ ​a​d​d​ ​s​o​m​e​ ​!
 			 */
 			MessageNoItems: string
 			/**
-			 * Upload entry list
+			 * U​p​l​o​a​d​ ​e​n​t​r​y​ ​l​i​s​t
 			 */
 			UploadButtonLabel: string
 			/**
-			 * Replace entries by uploading a .txt file
+			 * R​e​p​l​a​c​e​ ​e​n​t​r​i​e​s​ ​b​y​ ​u​p​l​o​a​d​i​n​g​ ​a​ ​.​t​x​t​ ​f​i​l​e
 			 */
 			UploadButtonTitle: string
 			/**
-			 * Add a new entry
+			 * A​d​d​ ​a​ ​n​e​w​ ​e​n​t​r​y
 			 */
 			AddEntryButtonLabel: string
 			/**
-			 * Add a new entry to the list
+			 * A​d​d​ ​a​ ​n​e​w​ ​e​n​t​r​y​ ​t​o​ ​t​h​e​ ​l​i​s​t
 			 */
 			AddEntryButtonTitle: string
 		}
 		StatusCard: {
 			/**
-			 * Status
+			 * S​t​a​t​u​s
 			 */
 			Title: string
 			/**
-			 * Active
+			 * A​c​t​i​v​e
 			 */
 			StatusActive: string
 			/**
-			 * Inactive
+			 * I​n​a​c​t​i​v​e
 			 */
 			StatusInactive: string
 			/**
-			 * Stop game
+			 * S​t​o​p​ ​g​a​m​e
 			 */
 			StopButton: string
 			/**
-			 * Loading configuration ...
+			 * L​o​a​d​i​n​g​ ​c​o​n​f​i​g​u​r​a​t​i​o​n​ ​.​.​.
 			 */
 			LoadingConfiguration: string
 		}
 		GameLog: {
 			/**
-			 * Game Log
+			 * G​a​m​e​ ​L​o​g
 			 */
 			Header: string
 			/**
-			 * Game started !
+			 * G​a​m​e​ ​s​t​a​r​t​e​d​ ​!
 			 */
 			StartedGameText: string
 			/**
-			 * #{entryKey} “{entryText}” confirmed by {playerNames}
+			 * #​{​e​n​t​r​y​K​e​y​}​ ​“​{​e​n​t​r​y​T​e​x​t​}​”​ ​c​o​n​f​i​r​m​e​d​ ​b​y​ ​{​p​l​a​y​e​r​N​a​m​e​s​}
 			 * @param {unknown} entryKey
 			 * @param {unknown} entryText
 			 * @param {unknown} playerNames
 			 */
 			ConfirmationText: RequiredParams<'entryKey' | 'entryText' | 'playerNames'>
 			/**
-			 * #{entryKey} completed columns for {playersCount} players
+			 * #​{​e​n​t​r​y​K​e​y​}​ ​c​o​m​p​l​e​t​e​d​ ​c​o​l​u​m​n​s​ ​f​o​r​ ​{​p​l​a​y​e​r​s​C​o​u​n​t​}​ ​p​l​a​y​e​r​s
 			 * @param {unknown} entryKey
 			 * @param {unknown} playersCount
 			 */
 			CompletedColText: RequiredParams<'entryKey' | 'playersCount'>
 			/**
-			 * #{entryKey} completed rows for {playersCount} players
+			 * #​{​e​n​t​r​y​K​e​y​}​ ​c​o​m​p​l​e​t​e​d​ ​r​o​w​s​ ​f​o​r​ ​{​p​l​a​y​e​r​s​C​o​u​n​t​}​ ​p​l​a​y​e​r​s
 			 * @param {unknown} entryKey
 			 * @param {unknown} playersCount
 			 */
 			CompletedRowText: RequiredParams<'entryKey' | 'playersCount'>
 			/**
-			 * #{entryKey} completed the grid for {playersCount} players
+			 * #​{​e​n​t​r​y​K​e​y​}​ ​c​o​m​p​l​e​t​e​d​ ​t​h​e​ ​g​r​i​d​ ​f​o​r​ ​{​p​l​a​y​e​r​s​C​o​u​n​t​}​ ​p​l​a​y​e​r​s
 			 * @param {unknown} entryKey
 			 * @param {unknown} playersCount
 			 */
@@ -192,58 +192,58 @@ type RootTranslation = {
 		}
 		EntrySelectionView: {
 			/**
-			 * Selection
+			 * S​e​l​e​c​t​i​o​n
 			 */
 			Title: string
 			/**
-			 * These are the bingo entries currently selected for the next game.
+			 * T​h​e​s​e​ ​a​r​e​ ​t​h​e​ ​b​i​n​g​o​ ​e​n​t​r​i​e​s​ ​c​u​r​r​e​n​t​l​y​ ​s​e​l​e​c​t​e​d​ ​f​o​r​ ​t​h​e​ ​n​e​x​t​ ​g​a​m​e​.
 			 */
 			TitleSubHeader: string
 			/**
-			 * No items selected
+			 * N​o​ ​i​t​e​m​s​ ​s​e​l​e​c​t​e​d
 			 */
 			NoItemMessage: string
 		}
 		EditableBingoEntry: {
 			/**
-			 * Bingo proposition
+			 * B​i​n​g​o​ ​p​r​o​p​o​s​i​t​i​o​n
 			 */
 			TextFieldLabel: string
 			/**
-			 * Proposition
+			 * P​r​o​p​o​s​i​t​i​o​n
 			 */
 			TextFieldPlaceholder: string
 			/**
-			 * Delete this entry
+			 * D​e​l​e​t​e​ ​t​h​i​s​ ​e​n​t​r​y
 			 */
 			DeleteLabel: string
 			/**
-			 * Cannot delete a selected entry
+			 * C​a​n​n​o​t​ ​d​e​l​e​t​e​ ​a​ ​s​e​l​e​c​t​e​d​ ​e​n​t​r​y
 			 */
 			DeleteLabelCantRemove: string
 			/**
-			 * Add to selection
+			 * A​d​d​ ​t​o​ ​s​e​l​e​c​t​i​o​n
 			 */
 			AddSelectionLabel: string
 			/**
-			 * Edit this entry
+			 * E​d​i​t​ ​t​h​i​s​ ​e​n​t​r​y
 			 */
 			EditLabel: string
 		}
 		/**
-		 * Chat integration is enabled
+		 * C​h​a​t​ ​i​n​t​e​g​r​a​t​i​o​n​ ​i​s​ ​e​n​a​b​l​e​d
 		 */
 		DeactivateChatIntegrationTitle: string
 		/**
-		 * You can disable chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.
+		 * Y​o​u​ ​c​a​n​ ​d​i​s​a​b​l​e​ ​c​h​a​t​ ​i​n​t​e​g​r​a​t​i​o​n​ ​b​y​ ​g​o​i​n​g​ ​t​o​ ​y​o​u​r​ ​“​M​y​ ​E​x​t​e​n​s​i​o​n​s​”​ ​p​a​n​e​l​,​ ​a​n​d​ ​c​l​i​c​k​i​n​g​ ​“​M​a​n​a​g​e​ ​P​e​r​m​i​s​s​i​o​n​s​”​.
 		 */
 		DeactivateChatIntegrationText: string
 		/**
-		 * Chat integration is disabled
+		 * C​h​a​t​ ​i​n​t​e​g​r​a​t​i​o​n​ ​i​s​ ​d​i​s​a​b​l​e​d
 		 */
 		ActivateChatIntegrationTitle: string
 		/**
-		 * You can allow chat integration by going to your “My Extensions” panel, and clicking “Manage Permissions”.
+		 * Y​o​u​ ​c​a​n​ ​a​l​l​o​w​ ​c​h​a​t​ ​i​n​t​e​g​r​a​t​i​o​n​ ​b​y​ ​g​o​i​n​g​ ​t​o​ ​y​o​u​r​ ​“​M​y​ ​E​x​t​e​n​s​i​o​n​s​”​ ​p​a​n​e​l​,​ ​a​n​d​ ​c​l​i​c​k​i​n​g​ ​“​M​a​n​a​g​e​ ​P​e​r​m​i​s​s​i​o​n​s​”​.
 		 */
 		ActivateChatIntegrationText: string
 	}

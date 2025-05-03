@@ -1,6 +1,6 @@
-@import "./BingoTheme.scss";
-@import "spinthatshit/src/loaders";
+@use "./BingoTheme.scss";
+@use "spinthatshit/src/loaders";
 
 .linear-indeterminate-loader {
-    @include loader12($size: 0.5rem, $duration: 1s, $align: middle, $color: $marker-color)
+    @include loaders.loader12($size: 0.5rem, $duration: 1s, $align: middle, $color: BingoTheme.$marker-color)
 }

@@ -160,10 +160,16 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         }
     }, [canModerate])
 
-    const refreshGrid = (game: BingoGame, refreshEntries: BingoEntry[]) => {
+    const refreshGrid = React.useCallback((game: BingoGame, refreshEntries: BingoEntry[]) => {
         if (! game)
         {
             console.error("No game provided to refreshGrid")
+            return
+        }
+        if (! TwitchExtHelper.viewer.isLinked)
+        {
+            console.error("Unidentified user, aborting refresh")
+            setActiveGame(game)
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
@@ -179,7 +185,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
         });
         setActiveGame(game)
         refreshGame(game)
-    }
+    }, [isAuthorized])
 
     React.useEffect(() => {
         if (grid && props.onRefreshGrid) props.onRefreshGrid(grid, grid.cells.map(c => getCell(c.row, c.col)[0]))
