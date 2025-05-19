@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@mui/material": "^5.0.0",
-    "@material-ui/icons": "^4.11.2",
+    "@mui/icons-material": "^5.0.0",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "dayjs": "^1.10.7",
     "jest": "^29.2.5",
