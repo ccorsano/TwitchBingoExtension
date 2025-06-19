@@ -10,23 +10,22 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.0.2" />
-    <PackageReference Include="Azure.Data.Tables" Version="12.9.1" />
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.1.2" />
+    <PackageReference Include="Azure.Data.Tables" Version="12.11.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Conceptoire.Twitch" Version="0.3.0" />
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.22.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.2.1" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.6" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.12.1" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
+    <PackageReference Include="System.Text.Json" Version="9.0.6" />
     <PackageReference Include="Troschuetz.Random" Version="5.0.1" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
   </ItemGroup>
 </Project>

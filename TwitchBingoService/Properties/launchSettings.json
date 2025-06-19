@@ -20,7 +20,7 @@
     "TwitchBingoService": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "openapi/v1.json",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

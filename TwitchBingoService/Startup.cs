@@ -1,13 +1,11 @@
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,15 +13,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-#if !RELEASE
-using Microsoft.OpenApi.Models;
-#endif
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
 using TwitchBingoService.Configuration;
@@ -51,14 +43,13 @@ namespace TwitchBingoService
             services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
             services.Configure<AzureStorageOptions>(Configuration.GetSection("azure"));
 
-            services.AddControllers();
-
-#if !RELEASE
-            services.AddSwaggerGen(c =>
+            services.AddSingleton<IOptionsSnapshot<OpenApiOptions>>(sp =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TwitchBingoService", Version = "v1" });
+                OpenApiOptions options = new();
+                return new StaticOptions<OpenApiOptions>(options);
             });
-#endif
+            services.AddOpenApi("v1");
+            services.AddControllers();
 
             services.AddApplicationInsightsTelemetry();
 
@@ -74,6 +65,7 @@ namespace TwitchBingoService
                         ValidateAudience = false, // No audience on extension tokens
                         ValidateIssuer = false, // No issuer either
                     };
+                    options.Audience = null;
 
                     options.Events = new JwtBearerEvents
                     {
@@ -99,7 +91,7 @@ namespace TwitchBingoService
                         },
                         OnAuthenticationFailed = (context) =>
                         {
-                            var logger = context.HttpContext.RequestServices.GetService<ILogger>();
+                            var logger = context.HttpContext.RequestServices.GetService<ILogger<Startup>>();
                             logger.LogWarning("Rejected request");
                             return Task.CompletedTask;
                         }
@@ -158,10 +150,6 @@ namespace TwitchBingoService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-#if !RELEASE
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TwitchBingoService v1"));
-#endif
             }
 
             var basePath = Configuration.GetValue<string>("HostBasePath");
@@ -202,6 +190,10 @@ namespace TwitchBingoService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapOpenApi();
+                }
             });
 
             // Explicitely flush Telemetry channel on shutdown, else when running on Lambda we will lose exceptions & more
