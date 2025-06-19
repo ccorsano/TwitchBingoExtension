@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using TwitchAchievementTrackerBackend.Configuration;
+using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Services
 {
@@ -91,6 +94,18 @@ namespace TwitchBingoService.Services
             token.Payload["user_id"] = channelId;
             token.Payload["channel_id"] = channelId;
             token.Payload["role"] = "external";
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public string GetExtensionJWTToken(string channelId)
+        {
+            var exp = DateTimeOffset.UtcNow - EPOCH;
+
+            var token = new JwtSecurityToken(null, null, null, null, DateTime.UtcNow.AddHours(1), _jwtSigningCredentials);
+            token.Payload["user_id"] = channelId;
+            token.Payload["channel_id"] = channelId;
+            token.Payload["role"] = "external";
+            token.Header.Remove("typ");
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -188,6 +203,20 @@ namespace TwitchBingoService.Services
         public async Task<string> GetUserDisplayName(string userId)
         {
             return (await _apiClient.GetUsersByIdAsync(new string[] { userId })).FirstOrDefault()?.DisplayName;
+        }
+
+        public async Task<TwitchConfigurationSegment> GetBroadcasterConfigurationSegment(string channelId)
+        {
+            string extToken = GetExtensionJWTToken(channelId);
+
+            HttpRequestMessage request = new(HttpMethod.Get, $"https://api.twitch.tv/helix/extensions/configurations?broadcaster_id={HttpUtility.UrlEncode(channelId)}&extension_id={HttpUtility.UrlEncode(_options.ExtensionId)}&segment=broadcaster");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", extToken);
+            request.Headers.Add("Client-Id", _options.ExtensionId);
+
+            var httpResponse = await _twitchExtensionClient.SendAsync(request);
+            var response = await httpResponse.Content.ReadFromJsonAsync<TwitchConfigurationResponse>();
+
+            return response.data.FirstOrDefault();
         }
     }
 }

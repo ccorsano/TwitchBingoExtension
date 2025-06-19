@@ -5,6 +5,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,12 +14,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
 using TwitchBingoService.Configuration;
+using TwitchBingoService.Model;
+using TwitchBingoService.Security;
 using TwitchBingoService.Services;
 using TwitchBingoService.Storage;
 
@@ -54,7 +59,37 @@ namespace TwitchBingoService
             services.AddApplicationInsightsTelemetry();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                .AddJwtBearer("TwitchOIDC", options =>
+                {
+                    //options.Authority = "https://id.twitch.tv";
+                    options.MetadataAddress = "https://id.twitch.tv/oauth2/.well-known/openid-configuration";
+                    options.Audience = "dh68vn27ky7w89ktv43kjxvzgz1vz7";
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = (validationContext) =>
+                        {
+                            var token = validationContext.SecurityToken as JsonWebToken;
+
+                            var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Role, "broadcaster")
+                            };
+                            if (token.TryGetPayloadValue("sub", out string userId))
+                            {
+                                claims.Add(new Claim("user_id", userId));
+                                claims.Add(new Claim("opaque_user_id", userId));
+                                claims.Add(new Claim("channel_id", userId));
+                            }
+
+                            var identity = new ClaimsIdentity(claims);
+                            validationContext.Principal.AddIdentity(identity);
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                    
+                })
+                .AddJwtBearer("TwitchExtension", options =>
                 {
                     TwitchOptions twitchOptions = new TwitchOptions();
                     Configuration.GetSection("twitch").Bind(twitchOptions);
@@ -109,6 +144,28 @@ namespace TwitchBingoService
                             return "opaque_user_id";
                         }
                     };
+                })
+                .AddPolicyScheme("Bearer", displayName: null, options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        string authorization = context.Request.Headers[HeaderNames.Authorization];
+                        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+                        {
+                            var token = authorization.Substring("Bearer ".Length).Trim();
+                            var jwtHandler = new JsonWebTokenHandler();
+
+                            if (jwtHandler.CanReadToken(token)) // it's a self contained access token and not encrypted
+                            {
+                                var audiences = jwtHandler.ReadJsonWebToken(token).Audiences;
+                                if (audiences.Any())
+                                {
+                                    return "TwitchOIDC";
+                                }
+                            }
+                        }
+                        return "TwitchExtension";
+                    };
                 });
 
             var azureConnectionString = Configuration.GetValue<string>("azure:ConnectionString");
@@ -142,6 +199,8 @@ namespace TwitchBingoService
                 .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
             services.AddTransient<ITwitchAPIClient, TwitchAPIClient>();
             services.AddMemoryCache();
+
+            services.AddSingleton<AuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -189,6 +248,22 @@ namespace TwitchBingoService
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("/token", request =>
+                {
+                    AuthService authService = request.RequestServices.GetRequiredService<AuthService>();
+
+                    TwitchUser twitchUser = new TwitchUser(
+                        request.User.FindFirstValue(ClaimTypes.NameIdentifier),
+                        request.User.FindFirstValue("preferred_username"),
+                        request.User.FindFirstValue("at_hash"));
+
+                    string token = authService.GenerateToken(twitchUser);
+                    return request.Response.WriteAsJsonAsync(token);
+                }).RequireAuthorization(policy =>
+                {
+                    policy.AuthenticationSchemes.Add("TwitchOIDC");
+                    policy.RequireAuthenticatedUser();
+                });
                 endpoints.MapControllers();
                 if (env.IsDevelopment())
                 {
