@@ -5,6 +5,7 @@ import dayjs from "dayjs"
 import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes"
 import { NotificationType } from "../../EBS/BingoService/EBSBingoTypes"
 import LL from '../../i18n/i18n-svelte';
+    import { Icon } from "@smui/button";
 
 export let index: number
 export let entry: BingoEntry | undefined
@@ -31,7 +32,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss (Z)'
 </Item>
 {:else if log.type == NotificationType.CompletedRow}
 <Item>
-    <Graphic class="material-icon">border-horizontal</Graphic>
+    <Graphic class="material-icons">border-horizontal</Graphic>
     <Text>
         <PrimaryText>
             <div class="body2">
@@ -45,7 +46,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss (Z)'
 </Item>
 {:else if log.type == NotificationType.CompletedColumn}
 <Item>
-    <Graphic class="material-icon">border-vertical</Graphic>
+    <Graphic class="material-icons">border-vertical</Graphic>
     <Text>
         <PrimaryText>
             <div class="body2">
@@ -59,7 +60,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss (Z)'
 </Item>
 {:else if log.type == NotificationType.CompletedGrid}
 <Item>
-    <Graphic class="material-icon">border-all</Graphic>
+    <Graphic class="material-icons">border-all</Graphic>
     <Text>
         <PrimaryText>
             <div class="body2">
@@ -73,9 +74,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss (Z)'
 </Item>
 {:else if log.type == NotificationType.Start}
 <Item>
-    <Graphic class="material-icon">
-        playcirclefilled
-    </Graphic>
+    <Graphic class="material-icons">playcirclefilled</Graphic>
     <Text>
         <PrimaryText>
             <div class="body2">

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Card, { Content, Actions } from "@smui/card"
-import Button from "@smui/button"
+import Button, { Icon } from "@smui/button"
 import IconButton from "@smui/icon-button"
 import LinearProgress from '@smui/linear-progress'
 import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes";
@@ -44,7 +44,7 @@ export let onStop: () => void
         <h2 class="mdc-typography--h5">
             {$LL.Config.GameLog.Header()}
             <IconButton on:click={onRefreshLog} disabled={isLoadingLog}>
-                refresh
+                <Icon class="material-icons">refresh</Icon>
             </IconButton>
         </h2>
         <GameLogView

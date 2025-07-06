@@ -1,6 +1,6 @@
 <script lang="ts">
     import Card, { Actions, Content } from '@smui/card';
-    import LayoutGrid, { Cell } from '@smui/layout-grid'
+    import LayoutGrid, { Cell, InnerGrid } from '@smui/layout-grid'
     import Slider from '@smui/slider'
     import { onMount } from 'svelte';
     import Paper from '@smui/paper'
@@ -49,10 +49,10 @@
     <Content>
         <h2>{$LL.Config.ConfigureGrid()}</h2>
         <span>
-            {$LL.Config.Columns()}
+            {$LL.Config.Columns()}: {columns}
         </span>
         <Slider
-            defaultValue={3}
+            defaultValue={columns}
             step={1}
             min={2}
             tickMarks
@@ -60,10 +60,10 @@
             bind:value={editingColumns}
         />
         <span>
-            {$LL.Config.Rows()}
+            {$LL.Config.Rows()}: {rows}
         </span>
         <Slider
-            defaultValue={3}
+            defaultValue={rows}
             step={1}
             min={2}
             tickMarks
@@ -78,23 +78,25 @@
             </svelte:fragment>
         </Alert>
         {/if}
-        <LayoutGrid container>
-            {#each [...Array(rows).keys()] as r}
-            <LayoutGrid container item xs={12} spacing={1} key={r}>
-                {#each [...Array(columns).keys()] as c}
-                <Cell item xs key={c}>
-                    <Paper className="paper" elevation={3}>
-                        <div style={"background-color: " + ((r * columns + c) < selectedEntriesLength) ? "primary.main" : "error.main"}>
-                            &nbsp;
-                        </div>
-                    </Paper>
-                </Cell>
+        <table>
+            <tbody>
+                {#each [...Array(rows).keys()] as r}
+                <tr>
+                    {#each [...Array(columns).keys()] as c}
+                    <td>
+                        <Paper className="paper" color={((r * columns + c) < selectedEntriesLength) ? "primary" : ""} elevation={3}>
+                            <div style={"background-color: " + ((r * columns + c) < selectedEntriesLength) ? "primary.main" : "error.main"}>
+                                &nbsp;
+                            </div>
+                        </Paper>
+                    </td>
+                    {/each}
+                </tr>
                 {/each}
-            </LayoutGrid>
-            {/each}
-        </LayoutGrid>
+            </tbody>
+        </table>
         <span>
-            {$LL.Config.ConfirmationTime()}
+            {$LL.Config.ConfirmationTime()}: {FormatTimeout(confirmationTimeout)}
         </span>
         <Slider
             defaultValue={120}

@@ -12,7 +12,7 @@ export let isLoading: boolean
 </script>
 
 <style lang="scss">
-    .gameLogList {
+    :global(.gameLogList) {
         max-height: 300px;
         overflow-y: scroll;
     }

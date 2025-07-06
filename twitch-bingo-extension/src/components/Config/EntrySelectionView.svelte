@@ -27,20 +27,22 @@
 <Card>
     <Content>
         <h2 class="mdc-typography--headline6">{$LL.Config.EntrySelectionView.Title()}</h2>
-        <h3 class="mdc-typography--subtitle2">{$LL.Config.EntrySelectionView.TitleSubHeader()}</h3>
+        <h3 class="mdc-typography--subtitle2" style="margin: 0 0 10px; color: #888;">
+            {$LL.Config.EntrySelectionView.TitleSubHeader()}
+        </h3>
         {#if selectedEntries.length == 0}
         <span><em>{$LL.Config.EntrySelectionView.NoItemMessage()}</em></span>
         {:else}
         <List>
             {#each selectedEntries as key, index (key)}
-                <Item onclick={() => onRemoveFromSelectionKey(key)}>
-                    <Text>{`${index}) ${getEntry(key)?.text}`}</Text>
+                <Item on:click={() => onRemoveFromSelectionKey(key)}>
+                    <Text>{`${index+1}) ${getEntry(key)?.text}`}</Text>
+                    <Meta>
+                        <IconButton on:click={() => onRemoveFromSelectionKey(key)} sizes="small">
+                            <Icon class="material-icons">do_not_disturb_on</Icon>
+                        </IconButton>
+                    </Meta>
                 </Item>
-                <Meta>
-                    <IconButton onclick={() => onRemoveFromSelectionKey(key)} sizes="small">
-                        <Icon class="material-icons">do_not_disturb_on</Icon>
-                    </IconButton>
-                </Meta>
             {/each}
         </List>
         {/if}

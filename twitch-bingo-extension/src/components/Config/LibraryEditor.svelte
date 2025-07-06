@@ -1,5 +1,5 @@
 <script lang="ts">
-import Button, { Icon } from '@smui/button';
+import { Icon } from '@smui/button';
 
 import Card, { Actions, Content, PrimaryAction } from '@smui/card';
 import IconButton from '@smui/icon-button';
@@ -7,8 +7,6 @@ import List from '@smui/list';
 import type { BingoEditableEntry } from '../../model/BingoEntry';
 import LL from '../../i18n/i18n-svelte';
 import EditableBingoEntry from './EditableBingoEntry.svelte'
-import type { BingoEntry } from '../../EBS/BingoService/EBSBingoTypes';
-    import type { ChangeEventHandler } from 'svelte/elements';
 
 export let entries: BingoEditableEntry[]
 export let selectedEntries: number[]
@@ -20,9 +18,8 @@ export let onEntriesUpload: (evt: Event) => void
 
 let textInputRef:HTMLInputElement
 
-function isSelected(entry: BingoEntry): boolean{
-    return selectedEntries.some(b => b == entry.key)
-}
+$: selectedSet = new Set(selectedEntries);
+$: selectedFlags = entries.map((_, i) => selectedSet.has(i));
 
 console.log("LibraryEditor")
 </script>
@@ -43,6 +40,7 @@ console.log("LibraryEditor")
             bind:this={textInputRef}
             type="file"
             style="display: 'none'"
+            hidden
             on:change={onEntriesUpload} />
         <IconButton on:click={() => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
             <Icon class="material-icons">cloud_upload</Icon>
@@ -62,7 +60,7 @@ console.log("LibraryEditor")
                 {#each entries as value (value.key)}
                 <EditableBingoEntry
                     item={value}
-                    selected={isSelected(value)}
+                    selected={selectedFlags[value.key]}
                     onDelete={(_changedEntry) => onDeleteEntry(value.key)}
                     onChange={(changedEntry) => onChangeEntry(value.key, changedEntry)}
                     onSelect={(selectedEntry) => onAddToSelection(selectedEntry)}
