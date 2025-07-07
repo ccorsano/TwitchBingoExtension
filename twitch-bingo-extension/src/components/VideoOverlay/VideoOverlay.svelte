@@ -57,7 +57,7 @@
 </script>
 
 <style lang="scss">
-    @import "./VideoOverlay.scss"
+    @use "./VideoOverlay.scss"
 </style>
 
 <BingoGameComponent onSharedIdentity={onSharedIdentityChange}>

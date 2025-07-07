@@ -51,7 +51,7 @@
 </script>
 
 <style lang="scss">
-    @import "./BingoViewerEntry.scss"
+    @use "./BingoViewerEntry.scss"
 </style>
 
 <div class={"entryGridCell " + entryVariantType}>

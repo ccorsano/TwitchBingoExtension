@@ -166,9 +166,10 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
             console.error("No game provided to refreshGrid")
             return
         }
-        if (! isAuthorized)
+        if (! TwitchExtHelper.viewer.isLinked)
         {
             console.error("Unidentified user, aborting refresh")
+            setActiveGame(game)
             return
         }
         BingoEBS.getGrid(game.gameId).then(grid => {
