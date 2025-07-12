@@ -3,7 +3,7 @@ import { TwitchExtHelper } from './TwitchExtension';
 import { BingoEntryState, BingoGridCell, BingoPendingResult } from '../model/BingoEntry';
 import { BingoEBS } from '../EBS/BingoService/EBSBingoService';
 import { Twitch } from '../services/TwitchService';
-import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoGrid, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
+import { BingoConfirmationNotification, BingoEntry, BingoGame, BingoGrid, DefaultEntry, ParseTimespan } from '../EBS/BingoService/EBSBingoTypes';
 import { BingoGameContext } from './BingoGameContext';
 import { BingoGridContext } from './BingoGridContext';
 import { BingoBroadcastEvent, BingoBroadcastEventType, BingoConfiguration } from '../model/BingoConfiguration';
@@ -273,7 +273,7 @@ export default function BingoGameComponent(props: BingoGameComponentProps) {
                 state: BingoEntryState.Idle,
                 timer: null,
             },
-            null
+            DefaultEntry
         ];
     }, [grid, entries, pendingResults]);
 

@@ -7,6 +7,13 @@ export interface BingoEntry {
     confirmedBy?: string;
 }
 
+export const DefaultEntry: BingoEntry = {
+    key: 0,
+    text: "",
+    confirmedAt: undefined,
+    confirmedBy: undefined
+}
+
 export interface BingoGame {
     gameId: string;
     channelId: string;
@@ -82,6 +89,12 @@ const TimeSpanRegexp = (/^(-?)((\d+)\.)?(\d{2}):(\d{2}):(\d{2})(\.(\d{7}))?$/);
 export function ParseTimespan(timeSpan: string): number
 {
     var result = TimeSpanRegexp.exec(timeSpan);
+
+    if (result == null)
+    {
+        return NaN;
+    }
+
     var isNegative = result[1] === "-";
     var days = result[2] === undefined ? 0 : Number.parseInt(result[2]);
     var hours = Number.parseInt(result[4]);

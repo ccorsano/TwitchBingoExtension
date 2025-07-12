@@ -1,40 +1,68 @@
 <script lang="ts">
-    import type { BingoEntry, BingoGame, BingoGrid } from "../EBS/BingoService/EBSBingoTypes";
-    import { readable, writable } from "svelte/store";
-    import { setContext } from "svelte";
+    import { DefaultEntry, ParseTimespan, type BingoEntry, type BingoGame, type BingoGrid } from "../EBS/BingoService/EBSBingoTypes";
+    import { readable, writable, type Writable } from "svelte/store";
+    import { getContext, setContext } from "svelte";
     import { BingoEntryState, BingoPendingResult, type BingoGridCell } from "../model/BingoEntry";
     import type { BingoConfiguration } from "../model/BingoConfiguration";
     import { BingoEBS } from "../EBS/BingoService/EBSBingoService";
     import { Twitch } from "../services/TwitchService";
+    import { TwitchExtHelper } from "./TwitchExtension";
+    import { GameContextKey, setGame } from "../stores/game";
+    import { GridContextKey, setGrid } from "../stores/grid";
+    import type { BingoGameContext } from "./BingoGameContext";
+    import type { BingoGridContext } from "./BingoGridContext";
 
     export let onRefreshGrid: (grid: BingoGrid, cells: BingoGridCell[]) => void = (a,b) => {}
     export let onReceiveGame: (game: BingoGame) => void = (g) => {}
     export let onStop: () => void = () => {}
     export let onSharedIdentity: (isShared:boolean) => void
 
+    const gameContext: Writable<BingoGameContext> = getContext(GameContextKey)
+    const gridContext: Writable<BingoGridContext> = getContext(GridContextKey)
+
     let isStarted:boolean = false
     let entries:BingoEntry[] = Array(0)
     let canModerate:boolean = false
+    let canVote:boolean = false
     let isAuthorized:boolean = false
+    let hasSharedIdentity = false;
     
     Twitch.onAuthorized.push((context) => {
         isAuthorized = true;
+        canModerate = TwitchExtHelper.viewer.role == 'broadcaster' || TwitchExtHelper.viewer.role == 'moderator'
+        canVote = TwitchExtHelper.viewer.role != 'external'
+        hasSharedIdentity = TwitchExtHelper.viewer.isLinked
+        if (onSharedIdentity)
+        {
+            onSharedIdentity(TwitchExtHelper.viewer.isLinked)
+        }
+        gameContext.update(gc => {
+            gc.canModerate = canModerate
+            gc.canVote = gc.canVote
+            gc.isAuthorized = isAuthorized
+            gc.hasSharedIdentity = hasSharedIdentity
+            return gc
+        })
     })
 
-    let activeGame = writable<BingoGame>(undefined)
-    setContext("game", activeGame)
-    let activeGrid = writable<BingoGrid>(undefined)
-    setContext("grid", activeGrid)
     let pendingResults:BingoPendingResult[] = new Array(0)
 
-    activeGrid.subscribe(grid => onRefreshGrid(grid, grid?.cells?.map(c => getCell(c.row, c.col)[0])))
+    gameContext.subscribe(context => {
+        if (context.game) onReceiveGame(context.game)
+    })
+    gridContext.subscribe(context => onRefreshGrid(context.grid, context.grid.cells.map(c => getCell(c.row, c.col)[0])))
 
     const onStart = (payload: BingoGame) => {
         refreshGrid(payload, payload.entries)
+        gameContext.update(gc => {
+            gc.isStarted = true
+            gc.onTentative = onTentative
+            return gc
+        })
         isStarted = true
     }
 
-    const refreshGrid = (game: BingoGame, refreshEntries: BingoEntry[]) => {
+    const refreshGrid = (game: BingoGame, refreshEntries: BingoEntry[] | null) => {
         if (! game)
         {
             console.error("No game provided to refreshGrid")
@@ -52,20 +80,20 @@
                 console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
                 entries = refreshEntries
             }
-            activeGrid.set(grid)
+            setGrid(gridContext, grid)
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
         });
-        activeGame.set(game)
+        setGame(gameContext, game)
         refreshGame(game)
     }
 
     const refreshGame = (game: BingoGame) => {
-        if (canModerate)
+        if ($gameContext.canModerate)
         {
             BingoEBS.getGame(game.gameId).then(refreshedGame => {
                 console.log("Refreshed game for moderation")
-                activeGame.set(refreshedGame)
+                setGame(gameContext, refreshedGame)
             }).catch(error => {
                 console.error("Error loading game from EBS: " + error);
             });
@@ -82,13 +110,15 @@
         onLoadConfig(configContent)
     }
 
+    Twitch.onConfiguration.push(loadConfig)
+
     let onLoadConfig = (configContent: BingoConfiguration) => {
         const activeGameId:string = configContent.activeGameId ?? configContent.activeGame?.gameId ?? ""
-        if ($activeGame?.gameId !== activeGameId)
+        if ($gameContext.game?.gameId !== activeGameId)
         {
             BingoEBS.getGame(activeGameId)
                 .then(game => {
-                    activeGame.set(game)
+                    setGame(gameContext, game)
                     onStart(game)
                     if (onReceiveGame)
                     {
@@ -101,8 +131,8 @@
         }
     }
 
-    const getCell = (row: number, col: number):[BingoGridCell,BingoEntry | null] => {
-        var cellResult = $activeGrid.cells.filter(c => c.row === row && c.col === col);
+    const getCell = (row: number, col: number):[BingoGridCell,BingoEntry] => {
+        var cellResult = $gridContext.grid.cells.filter(c => c.row === row && c.col === col);
         if (cellResult.length == 1)
         {
             var cell = cellResult[0];
@@ -139,16 +169,50 @@
             {
                 row: row,
                 col: col,
-                key: -(col + (row * $activeGrid.cols)) - 1,
+                key: -(col + (row * $gridContext.grid.cols)) - 1,
                 text: "",
                 state: BingoEntryState.Idle,
                 timer: null,
                 // isColCompleted: false,
                 // isRowCompleted: false,
             },
-            null
+            DefaultEntry
         ]
     }
+
+    const onTentativeRefresh = (entry: BingoEntry) => {
+        console.log(`onTentative, refreshing grid after timeout ${entries.length}`);
+        
+        pendingResults = pendingResults.filter(p => p.key != entry.key)
+        refreshGrid($gameContext.game!, null);
+    }
+    
+    const onTentative = (entry: BingoEntry) => {  
+        if ($gameContext.game)
+        {
+            BingoEBS.tentative($gameContext.game.gameId, entry.key.toString());
+            var cellIndex = $gridContext.grid.cells.findIndex(c => c.key == entry.key);
+            $gridContext.grid.cells[cellIndex].state = BingoEntryState.Pending;
+            var pendingResultsRefreshed:BingoPendingResult[] = pendingResults.filter(p => p.key != entry.key);
+
+            var confirmationTimeout = ParseTimespan($gameContext.game.confirmationThreshold) + 500
+
+            pendingResultsRefreshed.push({
+                key: entry.key,
+                expireAt: new Date(Date.now() + confirmationTimeout),
+            });
+            setGrid(gridContext, $gridContext.grid)
+            pendingResults = pendingResultsRefreshed
+
+            setTimeout(() => onTentativeRefresh(entry), confirmationTimeout);
+            console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt} - ${entries.length}`);
+        }
+    }
+
+    gridContext.update(gc => {
+        gc.getCell = getCell
+        return gc
+    })
 
 </script>
 

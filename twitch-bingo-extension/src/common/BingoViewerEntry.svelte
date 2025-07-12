@@ -12,7 +12,7 @@
     export let isColCompleted: boolean
     export let onTentative: (entry: BingoEntry) => void
     export let countdown: Date | null = null
-    // export let fontSize: string //TODO
+    export let fontSize: string //TODO
     export let isShown: boolean
 
     let confirmationPrompt:boolean = false
@@ -38,6 +38,11 @@
         confirmationPrompt = false
     }
 
+    function isOfType(t: number)
+    {
+        return config.key % 10 == t;
+    }
+
     let entryVariantType = `type${config.key % 10}`
     let stateClass = confirmationPrompt ? "prompt" : "idle";
 
@@ -51,10 +56,21 @@
 </script>
 
 <style lang="scss">
-    @use "./BingoViewerEntry.scss"
+    @use "./BingoViewerEntry.scss";
+    @use "../common/BingoTheme.scss";
 </style>
 
-<div class={"entryGridCell " + entryVariantType}>
+<div class={`entryGridCell`}
+    class:type0={isOfType(0)}
+    class:type1={isOfType(1)}
+    class:type2={isOfType(2)}
+    class:type3={isOfType(3)}
+    class:type4={isOfType(4)}
+    class:type5={isOfType(5)}
+    class:type6={isOfType(6)}
+    class:type7={isOfType(7)}
+    class:type8={isOfType(8)}
+    class:type9={isOfType(9)}>
     <div class={"bingoCell paper " + stateClass} role="button" tabindex="0"
             class:visibleCell={isShown}
             class:hiddenCell={!isShown}
@@ -70,6 +86,8 @@
         </div>
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
             class="bingoCellPrompt" class:bingoCellPromptVisible={confirmationPrompt} class:bingoCellPromptHidden={!confirmationPrompt}
             on:click={(isShown && confirmationPrompt) ? handleTentative : null} >

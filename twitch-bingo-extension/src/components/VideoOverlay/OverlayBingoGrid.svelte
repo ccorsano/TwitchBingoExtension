@@ -9,6 +9,8 @@
     import BingoViewerEntry from "../../common/BingoViewerEntry.svelte";
     import { getContext } from "svelte";
     import type { Readable } from "svelte/store";
+    import { GameContextKey } from "../../stores/game";
+    import { GridContextKey } from "../../stores/grid";
 
 interface CellModel {
     cell: BingoGridCell
@@ -20,11 +22,12 @@ interface CellModel {
 
 export let isCollapsed: boolean
 
-let gameContextStore:Readable<BingoGameContext> = getContext("game")
-let gameContext = $gameContextStore
+const gameContext:Readable<BingoGameContext> = getContext(GameContextKey)
+gameContext.subscribe(context => {
+    console.log(JSON.stringify(context))
+})
 
-let gridContextStore:Readable<BingoGridContext> = getContext("grid")
-let gridContext:BingoGridContext = $gridContextStore
+let gridContext:Readable<BingoGridContext> = getContext(GridContextKey)
 let gridTemplateRows = ""
 let gridTemplateColumns = ""
 
@@ -51,18 +54,18 @@ let gridTemplateColumns = ""
 
     let cells:CellModel[] = Array(0)
 
-    if (gridContext?.grid != null)
-    {
-        cells = [...Array(gridContext.grid.rows).keys()]
+    gridContext.subscribe(context => {
+        cells = [...Array(context.grid.rows).keys()]
             .flatMap(rowIdx => {
-                let isRowComplete = gridContext.isRowComplete(rowIdx)
-                return [...Array(gridContext.grid.cols).keys()].map(colIdx => {
-                    let isColComplete = gridContext.isColComplete(colIdx)
-                    let [cell,entry] = gridContext.getCell(rowIdx, colIdx)
+                let isRowComplete = context.isRowComplete(rowIdx)
+                return [...Array(context.grid.cols).keys()].map(colIdx => {
+                    let isColComplete = context.isColComplete(colIdx)
+                    let [cell,entry] = context.getCell(rowIdx, colIdx)
                     if (! entry)
                     {
-                        let key = 1000 + colIdx + (rowIdx * gridContext.grid.cols)
+                        let key = 1000 + colIdx + (rowIdx * $gridContext.grid.cols)
                         return {
+                            key: key,
                             config: entry,
                             cell: cell,
                             isRowCompleted: isRowComplete,
@@ -71,6 +74,7 @@ let gridTemplateColumns = ""
                         }
                     }
                     return {
+                        key: entry.key,
                         config: entry,
                         cell: cell,
                         isRowCompleted: isRowComplete,
@@ -79,10 +83,11 @@ let gridTemplateColumns = ""
                     }
                 })
             })
-
-        gridTemplateRows = [...Array(gridContext.grid.rows).keys()].map(() => '1fr').join(' ')
-        gridTemplateColumns = [...Array(gridContext.grid.cols).keys()].map(() => '1fr').join(' ')
-    }
+        gridTemplateRows = [...Array($gridContext.grid.rows).keys()].map(() => '1fr').join(' ')
+        gridTemplateColumns = [...Array($gridContext.grid.cols).keys()].map(() => '1fr').join(' ')
+        console.log(JSON.stringify(cells))
+    })
+    
 </script>
 
 <style lang="scss">
@@ -90,7 +95,7 @@ let gridTemplateColumns = ""
 </style>
 
 <div>
-    {#if gameContext?.isStarted && gridContext?.grid}
+    {#if $gameContext.isStarted && $gridContext.grid}
     <div class="gridOuterBox" class:collapsed={isCollapsed}>
         <div class="gridHeaderBox">
             <img src={BingoHeaderTitle} alt="Bingo Logo" style="height: '100%'" />
@@ -98,7 +103,7 @@ let gridTemplateColumns = ""
         <div class="gridHeaderSeparator"></div>
         <div class="gridBodyBox">
             <div
-                class={`bingoGrid c${gridContext.grid.cols} r${gridContext.grid.rows}`}
+                class={`bingoGrid c${$gridContext.grid.cols} r${$gridContext.grid.rows}`}
                 style={`grid-template-rows: ${gridTemplateRows}; grid-template-colums: ${gridTemplateColumns}`}>
                 {#each cells as cell (cell.cell.key)}
                     {#if !cell.config}
@@ -108,7 +113,7 @@ let gridTemplateColumns = ""
                             state={BingoEntryState.Idle}
                             isColCompleted={cell.isColCompleted}
                             isRowCompleted={cell.isRowCompleted}
-                            onTentative={gameContext.onTentative}
+                            onTentative={$gameContext.onTentative}
                             fontSize="16px"
                             isShown={!isCollapsed}
                         />
@@ -121,7 +126,7 @@ let gridTemplateColumns = ""
                             isColCompleted={cell.isColCompleted}
                             isRowCompleted={cell.isRowCompleted}
                             countdown={cell.cell.timer}
-                            onTentative={gameContext.onTentative}
+                            onTentative={$gameContext.onTentative}
                             fontSize={cell.fontSize}
                             isShown={!isCollapsed}
                         />
