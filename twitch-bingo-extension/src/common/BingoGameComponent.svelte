@@ -84,7 +84,7 @@
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
         });
-        setGame(gameContext, game)
+        // setGame(gameContext, game)
         refreshGame(game)
     }
 
@@ -197,11 +197,11 @@
                 key: entry.key,
                 expireAt: new Date(Date.now() + confirmationTimeout),
             });
-            setGrid(gridContext, $gridContext.grid)
             pendingResults = pendingResultsRefreshed
-
             setTimeout(() => onTentativeRefresh(entry), confirmationTimeout);
             console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt} - ${entries.length}`);
+
+            setGrid(gridContext, $gridContext.grid)
         }
     }
 

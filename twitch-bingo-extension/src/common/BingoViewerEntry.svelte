@@ -1,9 +1,8 @@
 <script lang="ts">
     import { FormatTimeout, type BingoEntry } from "../EBS/BingoService/EBSBingoTypes";
     import { BingoEntryState } from "../model/BingoEntry";
-    import { Moon } from 'svelte-loading-spinners'
     import LL from "../i18n/i18n-svelte";
-    import Button from "@smui/button";
+    import CountdownCircleTimer from "./CountdownCircleTimer.svelte";
 
 
     export let config: BingoEntry
@@ -45,30 +44,36 @@
 
     let entryVariantType = `type${config.key % 10}`
     let stateClass = confirmationPrompt ? "prompt" : "idle";
-    switch(state)
-    {
-        case BingoEntryState.Confirmed:
-            stateClass = "confirmed";
-            break;
-        case BingoEntryState.Missed:
-            stateClass = "missed";
-            break;
-        case BingoEntryState.Pending:
-            stateClass = "pending";
-            break;
-        case BingoEntryState.Rejected:
-            stateClass = "rejected";
-            break;
-        default:
-            break;
+
+    $:{
+        switch(state)
+        {
+            case BingoEntryState.Confirmed:
+                stateClass = "confirmed";
+                break;
+            case BingoEntryState.Missed:
+                stateClass = "missed";
+                break;
+            case BingoEntryState.Pending:
+                stateClass = "pending";
+                break;
+            case BingoEntryState.Rejected:
+                stateClass = "rejected";
+                break;
+            default:
+                break;
+        }
     }
 
-    let showTimer = countdown != null
+    let showTimer:boolean = false
+    $: showTimer = countdown != null
     let duration = 0
-    if (showTimer)
-    {
-        duration = (countdown!.getTime() - Date.now()) / 1000
-        showTimer &&= duration > 0
+    $:{
+        if (showTimer)
+        {
+            duration = (countdown!.getTime() - Date.now()) / 1000
+            showTimer &&= duration > 0
+        }
     }
 </script>
 
@@ -112,20 +117,20 @@
         </div>
         {#if showTimer}
             <div class="countdownPrompt bingoCellPrompt bingoCellPromptVisible">
-                <div style="font-size: '16px'">
-                    <Moon size="70" color="#EA4E7A" duration={`{duration}s`} unit="px"/>
-                    <!--
-                    /* <CountdownCircleTimer
+                <div style:font-size="16px">
+                    <CountdownCircleTimer
                         isPlaying
                         size={70}
-                        isLinearGradient={true}
                         duration={duration}
-                        children={renderTime}
                         strokeWidth={12}
                         trailColor={"#F4A4BB"}
                         colors={"#EA4E7A"}
-                    /> */
-                    -->
+                        let:remainingTime={remainingTime}
+                    >
+                        <span class="countdownText">
+                            { FormatTimeout(remainingTime) }
+                        </span>
+                    </CountdownCircleTimer>
                 </div>
             </div>
         {/if}

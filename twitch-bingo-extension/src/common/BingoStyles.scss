@@ -14,6 +14,32 @@
     }
 };
 
+:global(.pending) {
+    background: getHex(BingoTheme.$pending)
+}
+
+:global(.confirmed) {
+    background: getHex(BingoTheme.$confirmed),
+}
+
+:global(.missed) {
+    background: getHex(BingoTheme.$missed);
+    color: '#666';
+}
+
+:global(.cancel) {
+    background: 'rgba(220,128,128,0.8)';
+}
+
+:global(.confirm) {
+    background: 'rgba(128,220,128,0.8)',
+}
+
+:global(.rejected) {
+    background: getHex(BingoTheme.$missed);
+    color: '#666';
+}
+
 :global(.colConfirmed) {
     border-left-style: solid;
     border-left-color: black;
