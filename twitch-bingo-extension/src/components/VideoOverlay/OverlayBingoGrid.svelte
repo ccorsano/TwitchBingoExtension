@@ -12,45 +12,25 @@
     import { GameContextKey } from "../../stores/game";
     import { GridContextKey } from "../../stores/grid";
 
-interface CellModel {
-    cell: BingoGridCell
-    config: BingoEntry
-    isRowCompleted: boolean
-    isColCompleted: boolean
-    fontSize: string
-}
+    interface CellModel {
+        cell: BingoGridCell
+        config: BingoEntry
+        isRowCompleted: boolean
+        isColCompleted: boolean
+        fontSize: string
+    }
 
-export let isCollapsed: boolean
+    export let isCollapsed: boolean
+    export let layoutClass: string
 
-const gameContext:Readable<BingoGameContext> = getContext(GameContextKey)
-gameContext.subscribe(context => {
-    console.log(JSON.stringify(context))
-})
+    const gameContext:Readable<BingoGameContext> = getContext(GameContextKey)
+    gameContext.subscribe(context => {
+        console.log(JSON.stringify(context))
+    })
 
-let gridContext:Readable<BingoGridContext> = getContext(GridContextKey)
-let gridTemplateRows = ""
-let gridTemplateColumns = ""
-
-// let gridContext:BingoGridContext = {
-//     grid: {
-//         gameId: "blah",
-//         playerId: "blah",
-//         cols: 1,
-//         rows: 1,
-//         cells:
-//         [
-//             {
-//                 row: 0,
-//                 col: 0,
-//                 key: 0,
-//                 state: BingoEntryState.Idle,
-//             }
-//         ]
-//     },
-//     getCell: getCell,
-//     isColComplete: (col) => false,
-//     isRowComplete: (row) => false,
-// }
+    let gridContext:Readable<BingoGridContext> = getContext(GridContextKey)
+    let gridTemplateRows = ""
+    let gridTemplateColumns = ""
 
     let cells:CellModel[] = Array(0)
 
@@ -94,54 +74,52 @@ let gridTemplateColumns = ""
     @import "./OverlayBingoGrid.scss"
 </style>
 
-<div>
-    {#if $gameContext.isStarted && $gridContext.grid}
-    <div class="gridOuterBox" class:collapsed={isCollapsed}>
-        <div class="gridHeaderBox">
-            <img src={BingoHeaderTitle} alt="Bingo Logo" style="height: '100%'" />
-        </div>
-        <div class="gridHeaderSeparator"></div>
-        <div class="gridBodyBox">
-            <div
-                class={`bingoGrid c${$gridContext.grid.cols} r${$gridContext.grid.rows}`}
-                style={`grid-template-rows: ${gridTemplateRows}; grid-template-colums: ${gridTemplateColumns}`}>
-                {#each cells as cell (cell.cell.key)}
-                    {#if !cell.config}
-                    <div class="bingoCellArea" style={`grid-column: ${cell.cell.col + 1}; grid-row: ${cell.cell.row + 1}`}>
-                        <BingoViewerEntry
-                            config={{key: cell.cell.key, text: ""}}
-                            state={BingoEntryState.Idle}
-                            isColCompleted={cell.isColCompleted}
-                            isRowCompleted={cell.isRowCompleted}
-                            onTentative={$gameContext.onTentative}
-                            fontSize="16px"
-                            isShown={!isCollapsed}
-                        />
-                    </div>
-                    {:else}
-                    <div class="bingoCellArea" style={`grid-column: ${cell.cell.col + 1}; grid-row: ${cell.cell.row + 1}`}>
-                        <BingoViewerEntry
-                            config={cell.config}
-                            state={cell.cell.state}
-                            isColCompleted={cell.isColCompleted}
-                            isRowCompleted={cell.isRowCompleted}
-                            countdown={cell.cell.timer}
-                            onTentative={$gameContext.onTentative}
-                            fontSize={cell.fontSize}
-                            isShown={!isCollapsed}
-                        />
-                    </div>
-                    {/if}
-                {/each}
-            </div>
+{#if $gameContext.isStarted && $gridContext.grid}
+<div class="gridOuterBox {layoutClass}" class:collapsed={isCollapsed}>
+    <div class="gridHeaderBox">
+        <img src={BingoHeaderTitle} alt="Bingo Logo" style:height="100%" />
+    </div>
+    <div class="gridHeaderSeparator"></div>
+    <div class="gridBodyBox">
+        <div
+            class={`bingoGrid c${$gridContext.grid.cols} r${$gridContext.grid.rows}`}
+            style={`grid-template-rows: ${gridTemplateRows}; grid-template-columns: ${gridTemplateColumns}`}>
+            {#each cells as cell (cell.cell.key)}
+                {#if !cell.config}
+                <div class="bingoCellArea" style={`grid-column: ${cell.cell.col + 1}; grid-row: ${cell.cell.row + 1}`}>
+                    <BingoViewerEntry
+                        config={{key: cell.cell.key, text: ""}}
+                        state={BingoEntryState.Idle}
+                        isColCompleted={cell.isColCompleted}
+                        isRowCompleted={cell.isRowCompleted}
+                        onTentative={$gameContext.onTentative}
+                        fontSize="16px"
+                        isShown={!isCollapsed}
+                    />
+                </div>
+                {:else}
+                <div class="bingoCellArea" style={`grid-column: ${cell.cell.col + 1}; grid-row: ${cell.cell.row + 1}`}>
+                    <BingoViewerEntry
+                        config={cell.config}
+                        state={cell.cell.state}
+                        isColCompleted={cell.isColCompleted}
+                        isRowCompleted={cell.isRowCompleted}
+                        countdown={cell.cell.timer}
+                        onTentative={$gameContext.onTentative}
+                        fontSize={cell.fontSize}
+                        isShown={!isCollapsed}
+                    />
+                </div>
+                {/if}
+            {/each}
         </div>
     </div>
-    {:else}
-    <div class="loadingGridBox" class:collapsed={isCollapsed}>
-            <LinearIndeterminateLoader style="margin-bottom: '1rem'; margin-top: '1rem'" />
-            <div style="margin-top: '2rem'">
-                {$LL.OverlayBingoGrid.WaitingMessage()}
-            </div>
-        </div>
-    {/if}
 </div>
+{:else}
+<div class="loadingGridBox" class:collapsed={isCollapsed}>
+        <LinearIndeterminateLoader style="margin-bottom: '1rem'; margin-top: '1rem'" />
+        <div style="margin-top: '2rem'">
+            {$LL.OverlayBingoGrid.WaitingMessage()}
+        </div>
+    </div>
+{/if}

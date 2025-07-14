@@ -15,7 +15,7 @@
     opacity: 0.0 !important;
 }
 
-.gridHeaderBox
+:global(.gridHeaderBox)
 {
     margin: 1vh;
     border-style: solid;
@@ -56,13 +56,13 @@
     width: 100.1%; // Extend out on the right to not see a black border
 }
 
-.gridBodyBox
+:global(.gridBodyBox)
 {
     padding: 2.5vh;
     padding-bottom: 0;
 }
 
-.bingoGrid
+:global(.bingoGrid)
 {
     display: grid;
     grid-auto-columns: 1fr;

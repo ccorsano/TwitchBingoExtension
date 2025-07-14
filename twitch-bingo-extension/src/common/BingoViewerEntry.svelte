@@ -45,6 +45,23 @@
 
     let entryVariantType = `type${config.key % 10}`
     let stateClass = confirmationPrompt ? "prompt" : "idle";
+    switch(state)
+    {
+        case BingoEntryState.Confirmed:
+            stateClass = "confirmed";
+            break;
+        case BingoEntryState.Missed:
+            stateClass = "missed";
+            break;
+        case BingoEntryState.Pending:
+            stateClass = "pending";
+            break;
+        case BingoEntryState.Rejected:
+            stateClass = "rejected";
+            break;
+        default:
+            break;
+    }
 
     let showTimer = countdown != null
     let duration = 0
