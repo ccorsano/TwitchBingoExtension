@@ -20,7 +20,6 @@
     const gameContext: Writable<BingoGameContext> = getContext(GameContextKey)
     const gridContext: Writable<BingoGridContext> = getContext(GridContextKey)
     
-
     let isStarted:boolean = false
     let entries:BingoEntry[] = Array(0)
     let canModerate:boolean = false
@@ -39,7 +38,8 @@
         }
         gameContext.update(gc => {
             gc.canModerate = canModerate
-            gc.canVote = gc.canVote
+            gc.isStarted = isStarted
+            gc.canVote = canVote
             gc.isAuthorized = isAuthorized
             gc.hasSharedIdentity = hasSharedIdentity
             gc.requestRefresh = (id: string) => {
@@ -72,6 +72,10 @@
                 return entry
             })
         pendingResults = pendingResults.filter(p => p.key != confirmation.key)
+        if ($gameContext.game)
+        {
+            refreshGrid($gameContext.game.gameId, entries)
+        }
     }
     
     function receiveBroadcast(_target: any, _contentType: any, messageStr: string) {
@@ -159,7 +163,6 @@
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
         });
-        // setGame(gameContext, game)
         refreshGame(gameId)
     }
 

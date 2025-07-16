@@ -1,22 +1,24 @@
 <script lang="ts">
     import TabWidget from "./TabWidget.svelte";
     import type { BingoGameContext } from "../../common/BingoGameContext"
-    import { ParseTimespan, type BingoEntry, type BingoGame, type BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
+    import { ParseTimespan, type BingoEntry, type BingoGame, type BingoGrid, type BingoTentativeNotification } from "../../EBS/BingoService/EBSBingoTypes";
     import OverlayBingoGrid from "./OverlayBingoGrid.svelte";
     import LL from '../../i18n/i18n-svelte';
     import BingoGameComponent from "../../common/BingoGameComponent.svelte";
     import type { Writable } from "svelte/store";
-    import { setContext } from "svelte";
+    import { onMount, setContext } from "svelte";
     import { createGameContext, GameContextKey } from "../../stores/game"
     import type { BingoGridContext } from "../../common/BingoGridContext";
     import { createGridContext, GridContextKey } from "../../stores/grid";
     import ModerationSection from "./ModerationSection.svelte";
+    import { TwitchExtHelper } from "../../common/TwitchExtension";
 
     let isCollapsed = true
     let isShowingIdentityPrompt = false
     let isWidgetShown = true
     let hasModNotifications = false
     let moderationDrawerOpen = false
+    let isModDrawerAutoOpened = false
     let confirmationTimeout:number = 0.0
 
     const gameContext:Writable<BingoGameContext> = createGameContext()
@@ -28,12 +30,37 @@
     
     let layoutClass = "wide"
 
-    let drawingAreaClick = () => {
+    onMount(() => {
+        TwitchExtHelper.onContext((context, _) => {
+            isWidgetShown = (context.arePlayerControlsVisible !== false)
+            return () => {
+                TwitchExtHelper.onContext(null)
+            }
+        })
+    })
+
+    function onTentativeNotification(_tentative: BingoTentativeNotification) {
+        if (!moderationDrawerOpen)
+        {
+            isModDrawerAutoOpened = true
+            moderationDrawerOpen = true
+        }
+        hasModNotifications = true
+    }
+
+    function onNotificationsEmpty() {
+        if (isModDrawerAutoOpened)
+        {
+            moderationDrawerOpen = false
+        }
+        hasModNotifications = false
+    }
+
+    function drawingAreaClick() {
         if (! isCollapsed)
         {
             isCollapsed = true
         }
-        console.log("hehe")
     }
 
     function onToggleGrid(gameContext:BingoGameContext)
@@ -51,12 +78,14 @@
         isCollapsed = !isCollapsed
         console.log(isCollapsed ? "collapsed" : "not collapsed")
     }
-    let onToggleModerationPane = () => {
+
+    function onToggleModerationPane() {
         moderationDrawerOpen = !moderationDrawerOpen
+        isModDrawerAutoOpened = false
         console.log(`Moderation pane ${moderationDrawerOpen ? "open" : "closed" }`)
     }
 
-    let onSharedIdentityChange = (isShared: boolean) => {
+    function onSharedIdentityChange(isShared: boolean) {
         if (isShared && isShowingIdentityPrompt) {
             isShowingIdentityPrompt = false
         }
@@ -65,7 +94,7 @@
         }
     }
 
-    let onReceiveGame = (game: BingoGame) => {
+    function onReceiveGame(game: BingoGame) {
         console.log("Game received")
         if (game)
         {
@@ -80,7 +109,7 @@
         }
     }
 
-    let onRefreshGrid = (grid: BingoGrid) => {
+    function onRefreshGrid(grid: BingoGrid) {
         console.log("Grid refreshed")
     }
 </script>
@@ -123,6 +152,8 @@
                         bind:open={moderationDrawerOpen}
                         confirmationTimeout={confirmationTimeout}
                         isStarted={$gameContext.isStarted}
+                        onReceiveTentative={onTentativeNotification}
+                        onNotificationsEmpty={onNotificationsEmpty}
                     />
                 {/await}
             {/if}

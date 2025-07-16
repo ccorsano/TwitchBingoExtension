@@ -97,7 +97,7 @@ export interface TwitchExtensionFeaturesHelper {
 
 export interface TwitchExtensionHelper {
     onAuthorized: (authCallback: (context: TwitchAuthCallbackContext) => void) => void;
-    onContext: (contextCallback: (context: TwitchContext, changedProperties: string[]) => void) => void;
+    onContext: (contextCallback: ((context: TwitchContext, changedProperties: string[]) => void) | null) => void;
     onError: (errorCallback: (error: any) => void) => void;
     onHighlightChanged: (callback: (isHighlighted: boolean) => void) => void;
     onPositionChanged: (callback: (position: TwitchExtensionPosition) => void) => void;

@@ -24,9 +24,6 @@
     export let layoutClass: string
 
     const gameContext:Readable<BingoGameContext> = getContext(GameContextKey)
-    gameContext.subscribe(context => {
-        console.log(JSON.stringify(context))
-    })
 
     let gridContext:Readable<BingoGridContext> = getContext(GridContextKey)
     let gridTemplateRows = ""
@@ -65,7 +62,6 @@
             })
         gridTemplateRows = [...Array($gridContext.grid.rows).keys()].map(() => '1fr').join(' ')
         gridTemplateColumns = [...Array($gridContext.grid.cols).keys()].map(() => '1fr').join(' ')
-        console.log(JSON.stringify(cells))
     })
     
 </script>

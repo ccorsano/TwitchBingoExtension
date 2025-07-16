@@ -204,7 +204,6 @@ function onStart(): void
         }
         var configUpdateJson = JSON.stringify(config)
         TwitchExtHelper.configuration.set('broadcaster', EBSVersion, configUpdateJson);
-        console.log(configUpdateJson);
         TwitchExtHelper.send('broadcast','application/json', {
             type: BingoBroadcastEventType.Start,
             payload: game

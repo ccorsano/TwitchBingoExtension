@@ -66,7 +66,8 @@
     const receiveTentative = (notification: BingoTentativeNotification) => {
         const tryAddTentative = (currentTentatives: BingoTentativeNotification[]):BingoTentativeNotification[] => {
             // Skip if a tentative is already pending for this key
-            if (currentTentatives.some(t => t.gameId == notification.gameId && t.key == notification.key))
+            if (currentTentatives.some(t => t.gameId == notification.gameId && t.key == notification.key)
+                || pendingConfirmations.some(t => t.gameId == notification.gameId && t.key == notification.key))
             {
                 console.log("Skipped adding tentative " + notification.gameId + " " + notification.key)
                 return currentTentatives
@@ -99,6 +100,7 @@
                 }
                 return tentative
             })
+        $moderationContext.tentatives = $moderationContext.tentatives.filter(t => t.key != confirmation.key)
     }
 
     const onReceiveWhisper = (_target: string, _contentType: string, messageStr: string) => {
@@ -192,8 +194,8 @@
         TwitchExtHelper.listen('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
 
         return () => {
-        console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
-        TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
+            console.log(`Unregistering listener for ${'whisper-' + TwitchExtHelper.viewer.opaqueId}`)
+            TwitchExtHelper.unlisten('whisper-' + TwitchExtHelper.viewer.opaqueId, onReceiveWhisper)
         }
     })
 

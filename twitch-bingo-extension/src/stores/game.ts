@@ -20,6 +20,7 @@ const _defaultGameContext: BingoGameContext = {
     onTentative: (entry: BingoEntry) => {},
     canModerate: false,
     canVote: false,
+    requestRefresh: (gameId: string) => {},
 }
 
 export function createGame() {

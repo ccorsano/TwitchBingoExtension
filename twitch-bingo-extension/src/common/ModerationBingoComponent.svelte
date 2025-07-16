@@ -34,7 +34,7 @@
                     gameId={tentative.gameId}
                     entry={entries.find(e => e.key === tentative.key) ?? DefaultEntry}
                     isConfirmed={tentative.confirmationTime != undefined}
-                    referenceTime={tentative.confirmationTime ?? tentative.tentativeTime}
+                    referenceTime={tentative.tentativeTime}
                     confirmationTimeout={confirmationTimeout}
                     onConfirm={onConfirm}
                     onExpire={onTentativeExpire}

@@ -45,15 +45,18 @@
         {
             case BingoEntryState.Confirmed:
                 stateClass = "confirmed";
+                countdown = null;
                 break;
             case BingoEntryState.Missed:
                 stateClass = "missed";
+                countdown = null;
                 break;
             case BingoEntryState.Pending:
                 stateClass = "pending";
                 break;
             case BingoEntryState.Rejected:
                 stateClass = "rejected";
+                countdown = null;
                 break;
             default:
                 break;

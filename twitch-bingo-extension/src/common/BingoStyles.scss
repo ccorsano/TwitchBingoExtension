@@ -10,33 +10,33 @@
 
 :global(.idle) {
     &:hover {
-        background: BingoTheme.$idle-hover;
+        background-color: BingoTheme.$idle-hover;
     }
 };
 
 :global(.pending) {
-    background: getHex(BingoTheme.$pending)
+    background-color: BingoTheme.$pending
 }
 
 :global(.confirmed) {
-    background: getHex(BingoTheme.$confirmed),
+    background-color: BingoTheme.$confirmed,
 }
 
 :global(.missed) {
-    background: getHex(BingoTheme.$missed);
+    background-color: BingoTheme.$missed;
     color: '#666';
 }
 
 :global(.cancel) {
-    background: 'rgba(220,128,128,0.8)';
+    background-color: rgba(220,128,128,0.8);
 }
 
 :global(.confirm) {
-    background: 'rgba(128,220,128,0.8)',
+    background-color: rgba(128,220,128,0.8),
 }
 
 :global(.rejected) {
-    background: getHex(BingoTheme.$missed);
+    background: BingoTheme.$missed;
     color: '#666';
 }
 

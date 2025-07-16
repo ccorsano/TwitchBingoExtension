@@ -5,13 +5,16 @@
     import { createGameModerationContext, GameModerationContextKey } from "../../stores/moderation";
     import type { BingoGameModerationContext } from "../../common/BingoGameModerationContext";
     import { getContext, setContext } from "svelte";
-    import type { BingoTentative } from "../../EBS/BingoService/EBSBingoTypes";
+    import type { BingoTentative, BingoTentativeNotification } from "../../EBS/BingoService/EBSBingoTypes";
     import type { BingoGameContext } from "../../common/BingoGameContext";
     import { GameContextKey } from "../../stores/game";
 
     export let open:boolean = false
     export let isStarted:boolean = false
     export let confirmationTimeout: number
+    export let onNotificationsEmpty: (() => void) | undefined = undefined
+    export let onReceiveTentative: ((tentative: BingoTentativeNotification) => void) | undefined = undefined
+
 
     const gameModerationContext:Writable<BingoGameModerationContext> = createGameModerationContext()
     setContext(GameModerationContextKey, gameModerationContext)
@@ -67,6 +70,8 @@
 
 <BingoGameModerationComponent
     onReceiveConfirmation={onConfirmationNotification}
+    onNotificationsEmpty={onNotificationsEmpty}
+    onReceiveTentative={onReceiveTentative}
     >
     <div class="drawer-container" class:open={open} class:closed={!open}>
         <ModerationPane

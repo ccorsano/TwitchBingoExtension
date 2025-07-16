@@ -21,7 +21,7 @@ export let isLoading: boolean
 {#if isLoading}
 <LinearProgress indeterminate />
 {:else}
-<List class="gameLogList">
+<List class="gameLogList" twoLine>
 {#each logEntries as log,index}
 {#key index}
 <GameLogItem

@@ -14,11 +14,11 @@ export let onToggleModerationPane: () => void
 </style>
 
 <div class="tabWidgetContainer">
-    <div class:shown class:hidden={!shown} class="tabWidget" on:click|capture={_ => onToggleGrid()}>
+    <div class:shown={shown} class:hidden={!shown} class="tabWidget" on:click|capture={_ => onToggleGrid()}>
         <img src={BingoLogo} alt="Bingo Logo" />
     </div>
     {#if canModerate}
-        <div  class:shown class:hidden={!shown} class:pending={hasModNotifications} class="tabWidget" on:click|capture={_ => moderationShown = !moderationShown }>
+        <div class:shown class:hidden={!shown} class:pending={hasModNotifications} class="tabWidget" on:click|capture={_ => moderationShown = !moderationShown }>
             <span>⚔</span>
         </div>
     {/if}
