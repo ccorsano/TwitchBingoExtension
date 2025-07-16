@@ -38,13 +38,26 @@
     margin: 0;
 }
 
+.action-area {
+    display: grid;
+    grid-template-rows: 14vh;
+    grid-template-columns: 0px 4rem;
+    z-index: 10;
+    transition: 0.5s ease-in 0s;
+}
+
+.action-area.moderationOpen {
+    grid-template-columns: 30vw 4rem;
+    transition: 0.5s ease-in 0s;
+}
+
 :global(.identityPrompt)
 {
     background-color: getRGB(jasminePalette);
-    width: '100%';
-    text-align: 'center';
-    padding-top: '1vw';
-    padding-bottom: '1vw';
-    border-radius: '0.25vw';
-    transition: 'opacity 0.5s';
+    width: 100%;
+    text-align: center;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    border-radius: 0.25vw;
+    transition: opacity 0.5s;
 }

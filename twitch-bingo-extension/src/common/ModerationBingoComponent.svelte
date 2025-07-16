@@ -1,46 +1,64 @@
 <script lang="ts">
-    import type { BingoEntry, BingoTentativeNotification } from "src/EBS/BingoService/EBSBingoTypes";
-    import Paper from '@smui/paper'
+    import { DefaultEntry, type BingoEntry, type BingoTentativeNotification } from "../EBS/BingoService/EBSBingoTypes";
+    import Paper, { Content } from '@smui/paper'
+    import TentativeNotificationComponent from "./TentativeNotificationComponent.svelte";
+    import ModerationBingoEntry from "./ModerationBingoEntry.svelte";
+    import { GameModerationContextKey } from "../stores/moderation";
+    import type { Readable } from "svelte/store";
+    import { getContext } from "svelte";
+    import type { BingoGameModerationContext } from "./BingoGameModerationContext";
+    import LinearProgress from "@smui/linear-progress";
+    import LL from "../i18n/i18n-svelte";
 
     export let entries: BingoEntry[]
     export let tentatives: BingoTentativeNotification[]
-    export let isStarted: boolean
-    export let gameId: string
     export let confirmationTimeout: number
     export let onConfirm: (entry: BingoEntry) => void
     export let onTentativeExpire: (entry: BingoEntry) => void
     export let onTest: (entry: BingoEntry) => void | undefined
 
+    const moderationContext: Readable<BingoGameModerationContext> = getContext(GameModerationContextKey)
+
+    const onForceNotify = (entry: BingoEntry) => {
+        $moderationContext.onForceNotify(entry)
+    }
 
 </script>
 
-<Paper elevation="3">
-    <div>
-        {#each tentatives as tentative}
-        {#if tentative}
-            
-        {/if}
-        {/each}
-
-        
-                    props.tentatives.map((tentative) => {
-                        if (tentative)
-                        {
-                            var entry: BingoEntry = props.entries.find(e => e.key == tentative.key);
-
-                            return (
-                                <TentativeNotificationComponent
-                                    gameId={tentative.gameId}
-                                    entry={entry}
-                                    isConfirmed={tentative.confirmationTime != null}
-                                    referenceTime={tentative.confirmationTime ?? tentative.tentativeTime}
-                                    key={tentative.key}
-                                    confirmationTimeout={props.confirmationTimeout}
-                                    onConfirm={props.onConfirm}
-                                    onExpire={props.onTentativeExpire}
-                                />
-                            );
-                        }
-                    })
-    </div>
+<Paper elevation={3} color={"default"}>
+    <Content>
+        <div>
+            {#each tentatives as tentative}
+            {#if tentative}
+                <TentativeNotificationComponent
+                    gameId={tentative.gameId}
+                    entry={entries.find(e => e.key === tentative.key) ?? DefaultEntry}
+                    isConfirmed={tentative.confirmationTime != undefined}
+                    referenceTime={tentative.confirmationTime ?? tentative.tentativeTime}
+                    confirmationTimeout={confirmationTimeout}
+                    onConfirm={onConfirm}
+                    onExpire={onTentativeExpire}
+                />
+            {/if}
+            {/each}
+        </div>
+        <div>
+            {#if entries?.length > 0}
+                {#each entries as entry}
+                    <ModerationBingoEntry
+                        tentatives={tentatives}
+                        entry={entry}
+                        onConfirm={onConfirm}
+                        onTest={onTest}
+                        onForceNotify={onForceNotify}
+                        />
+                {/each}
+            {:else}
+                <div style:margin="1vw">
+                    <LinearProgress indeterminate />
+                    {$LL.BingoModeration.NoEntriesMessage()}
+                </div>
+            {/if}
+        </div>
+    </Content>
 </Paper>

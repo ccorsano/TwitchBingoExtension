@@ -4,6 +4,7 @@ import BingoLogo from "../../../assets/BingoLogo.svg"
 export let shown:boolean
 export let canModerate:boolean
 export let hasModNotifications:boolean
+export let moderationShown:boolean
 export let onToggleGrid: () => void
 export let onToggleModerationPane: () => void
 </script>
@@ -17,7 +18,7 @@ export let onToggleModerationPane: () => void
         <img src={BingoLogo} alt="Bingo Logo" />
     </div>
     {#if canModerate}
-        <div class:pending={hasModNotifications} class="tabWidget" on:click|capture={_ => onToggleModerationPane()}>
+        <div  class:shown class:hidden={!shown} class:pending={hasModNotifications} class="tabWidget" on:click|capture={_ => moderationShown = !moderationShown }>
             <span>⚔</span>
         </div>
     {/if}

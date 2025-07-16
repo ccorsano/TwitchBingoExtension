@@ -33,8 +33,6 @@
 
     let elapsedTime:number = 0.0
     let startTime:number|undefined = undefined
-    let remainingTime:number = duration
-    $: remainingTime = duration - elapsedTime
 
     function linearEase(time: number, start: number, goal: number, duration:number)
     {
@@ -56,7 +54,7 @@
                 elapsedTime = (Date.now() - startTime) / 1000.0
                 if (onUpdate)
                 {
-                    onUpdate(elapsedTime)
+                    onUpdate(elapsedTime ?? 0.0)
                 }
                 if (elapsedTime >= duration && onComplete)
                 {
@@ -71,7 +69,25 @@
     })
 </script>
 
-<div style:position="relative" style:width={size} style:height={size}>
+<style lang="scss">
+    .time-style {
+        overflow: hidden;
+        display: flex;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        flex-wrap: nowrap;
+    }
+</style>
+
+<div style:position="relative" style:width={size} style:height={size}
+     style:box-sizing="border-box" style:overflow="hidden">
     <svg
     viewBox={`0 0 ${size} ${size}`}
     width={size}
@@ -94,5 +110,7 @@
         stroke-dashoffset={linearEase(elapsedTime, 0, pathLength, duration)}
     />
     </svg>
-    <slot remainingTime={remainingTime} />
+    <div class="time-style" style:max-height={size}>
+        <slot/>
+    </div>
 </div>

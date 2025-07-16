@@ -1,26 +1,30 @@
 <script lang="ts">
     import TabWidget from "./TabWidget.svelte";
     import type { BingoGameContext } from "../../common/BingoGameContext"
-    import type { BingoEntry, BingoGame, BingoGrid } from "src/EBS/BingoService/EBSBingoTypes";
+    import { ParseTimespan, type BingoEntry, type BingoGame, type BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
     import OverlayBingoGrid from "./OverlayBingoGrid.svelte";
     import LL from '../../i18n/i18n-svelte';
     import BingoGameComponent from "../../common/BingoGameComponent.svelte";
     import type { Writable } from "svelte/store";
     import { setContext } from "svelte";
     import { createGameContext, GameContextKey } from "../../stores/game"
-    import type { BingoGridContext } from "src/common/BingoGridContext";
+    import type { BingoGridContext } from "../../common/BingoGridContext";
     import { createGridContext, GridContextKey } from "../../stores/grid";
+    import ModerationSection from "./ModerationSection.svelte";
 
     let isCollapsed = true
     let isShowingIdentityPrompt = false
     let isWidgetShown = true
     let hasModNotifications = false
     let moderationDrawerOpen = false
+    let confirmationTimeout:number = 0.0
 
     const gameContext:Writable<BingoGameContext> = createGameContext()
     setContext(GameContextKey, gameContext)
     const gridContext:Writable<BingoGridContext> = createGridContext()
     setContext(GridContextKey, gridContext)
+
+    $: confirmationTimeout = ParseTimespan($gameContext.game?.confirmationThreshold ?? "00:00:00")
     
     let layoutClass = "wide"
 
@@ -47,7 +51,10 @@
         isCollapsed = !isCollapsed
         console.log(isCollapsed ? "collapsed" : "not collapsed")
     }
-    let onToggleModerationPane = () => {}
+    let onToggleModerationPane = () => {
+        moderationDrawerOpen = !moderationDrawerOpen
+        console.log(`Moderation pane ${moderationDrawerOpen ? "open" : "closed" }`)
+    }
 
     let onSharedIdentityChange = (isShared: boolean) => {
         if (isShared && isShowingIdentityPrompt) {
@@ -88,15 +95,38 @@
     onRefreshGrid={onRefreshGrid}
     onSharedIdentity={onSharedIdentityChange}>
 {#if $gameContext}
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div id="bingoRenderingArea" class={layoutClass}>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div id="safeAreaTop" style="grid-column-start: 1; grid-column-end: 4; grid-row: 1; height: '14vh'; width: '100%';" on:click|self={drawingAreaClick}></div>
-    <div style:grid-column="1" style:grid-row="2" style:height="75vh" on:click|self={drawingAreaClick}>
-        <TabWidget
-            shown={isWidgetShown}
-            canModerate={$gameContext?.canModerate}
-            hasModNotifications={hasModNotifications}
-            onToggleGrid={() => onToggleGrid($gameContext)}
-            onToggleModerationPane={onToggleModerationPane} />
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div class="action-area"
+         class:moderationOpen={moderationDrawerOpen}
+         style:grid-column="1"
+         style:grid-row="2"
+         style:height="75vh"
+         on:click|self={drawingAreaClick}>
+        <div style:grid-column="2" style:grid-row="1">
+            <TabWidget
+                shown={isWidgetShown}
+                bind:moderationShown={moderationDrawerOpen}
+                canModerate={$gameContext.canModerate}
+                hasModNotifications={hasModNotifications}
+                onToggleGrid={() => onToggleGrid($gameContext)}
+                onToggleModerationPane={onToggleModerationPane} />
+        </div>
+        <div style:grid-column="1" style:grid-row="1">
+            {#if $gameContext.canModerate}
+                {#await import("./ModerationSection.svelte") then}
+                    <ModerationSection
+                        bind:open={moderationDrawerOpen}
+                        confirmationTimeout={confirmationTimeout}
+                        isStarted={$gameContext.isStarted}
+                    />
+                {/await}
+            {/if}
+        </div>
     </div>
     <div id="bingoGridArea"
         style:grid-column="2"
@@ -107,12 +137,12 @@
         style:overflow="hidden">
         {#if isShowingIdentityPrompt }
             <div class="identityPrompt">
-                    <div style="margin-bottom: '2rem'; margin-top: '1rem'">
+                    <div style:margin-bottom="2rem" style:margin-top="1rem">
                         {$LL.OverlayBingoGrid.IdentityPromptMessage()}
                     </div>
                     <div
                         class="bandeauPrompt bandeauPromptVisible"
-                        style="position: 'unset'"
+                        style:position="unset"
                         on:click={(_) => $gameContext.promptIdentity()}>
                         {$LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                     </div>

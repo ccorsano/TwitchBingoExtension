@@ -16,11 +16,6 @@
 
     let confirmationPrompt:boolean = false
 
-    // function renderTime(remainingTime)
-    // {
-    //     return FormatTimeout(remainingTime)
-    // }
-
     function handlePrompt(_:any) {
         if (!isShown)
         {
@@ -68,6 +63,7 @@
     let showTimer:boolean = false
     $: showTimer = countdown != null
     let duration = 0
+    let remainingTime = 0
     $:{
         if (showTimer)
         {
@@ -125,7 +121,9 @@
                         strokeWidth={12}
                         trailColor={"#F4A4BB"}
                         colors={"#EA4E7A"}
-                        let:remainingTime={remainingTime}
+                        onUpdate={ elapsedTime => {
+                            remainingTime = Math.ceil(duration - elapsedTime)
+                        }}
                     >
                         <span class="countdownText">
                             { FormatTimeout(remainingTime) }

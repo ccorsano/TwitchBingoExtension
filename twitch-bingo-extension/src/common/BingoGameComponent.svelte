@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { DefaultEntry, ParseTimespan, type BingoEntry, type BingoGame, type BingoGrid } from "../EBS/BingoService/EBSBingoTypes";
-    import { readable, writable, type Writable } from "svelte/store";
-    import { getContext, setContext } from "svelte";
+    import { DefaultEntry, ParseTimespan, type BingoConfirmationNotification, type BingoEntry, type BingoGame, type BingoGrid } from "../EBS/BingoService/EBSBingoTypes";
+    import { type Writable } from "svelte/store";
+    import { getContext, onMount } from "svelte";
     import { BingoEntryState, BingoPendingResult, type BingoGridCell } from "../model/BingoEntry";
-    import type { BingoConfiguration } from "../model/BingoConfiguration";
+    import { BingoBroadcastEventType, type BingoBroadcastEvent, type BingoConfiguration } from "../model/BingoConfiguration";
     import { BingoEBS } from "../EBS/BingoService/EBSBingoService";
     import { Twitch } from "../services/TwitchService";
     import { TwitchExtHelper } from "./TwitchExtension";
@@ -19,6 +19,7 @@
 
     const gameContext: Writable<BingoGameContext> = getContext(GameContextKey)
     const gridContext: Writable<BingoGridContext> = getContext(GridContextKey)
+    
 
     let isStarted:boolean = false
     let entries:BingoEntry[] = Array(0)
@@ -41,6 +42,9 @@
             gc.canVote = gc.canVote
             gc.isAuthorized = isAuthorized
             gc.hasSharedIdentity = hasSharedIdentity
+            gc.requestRefresh = (id: string) => {
+                refreshGrid(id, null)
+            }
             return gc
         })
     })
@@ -52,8 +56,79 @@
     })
     gridContext.subscribe(context => onRefreshGrid(context.grid, context.grid.cells.map(c => getCell(c.row, c.col)[0])))
 
+    
+    function onConfirmationNotification(confirmation: BingoConfirmationNotification) {
+        // console.log(confirmation)
+        entries = entries.map(entry => {
+                if (entry.key === confirmation.key)
+                {
+                    return {
+                        key: confirmation.key,
+                        text: entry.text,
+                        confirmedAt: confirmation.confirmationTime,
+                        confirmedBy: confirmation.confirmedBy,
+                    }
+                }
+                return entry
+            })
+        pendingResults = pendingResults.filter(p => p.key != confirmation.key)
+    }
+    
+    function receiveBroadcast(_target: any, _contentType: any, messageStr: string) {
+        console.log(`Received broadcast: ${messageStr}`)
+        let message: BingoBroadcastEvent = JSON.parse(messageStr);
+        switch (message.type) {
+            case BingoBroadcastEventType.SetConfig:
+                let config: BingoConfiguration = message.payload
+                if (config.activeGame)
+                {
+                    gameContext.update(gc => {
+                        gc.game = config.activeGame
+                        return gc
+                    })
+                }
+                onLoadConfig(config)
+                break;
+            case BingoBroadcastEventType.Start:
+                onStart(message.payload);
+                break;
+            case BingoBroadcastEventType.Bingo:
+                if ($gameContext.game)
+                {
+                    refreshGrid($gameContext.game.gameId, null);
+                }
+                break;
+            case BingoBroadcastEventType.Stop:
+                pendingResults = new Array(0)
+                entries = new Array(0)
+                gameContext.update(gc => {
+                    gc.game = undefined
+                    return gc
+                })
+                console.log("Stopped game");
+                if (onStop)
+                {
+                    onStop()
+                }
+                break;
+            case BingoBroadcastEventType.Confirm:
+                onConfirmationNotification(message.payload)
+                break;
+            default:
+                break;
+        }
+    }
+
+    onMount(() => {
+        TwitchExtHelper.listen('broadcast', receiveBroadcast);
+        return () => {
+            TwitchExtHelper.unlisten('broadcast', receiveBroadcast)
+        }
+    })
+
+
     const onStart = (payload: BingoGame) => {
-        refreshGrid(payload, payload.entries)
+        refreshGrid(payload.gameId, payload.entries)
         gameContext.update(gc => {
             gc.isStarted = true
             gc.onTentative = onTentative
@@ -62,8 +137,8 @@
         isStarted = true
     }
 
-    const refreshGrid = (game: BingoGame, refreshEntries: BingoEntry[] | null) => {
-        if (! game)
+    const refreshGrid = (gameId: string, refreshEntries: BingoEntry[] | null) => {
+        if (! gameId)
         {
             console.error("No game provided to refreshGrid")
             return
@@ -73,7 +148,7 @@
             console.error("Unidentified user, aborting refresh")
             return
         }
-        BingoEBS.getGrid(game.gameId).then(grid => {
+        BingoEBS.getGrid(gameId).then(grid => {
             console.log(`Refreshing grid.`)
             if (refreshEntries)
             {
@@ -85,13 +160,13 @@
             console.error("Error loading grid from EBS: " + error);
         });
         // setGame(gameContext, game)
-        refreshGame(game)
+        refreshGame(gameId)
     }
 
-    const refreshGame = (game: BingoGame) => {
+    const refreshGame = (gameId: string) => {
         if ($gameContext.canModerate)
         {
-            BingoEBS.getGame(game.gameId).then(refreshedGame => {
+            BingoEBS.getGame(gameId).then(refreshedGame => {
                 console.log("Refreshed game for moderation")
                 setGame(gameContext, refreshedGame)
             }).catch(error => {
@@ -126,7 +201,7 @@
                     }
                 })
                 .catch(error => {
-                    console.log(`Error fetching game ${activeGameId}: ${error}`)
+                    console.log(`Error fetching game ${activeGameId}: ${JSON.stringify(error)}`)
                 })
         }
     }
@@ -180,7 +255,7 @@
         console.log(`onTentative, refreshing grid after timeout ${entries.length}`);
         
         pendingResults = pendingResults.filter(p => p.key != entry.key)
-        refreshGrid($gameContext.game!, null);
+        refreshGrid($gameContext.game!.gameId, null);
     }
     
     const onTentative = (entry: BingoEntry) => {  
@@ -204,6 +279,14 @@
             setGrid(gridContext, $gridContext.grid)
         }
     }
+
+    gameContext.update(gc => {
+        gc.promptIdentity = (): void => {
+            console.log("Prompting identity")
+            TwitchExtHelper.actions.requestIdShare()
+        }
+        return gc
+    })
 
     gridContext.update(gc => {
         gc.getCell = getCell

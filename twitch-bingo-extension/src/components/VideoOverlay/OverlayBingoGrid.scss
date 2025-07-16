@@ -91,11 +91,11 @@
 
 :global(.loadingGridBox) {
     background-color: whitesmoke;
-    width: '100%';
-    text-align: 'center';
-    padding-top: '1vw';
-    padding-bottom: '1vw';
-    border-radius: '0.25vw';
+    width: 100%;
+    text-align: center;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    border-radius: 0.25vw;
     opacity: 1.0;
-    transition: 'opacity 0.5s'
+    transition: opacity 0.5s;
 }
