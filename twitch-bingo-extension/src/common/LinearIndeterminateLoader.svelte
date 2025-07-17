@@ -3,7 +3,7 @@ export let style:string = ""
 </script>
 
 <style lang="scss">
-    @import './LinearIndeterminateLoader.scss'
+    @use './LinearIndeterminateLoader.scss'
 </style>
 
 <div class="linear-indeterminate-loader" style={style} ></div>

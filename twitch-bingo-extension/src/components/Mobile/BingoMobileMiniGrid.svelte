@@ -6,7 +6,6 @@
     export let cells: Array<BingoGridCell> = new Array(0)
     export let rows: number
     export let columns: number
-    export let canVote: boolean
     export let onSelectCell: (x: number, y: number) => void
     export let selectedKey: number | null = null
 

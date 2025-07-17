@@ -4,7 +4,6 @@
     import LL from "../i18n/i18n-svelte";
     import CountdownCircleTimer from "./CountdownCircleTimer.svelte";
 
-    export let gameId: string
     export let entry: BingoEntry
     export let onExpire: (entry: BingoEntry) => void | undefined
     export let onConfirm: (entry: BingoEntry) => void

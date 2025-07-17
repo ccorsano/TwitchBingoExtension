@@ -114,7 +114,6 @@
                     cells={minigridCells}
                     rows={$gameContext.game.rows}
                     columns={$gameContext.game.columns}
-                    canVote={$gameContext.canVote}
                     onSelectCell={(x,y) => onSelectFromGrid($gridContext, x, y)}
                     selectedKey={selectedCell}
                     />

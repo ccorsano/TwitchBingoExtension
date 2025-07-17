@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import basicSsl from '@vitejs/plugin-basic-ssl'
-import sveltePreprocess from 'svelte-preprocess';
 import { resolve } from 'path';
-import { svelteSVG } from "rollup-plugin-svelte-svg";
+// Note: this can go after moving to svelte >5.30.1
+import { svelteSVG } from 'rollup-plugin-svelte-svg';
 
 
 export default defineConfig({
@@ -17,6 +17,7 @@ export default defineConfig({
                 mobile: resolve(__dirname, 'mobile.html')
             }
         },
+        sourcemap: true,
         assetsDir: "."
     },
     server: {

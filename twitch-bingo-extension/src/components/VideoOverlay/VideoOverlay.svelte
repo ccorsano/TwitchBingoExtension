@@ -1,7 +1,7 @@
 <script lang="ts">
     import TabWidget from "./TabWidget.svelte";
     import type { BingoGameContext } from "../../common/BingoGameContext"
-    import { ParseTimespan, type BingoEntry, type BingoGame, type BingoGrid, type BingoTentativeNotification } from "../../EBS/BingoService/EBSBingoTypes";
+    import { ParseTimespan, type BingoGame, type BingoGrid, type BingoTentativeNotification } from "../../EBS/BingoService/EBSBingoTypes";
     import OverlayBingoGrid from "./OverlayBingoGrid.svelte";
     import LL from '../../i18n/i18n-svelte';
     import BingoGameComponent from "../../common/BingoGameComponent.svelte";
@@ -10,7 +10,6 @@
     import { createGameContext, GameContextKey } from "../../stores/game"
     import type { BingoGridContext } from "../../common/BingoGridContext";
     import { createGridContext, GridContextKey } from "../../stores/grid";
-    import ModerationSection from "./ModerationSection.svelte";
     import { TwitchExtHelper } from "../../common/TwitchExtension";
 
     let isCollapsed = true
@@ -142,16 +141,14 @@
                 bind:moderationShown={moderationDrawerOpen}
                 canModerate={$gameContext.canModerate}
                 hasModNotifications={hasModNotifications}
-                onToggleGrid={() => onToggleGrid($gameContext)}
-                onToggleModerationPane={onToggleModerationPane} />
+                onToggleGrid={() => onToggleGrid($gameContext)} />
         </div>
         <div style:grid-column="1" style:grid-row="1">
             {#if $gameContext.canModerate}
-                {#await import("./ModerationSection.svelte") then}
+                {#await import('./ModerationSection.svelte') then {default: ModerationSection }}
                     <ModerationSection
                         bind:open={moderationDrawerOpen}
                         confirmationTimeout={confirmationTimeout}
-                        isStarted={$gameContext.isStarted}
                         onReceiveTentative={onTentativeNotification}
                         onNotificationsEmpty={onNotificationsEmpty}
                     />

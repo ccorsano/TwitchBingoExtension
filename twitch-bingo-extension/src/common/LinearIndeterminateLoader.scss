@@ -1,6 +1,32 @@
 @use "./BingoTheme.scss";
-@use "spinthatshit/src/loaders";
+@use 'sass:color';
+
+$marker-color-light: color.scale(BingoTheme.$marker-color, $lightness: +75%);
 
 .linear-indeterminate-loader {
-    @include loaders.loader12($size: 0.5rem, $duration: 1s, $align: middle, $color: BingoTheme.$marker-color)
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: block;
+  margin:15px auto;
+  position: relative;
+  background: $marker-color-light;
+  box-shadow: -24px 0 $marker-color-light, 24px 0 $marker-color-light;
+  box-sizing: border-box;
+  animation: shadowPulse 2s linear infinite;
+}
+
+@keyframes shadowPulse {
+  33% {
+    background: $marker-color-light;
+    box-shadow: -24px 0 BingoTheme.$marker-color, 24px 0 $marker-color-light;
+  }
+  66% {
+    background: BingoTheme.$marker-color;
+    box-shadow: -24px 0 $marker-color-light, 24px 0 $marker-color-light;
+  }
+  100% {
+    background: $marker-color-light;
+    box-shadow: -24px 0 $marker-color-light, 24px 0 BingoTheme.$marker-color;
+  }
 }

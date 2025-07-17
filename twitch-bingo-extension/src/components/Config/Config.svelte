@@ -297,7 +297,6 @@ function onEntriesUpload(evt: Event): void
     <EntrySelectionView
         entries={entries}
         selectedEntries={selectedEntries}
-        onAddToSelection={onAddToSelection}
         onRemoveFromSelection={onRemoveFromSelection}
     />
     <GridConfigurationView

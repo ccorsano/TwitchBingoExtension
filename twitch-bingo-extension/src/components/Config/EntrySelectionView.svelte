@@ -8,7 +8,6 @@
 
     export let entries: BingoEditableEntry[]
     export let selectedEntries: number[]
-    export let onAddToSelection: (entry: BingoEditableEntry) => void
     export let onRemoveFromSelection: (entry: BingoEditableEntry) => void
 
     function onRemoveFromSelectionKey(key: number) {

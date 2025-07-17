@@ -10,7 +10,6 @@
     import { GameContextKey } from "../../stores/game";
 
     export let open:boolean = false
-    export let isStarted:boolean = false
     export let confirmationTimeout: number
     export let onNotificationsEmpty: (() => void) | undefined = undefined
     export let onReceiveTentative: ((tentative: BingoTentativeNotification) => void) | undefined = undefined

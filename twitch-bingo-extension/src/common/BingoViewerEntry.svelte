@@ -11,7 +11,6 @@
     export let isColCompleted: boolean
     export let onTentative: (entry: BingoEntry) => void
     export let countdown: Date | null = null
-    export let fontSize: string //TODO
     export let isShown: boolean
 
     let confirmationPrompt:boolean = false

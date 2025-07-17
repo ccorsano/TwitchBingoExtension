@@ -67,7 +67,7 @@
 </script>
 
 <style lang="scss">
-    @import "./OverlayBingoGrid.scss"
+    @use "./OverlayBingoGrid.scss"
 </style>
 
 {#if $gameContext.isStarted && $gridContext.grid}
@@ -89,7 +89,6 @@
                         isColCompleted={cell.isColCompleted}
                         isRowCompleted={cell.isRowCompleted}
                         onTentative={$gameContext.onTentative}
-                        fontSize="16px"
                         isShown={!isCollapsed}
                     />
                 </div>
@@ -102,7 +101,6 @@
                         isRowCompleted={cell.isRowCompleted}
                         countdown={cell.cell.timer}
                         onTentative={$gameContext.onTentative}
-                        fontSize={cell.fontSize}
                         isShown={!isCollapsed}
                     />
                 </div>
