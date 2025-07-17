@@ -7,7 +7,7 @@
 
 ## Description
 
-First release !
+Svelte rewrite: easier dev for me, lighter application to load.
 Please consider this as a minimum viable version of this extension, and check regularly for updates.
 Note: This extension is dependent on a extension service, which for this initial release is not scaled for a large viewing audience.
 
@@ -33,21 +33,21 @@ The extension will celebrate the most attentive viewers by posting messages on t
 ## Stack
 
 ### Twitch Extension
-- Webpack for bundling
-- React
+- Svelte 4
+- Vite
 - Typescript
 - typesafe-i18n
-- MaterialUI (trying to limit its use)
+- SMUI (for configuration screens)
 
 ### Extension Backend Service
-- .net 5
+- .net 7
 - asp.net core
 - Redis for storage
 
 ## How to run
 ### Prerequisite
-- node 18.x
-- .net 5 for the backend
+- node 22.x
+- .net 7 for the backend
 
 ### Configuration
 

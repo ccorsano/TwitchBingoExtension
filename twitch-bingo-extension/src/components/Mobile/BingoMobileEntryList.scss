@@ -1,7 +1,7 @@
 @use './MobileTheme.scss';
 @use "../../common/BingoTheme.scss";
 
-.bingoEntry {
+:global(.bingoEntry) {
     display: grid;
     grid-template-columns: auto 1fr;
     padding-top: 5px;
@@ -17,11 +17,11 @@
 
     display: grid;
 
-    > div {
+    :global(> div) {
         align-self: center;
     };
     transition: all 0.5s;
-    div.key {
+    :global(div.key) {
         border-radius: 36px;
         background-color: MobileTheme.$grid-fill-color;
         color: MobileTheme.$grid-text-inverted;
@@ -34,13 +34,13 @@
         margin-right: 12px;
         grid-column: 1;
     }
-    .timer {
+    :global(.timer) {
         height: 0px;
         width: 0px;
         opacity: 0;
         transition: all 0.5s;
     };
-    .text {
+    :global(.text) {
         text-overflow: ellipsis;
         grid-column-start: 2;
         grid-column-end: 4;
@@ -49,98 +49,98 @@
     cursor: pointer;
 }
 
-.idle {
+:global(.idle) {
     background: MobileTheme.$cell-fill-color-base;
 };
-.prompt {
+:global(.prompt) {
     background: MobileTheme.$cell-fill-color-base;
     border-color: MobileTheme.$list-missed-text;
 };
-.pending {
+:global(.pending) {
     background: MobileTheme.$list-pending-background;
     min-height: 50px !important;
 };
-.confirmed {
+:global(.confirmed) {
     background-color: MobileTheme.$cell-fill-color-base;
 
-    div.key {
+    :global(div.key) {
         background-color: BingoTheme.$marker-color;
     }
 
-    div.text {
+    :global(div.text) {
         color: MobileTheme.$grid-text-color;
     }
 };
-.confirmed.highlighted {
-    div.key {
+:global(.confirmed.highlighted) {
+    :global(div.key) {
         background-color: BingoTheme.$marker-color;
     }
-    div.text {
+    :global(div.text) {
         color: MobileTheme.$grid-text-color;
     }
 }
 
-.missed {
+:global(.missed) {
     background: MobileTheme.$list-missed-background;
     color: MobileTheme.$list-missed-text;
-    div.key {
+    :global(div.key) {
         background-color: MobileTheme.$list-missed-key;
     }
 };
 
-.missed.highlighted {
+:global(.missed.highlighted) {
     background: MobileTheme.$list-missed-background;
     color: MobileTheme.$list-missed-text;
 };
 
-.rejected {
+:global(.rejected) {
     background: MobileTheme.$list-missed-background;
     color: MobileTheme.$list-missed-text;
-    div.key {
+    :global(div.key) {
         background-color: MobileTheme.$list-missed-key;
     }
 };
 
-.rejected.highlighted {
+:global(.rejected.highlighted) {
     background: MobileTheme.$list-missed-background;
     color: MobileTheme.$list-missed-text;
 };
 
-.highlighted {
+:global(.highlighted) {
     height: unset;
     min-height: 36px;
-    div.key {
+    :global(div.key) {
         background-color: MobileTheme.$cell-fill-color-base;
         color: MobileTheme.$grid-fill-color;
         border: solid MobileTheme.$grid-fill-color thin;
     }
-    .timer {
+    :global(.timer) {
         height: unset;
         width: fit-content;
         opacity: 1;
         grid-column: 1;
     };
-    .text {
+    :global(.text) {
         text-overflow: unset;
         grid-column: 2;
     };
 };
 
-.prompting {
+:global(.prompting) {
     height: unset;
     min-height: 64px;
     overflow-y: hidden;
-    .confirm {
+    :global(.confirm) {
         border-top-right-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     };
-    .cancel {
+    :global(.cancel) {
         border-top-left-radius: 0.25rem;
         border-bottom-left-radius: 0.25rem;
     };
 }
 
-.bingoCell {
+:global(.bingoCell) {
     transition: opacity 0.3s;
     position: relative;
     z-index: 1;
@@ -148,7 +148,7 @@
     cursor: pointer;
 };
 
-.bingoCellPrompt {
+:global(.bingoCellPrompt) {
     transition: all 0.5s;
     height: 100%;
     background-color: MobileTheme.$grid-fill-color; // #fff3d6
@@ -169,23 +169,23 @@
     border-bottom-left-radius: 100%;
 };
 
-.bingoCellPromptVisible {
+:global(.bingoCellPromptVisible) {
     width: unset;
     opacity: 1.0;
     
-    :active {
+    :global(:active) {
         cursor: pointer;
         background-color: rgba(251,247,239,0.8); // #fbf7ef
         box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
     }
 };
 
-.bingoCellPromptHidden {
+:global(.bingoCellPromptHidden) {
     opacity: 0.0;
     right: -10rem;
 };
 
-.bingoCellTimer {
+:global(.bingoCellTimer) {
     transition: all 0.5s;
     height: 100%;
     background-color: MobileTheme.$grid-text-inverted; // #fff3d6
@@ -206,18 +206,18 @@
     border-bottom-left-radius: 100%;
 };
 
-.bingoCellTimerVisible {
+:global(.bingoCellTimerVisible) {
     width: unset;
     opacity: 1.0;
     
-    :active {
+    :global(:active) {
         cursor: pointer;
         background-color: rgba(251,247,239,0.8); // #fbf7ef
         box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
     }
 };
 
-.bingoCellTimerHidden {
+:global(.bingoCellTimerHidden) {
     opacity: 0.0;
     right: -10rem;
 };

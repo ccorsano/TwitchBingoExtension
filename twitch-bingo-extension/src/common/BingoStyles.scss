@@ -1,6 +1,6 @@
 @use './BingoTheme.scss';
 
-.paper {
+:global(.paper) {
     background: BingoTheme.$idle-base;
     height: 100%;
     border-radius: 0.25rem;
@@ -8,27 +8,53 @@
     text-align: center;
 };
 
-.idle {
+:global(.idle) {
     &:hover {
-        background: BingoTheme.$idle-hover;
+        background-color: BingoTheme.$idle-hover;
     }
 };
 
-.colConfirmed {
+:global(.pending) {
+    background-color: BingoTheme.$pending
+}
+
+:global(.confirmed) {
+    background-color: BingoTheme.$confirmed,
+}
+
+:global(.missed) {
+    background-color: BingoTheme.$missed;
+    color: '#666';
+}
+
+:global(.cancel) {
+    background-color: rgba(220,128,128,0.8);
+}
+
+:global(.confirm) {
+    background-color: rgba(128,220,128,0.8),
+}
+
+:global(.rejected) {
+    background: BingoTheme.$missed;
+    color: '#666';
+}
+
+:global(.colConfirmed) {
     border-left-style: solid;
     border-left-color: black;
     border-right-style: solid;
     border-right-color: black;
 };
 
-.rowConfirmed {
+:global(.rowConfirmed) {
     border-top-style: solid;
     border-top-color: black;
     border-bottom-style: solid;
     border-bottom-color: black;
 };
 
-.bandeauPrompt {
+:global(.bandeauPrompt) {
     transition: all 0.5s;
     width: 100%;
     background-color: rgba(234,78,122,0.8); // #fff3d6
@@ -42,7 +68,7 @@
     bottom: 1rem;
 };
 
-.bandeauPromptVisible {
+:global(.bandeauPromptVisible) {
     height: unset;
     opacity: 1.0;
     &:hover {
@@ -54,7 +80,7 @@
     }
 };
 
-.bandeauPromptHidden {
+:global(.bandeauPromptHidden) {
     opacity: 0.0;
     bottom: -1vh;
 };

@@ -1,17 +1,19 @@
+@use "../../common/BingoTheme.scss";
+
 @media screen and (max-width: 30em) {
-    #root
+    :global(#root)
     {
         display: none;
     }
 }
 
 @media screen and (min-width: 30em) {
-    #root {
+    :global(#root) {
         display: block;
     }
 }
 
-#root
+:global(#root)
 {
     width: 100%;
     height: 100%;
@@ -32,25 +34,30 @@
     grid-template-columns: 3rem 50% auto;
 }
 
-.bingoGrid
-{
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-flow: column;
-    column-gap: 1vh;
-    row-gap: 1vh;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-items: center;
-    max-height: 70vh;
-
-    &> div {
-        width: 100%;
-        height: 100%;
-    }
+:global(body) {
+    margin: 0;
 }
 
-body {
-    margin: 0;
+.action-area {
+    display: grid;
+    grid-template-rows: 14vh;
+    grid-template-columns: 0px 4rem;
+    z-index: 10;
+    transition: 0.5s ease-in 0s;
+}
+
+.action-area.moderationOpen {
+    grid-template-columns: 30vw 4rem;
+    transition: 0.5s ease-in 0s;
+}
+
+:global(.identityPrompt)
+{
+    background-color: getRGB(jasminePalette);
+    width: 100%;
+    text-align: center;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    border-radius: 0.25vw;
+    transition: opacity 0.5s;
 }

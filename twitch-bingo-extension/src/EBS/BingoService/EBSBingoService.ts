@@ -1,6 +1,6 @@
 import { EBSBase } from "../EBSBase";
 import * as EBSConfig from "../EBSConfig";
-import { BingoGame, BingoGameCreationParams, BingoGrid, BingoLogEntry, BingoTentative } from "./EBSBingoTypes";
+import type { BingoGame, BingoGameCreationParams, BingoGrid, BingoLogEntry, BingoTentative } from "./EBSBingoTypes";
 
 export class EBSBingoService extends EBSBase {
     constructor(){

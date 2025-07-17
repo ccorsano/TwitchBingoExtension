@@ -78,8 +78,14 @@ namespace TwitchBingoService.Services
             {
                 tasks.Add(Task.Run(async () =>
                 {
-                    var chatBot = await ConnectBot(channelId, CancellationToken.None);
-                    await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
+                    try
+                    {
+                        var chatBot = await ConnectBot(channelId, CancellationToken.None);
+                        await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
+                    } catch(Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to send chat message, channel {channelId}", channelId);
+                    }
                 }));
             }
             tasks.Add(_storage.WriteLog(game.gameId, new BingoLogEntry
@@ -483,14 +489,14 @@ namespace TwitchBingoService.Services
             }
 
             // Process completion notifications
-            var colComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
-            var rowComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
-            var gridComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedGrid && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var colCompleteIds = notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId));
+            var colComplete = Task.WhenAll(colCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var rowCompleteIds = notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId));
+            var rowComplete = Task.WhenAll(rowCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var gridCompleteIds = notifications.Where(n => n.type == NotificationType.CompletedGrid && !string.IsNullOrEmpty(n.playerId));
+            var gridComplete = Task.WhenAll(gridCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
 
-            _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colComplete), string.Join(',', rowComplete), string.Join(',', gridComplete));
+            _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colCompleteIds), string.Join(',', rowCompleteIds), string.Join(',', gridCompleteIds));
             tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
             {
                 type = "bingo",

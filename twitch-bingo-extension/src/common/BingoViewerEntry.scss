@@ -15,107 +15,107 @@
     margin: auto; // Keep item centered when hovering
 };
 
-.bingoGrid.c2.r2 .bingoCell {
+:global(.bingoGrid.c2.r2 .bingoCell) {
     font-size: 2.0vw;
 }
 
-.bingoGrid.c2.r3 .bingoCell {
+:global(.bingoGrid.c2.r3 .bingoCell) {
     font-size: 1.75vw;
 }
 
-.bingoGrid.c2.r4 .bingoCell {
+:global(.bingoGrid.c2.r4 .bingoCell) {
     font-size: 1.6vw;
 }
 
-.bingoGrid.c2.r5 .bingoCell {
+:global(.bingoGrid.c2.r5 .bingoCell) {
     font-size: 1.5vw;
 }
 
-.bingoGrid.c3.r2 .bingoCell {
+:global(.bingoGrid.c3.r2 .bingoCell) {
     font-size: 2.0vw;
 }
 
-.bingoGrid.c3.r3 .bingoCell {
+:global(.bingoGrid.c3.r3 .bingoCell) {
     font-size: 1.75vw;
 }
 
-.bingoGrid.c3.r4 .bingoCell {
+:global(.bingoGrid.c3.r4 .bingoCell) {
     font-size: 1.6vw;
 }
 
-.bingoGrid.c3.r5 .bingoCell {
+:global(.bingoGrid.c3.r5 .bingoCell) {
     font-size: 1.5vw;
 }
 
-.bingoGrid.c4.r2 .bingoCell {
+:global(.bingoGrid.c4.r2 .bingoCell) {
     font-size: 2.1vw;
 }
 
-.bingoGrid.c4.r3 .bingoCell {
+:global(.bingoGrid.c4.r3 .bingoCell) {
     font-size: 1.75vw;
 }
 
-.bingoGrid.c4.r4 .bingoCell {
+:global(.bingoGrid.c4.r4 .bingoCell) {
     font-size: 1.6vw;
 }
 
-.bingoGrid.c4.r5 .bingoEntryText {
+:global(.bingoGrid.c4.r5 .bingoEntryText) {
     font-size: 1.5vw;
 }
 
-.bingoGrid.c5.r2 .bingoEntryText {
+:global(.bingoGrid.c5.r2 .bingoEntryText) {
     font-size: 2vw;
 }
 
-.bingoGrid.c5.r3 .bingoEntryText {
+:global(.bingoGrid.c5.r3 .bingoEntryText) {
     font-size: 1.75vw;
 }
 
-.bingoGrid.c5.r4 .bingoEntryText {
+:global(.bingoGrid.c5.r4 .bingoEntryText) {
     font-size: 1.6vw;
 }
 
-.bingoGrid.c5.r5 .bingoEntryText {
+:global(.bingoGrid.c5.r5 .bingoEntryText) {
     font-size: 1.5vw;
 }
 
-.bingoGrid.c3.r5 .bingoEntryText {
+:global(.bingoGrid.c3.r5 .bingoEntryText) {
     font-size: 1.25vw;
 }
 
-.bingoGrid.c2 .bingoEntry {
+:global(.bingoGrid.c2 .bingoEntry) {
     width: map.get(OverlayConstants.$overlay-columns-width, 2) - 2vw;
 };
 
-.bingoGrid.c3 .bingoEntry {
+:global(.bingoGrid.c3 .bingoEntry) {
     width: map.get(OverlayConstants.$overlay-columns-width, 3) - 2vw;
 };
 
-.bingoGrid.c4 .bingoEntry {
+:global(.bingoGrid.c4 .bingoEntry) {
     width: map.get(OverlayConstants.$overlay-columns-width, 4) - 2vw;
 };
 
-.bingoGrid.c5 .bingoEntry {
+:global(.bingoGrid.c5 .bingoEntry) {
     width: map.get(OverlayConstants.$overlay-columns-width, 5) - 2vw;
 };
 
-.bingoGrid.r2 .bingoEntry {
+:global(.bingoGrid.r2 .bingoEntry) {
     height: map.get(OverlayConstants.$overlay-rows-height, 2);
 };
 
-.bingoGrid.r3 .bingoEntry {
+:global(.bingoGrid.r3 .bingoEntry) {
     height: map.get(OverlayConstants.$overlay-rows-height, 3);
 };
 
-.bingoGrid.r4 .bingoEntry {
+:global(.bingoGrid.r4 .bingoEntry) {
     height: map.get(OverlayConstants.$overlay-rows-height, 4);
 };
 
-.bingoGrid.r5 .bingoEntry {
+:global(.bingoGrid.r5 .bingoEntry) {
     height: map.get(OverlayConstants.$overlay-rows-height, 5);
 };
 
-.bingoCellPrompt {
+:global(.bingoCellPrompt) {
     transition: all 0.5s;
     width: 100%;
     color: #FFF;
@@ -130,23 +130,23 @@
     background-repeat: no-repeat;
 };
 
-.bingoGrid.c2 .bingoCellPrompt {
+:global(.bingoGrid.c2 .bingoCellPrompt) {
     background-size: map.get(OverlayConstants.$overlay-columns-width, 2);
 };
 
-.bingoGrid.c3 .bingoCellPrompt {
+:global(.bingoGrid.c3 .bingoCellPrompt) {
     background-size: map.get(OverlayConstants.$overlay-columns-width, 3);
 };
 
-.bingoGrid.c4 .bingoCellPrompt {
+:global(.bingoGrid.c4 .bingoCellPrompt) {
     background-size: math.div(map.get(OverlayConstants.$overlay-columns-width, 4), 1.5);
 };
 
-.bingoGrid.c5 .bingoCellPrompt {
+:global(.bingoGrid.c5 .bingoCellPrompt) {
     background-size: math.div(map.get(OverlayConstants.$overlay-columns-width, 5), 1.5);
 };
 
-.bingoCellPromptVisible {
+:global(.bingoCellPromptVisible) {
     height: unset;
     opacity: 1.0;
     bottom: 0px;
@@ -157,27 +157,27 @@
     }
 };
 
-.bingoCellPromptHidden {
+:global(.bingoCellPromptHidden) {
     opacity: 0.0;
 };
 
-.bingoGrid.c2 .bingoCellPromptHidden {
+:global(.bingoGrid.c2 .bingoCellPromptHidden) {
     bottom: math.div(map.get(OverlayConstants.$overlay-rows-height, 2),-2);
 };
 
-.bingoGrid.c3 .bingoCellPromptHidden {
+:global(.bingoGrid.c3 .bingoCellPromptHidden) {
     bottom: math.div(map.get(OverlayConstants.$overlay-rows-height, 3),-2);
 };
 
-.bingoGrid.c4 .bingoCellPromptHidden {
+:global(.bingoGrid.c4 .bingoCellPromptHidden) {
     bottom: math.div(map.get(OverlayConstants.$overlay-rows-height, 4),-2);
 };
 
-.bingoGrid.c5 .bingoCellPromptHidden {
+:global(.bingoGrid.c5 .bingoCellPromptHidden) {
     bottom: math.div(map.get(OverlayConstants.$overlay-rows-height, 5),-2);
 };
 
-.bingoCell {
+:global(.bingoCell) {
     transition: all 0.3s;
     position: relative;
     top: 0%;
@@ -188,7 +188,7 @@
     overflow: hidden;
 };
 
-.bingoCell.idle {
+:global(.bingoCell.idle) {
     &:hover {
         position: relative;
         top: -5%;
@@ -199,48 +199,48 @@
     }
 };
 
-.bingoEntryText {
+:global(.bingoEntryText) {
     padding-top: 2vh;
     padding-bottom: 2vh;
     margin: auto;
 }
 
-.hiddenCell {
+:global(.hiddenCell) {
     opacity: 0%;
     cursor: unset;
 };
 
-.visibleCell {
+:global(.visibleCell) {
     opacity: 100%;
     box-shadow: 0px 0px 0.4vw 0 rgb(0 0 0 / 50%);
 };
 
-.visibleCell.idle {
+:global(.visibleCell.idle) {
     &:hover {
         cursor: pointer;
     }
 };
 
-.visibleCell.prompt {
+:global(.visibleCell.prompt) {
     &:hover {
         cursor: pointer;
     }
 };
 
-.entryGridCell {
+:global(.entryGridCell) {
     position: relative;
     height: 100%;
     width: 100%;
     z-index: 0;
 };
 
-.bingoCellOverlay {
+:global(.bingoCellOverlay) {
     position: absolute;
     height: 100%;
     width: 100%;
 };
 
-.confirmed.bingoCellOverlay {
+:global(.confirmed.bingoCellOverlay) {
     background-image: url("/assets/Stamp.svg");
     opacity: 100%;
     background-repeat: no-repeat;
@@ -249,83 +249,83 @@
     background-size: 11vh;
 };
 
-.bingoCellOverlay.idle {
+:global(.bingoCellOverlay.idle) {
     &:hover {
         background: unset;
     }
 }
 
-.type0 .bingoCellOverlay {
+:global(.type0 .bingoCellOverlay) {
     background-position-x: 66%;
     background-position-y: 39%;
 }
 
-.type1 .bingoCellOverlay {
+:global(.type1 .bingoCellOverlay) {
     background-position-x: 42%;
     background-position-y: 62%;
 }
 
-.type2 .bingoCellOverlay {
+:global(.type2 .bingoCellOverlay) {
     background-position-x: 50%;
     background-position-y: 37%;
 }
 
-.type3 .bingoCellOverlay {
+:global(.type3 .bingoCellOverlay) {
     background-position-x: 40%;
     background-position-y: 35%;
 }
 
-.type4 .bingoCellOverlay {
+:global(.type4 .bingoCellOverlay) {
     background-position-x: 62%;
     background-position-y: 57%;
 }
 
-.type5 .bingoCellOverlay {
+:global(.type5 .bingoCellOverlay) {
     background-position-x: 55%;
     background-position-y: 50%;
 }
 
-.type6 .bingoCellOverlay {
+:global(.type6 .bingoCellOverlay) {
     background-position-x: 25%;
     background-position-y: 40%;
 }
 
-.type7 .bingoCellOverlay {
+:global(.type7 .bingoCellOverlay) {
     background-position-x: 47%;
     background-position-y: 58%;
 }
 
-.type8 .bingoCellOverlay {
+:global(.type8 .bingoCellOverlay) {
     background-position-x: 33%;
     background-position-y: 66%;
 }
 
-.type9 .bingoCellOverlay {
+:global(.type9 .bingoCellOverlay) {
     background-position-x: 42%;
     background-position-y: 42%;
 }
 
-.bingoCell.pending {
+:global(.bingoCell.pending) {
     background-color: #FFF;
 };
 
-.bingoCell.confirmed {
+:global(.bingoCell.confirmed) {
     background-color: #FFF;
 };
 
-.bingoCell.missed {
+:global(.bingoCell.missed) {
     opacity: 0.60;
     background-color: #FFF;
     color: #000;
 };
 
-.bingoCell.rejected {
+:global(.bingoCell.rejected) {
     opacity: 0.60;
     background-color: #FFF;
     color: #000;
 };
 
-.countdownPrompt {
+:global(.countdownPrompt) {
     cursor: unset;
     background: rgba(255,255,255,0.9);
     text-shadow: 0 0 2vh #FFF;
@@ -334,13 +334,13 @@
     height: 100%;
 }
 
-.countdownPrompt > div {
+:global(.countdownPrompt > div) {
     display: inline-grid;
     align-items: center;
     height: 100%;
 }
 
-.countdownText {
+:global(.countdownText) {
     color: #D81A4F;
     font-weight: bold;
 }

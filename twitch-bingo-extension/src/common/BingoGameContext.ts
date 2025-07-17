@@ -1,4 +1,4 @@
-import { BingoEntry, BingoGame } from "../EBS/BingoService/EBSBingoTypes";
+import type { BingoEntry, BingoGame } from "../EBS/BingoService/EBSBingoTypes";
 
 export type BingoGameContext = {
     isStarted: boolean,
@@ -7,6 +7,7 @@ export type BingoGameContext = {
     promptIdentity: () => void,
     game?: BingoGame;
     onTentative: (entry: BingoEntry) => void;
+    requestRefresh: (gameId: string) => void;
     canModerate: boolean;
     canVote: boolean;
 }
