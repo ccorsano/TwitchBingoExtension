@@ -171,6 +171,7 @@
                     <div style:margin-bottom="2rem" style:margin-top="1rem">
                         {$LL.OverlayBingoGrid.IdentityPromptMessage()}
                     </div>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div
                         class="bandeauPrompt bandeauPromptVisible"
                         style:position="unset"
@@ -184,8 +185,10 @@
             layoutClass={layoutClass}
         />
     </div>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div style:grid-column="3" style:grid-row="2" style:width="7rem" style:height="75vh" on:click={drawingAreaClick}>
     </div>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div id="safeAreaBottom" style:grid-column-start="1" style:grid-column-end="4" style:grid-row="3" style:height="9vh" style:width="100%" on:click={drawingAreaClick}></div>
 </div>
 {/if}

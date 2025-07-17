@@ -1,14 +1,14 @@
 <script lang="ts">
-import LinearProgress from "@smui/linear-progress"
-import List from "@smui/list"
-import dayjs from 'dayjs';
-import GameLogItem from "./GameLogItem.svelte";
-import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes"
+    import LinearProgress from "@smui/linear-progress"
+    import List from "@smui/list"
+    import dayjs from 'dayjs';
+    import GameLogItem from "./GameLogItem.svelte";
+    import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes"
+    import { onMount } from "svelte";
 
-export let entries: BingoEntry[]
-export let logEntries: BingoLogEntry[]
-export let isLoading: boolean
-
+    export let entries: BingoEntry[]
+    export let logEntries: BingoLogEntry[]
+    export let isLoading: boolean
 </script>
 
 <style lang="scss">

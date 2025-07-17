@@ -10,11 +10,6 @@
     export let onSelectCell: (x: number, y: number) => void
     export let selectedKey: number | null = null
 
-    function getCell(row: number, col: number)
-    {
-        return cells.find(c => c.row == row && c.col == col)
-    }
-
     const cellSizeWithMargin = 900 / Math.max(columns, rows)
     const cellWidthWithMargin = 900 / columns
     const cellSize = cellSizeWithMargin-10
@@ -23,8 +18,8 @@
     $: seedStr = `${columns}${rows}${cells.map(c => c.key).join('_')}`, [rows, columns]
     const rand = seededRand(seedStr)
 
-    function getEntryInfos(row: number, col: number) {
-        let cell = getCell(row, col)
+    function getEntryInfos(cells: BingoGridCell[], row: number, col: number, selectedKey: number | null) {
+        let cell = cells.find(c => c.row == row && c.col == col)
         if (!cell) {
             return null
         }
@@ -68,8 +63,8 @@
         }
     }
 
-    let entriesInfos
-    $: entriesInfos = [...Array(rows).keys()].map(row => [...Array(columns).keys()].map(col => getEntryInfos(row, col))).flat(1)
+    let entriesInfos: any
+    $: entriesInfos = [...Array(rows).keys()].map(row => [...Array(columns).keys()].map(col => getEntryInfos(cells, row, col, selectedKey))).flat(1)
 </script>
 
 <style lang="scss">

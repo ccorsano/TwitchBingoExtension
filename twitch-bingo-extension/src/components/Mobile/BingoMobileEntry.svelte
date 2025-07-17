@@ -19,9 +19,10 @@
     })
 
     let isPrompting = false
-    const isCurrentElementActive = isSelected && cell.state == BingoEntryState.Idle
+    let isCurrentElementActive:boolean = false
 
     $:{
+        isCurrentElementActive = isSelected && cell.state == BingoEntryState.Idle
         if (! isSelected && isPrompting)
         {
             isPrompting = false
@@ -51,9 +52,11 @@
     var showTimer: boolean = false
     $: showTimer = cell.timer != null
     var duration: number = 0
-    $: showTimer ? (cell.timer!.getTime() - Date.now()) / 1000 : 0
-    var classes: string[] = ["bingoEntry", bClass]
+    $: duration = showTimer ? (cell.timer!.getTime() - Date.now()) / 1000 : 0
+    var classes: string[]
+    var classesStr: string
     $:{
+        classes = ["bingoEntry", bClass]
         if (isSelected)
         {
             if (isPrompting)
@@ -66,6 +69,7 @@
             }
             classes.push("prompt")
         }
+        classesStr = classes.join(" ")
     }
     let remainingTime: number = duration
 
@@ -73,15 +77,23 @@
         isPrompting = false
         onConfirm(key)
     }
+
+    function onClickConfirm()
+    {
+        if (isPrompting)
+        {
+            confirmKey(cell.key)
+        }
+    }
 </script>
 
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div id={cellId} bind:this={rootElement}
-        class={classes.join(" ")}
-        on:click|capture={(_) => {
-            if (isCurrentElementActive)
+        class={classesStr}
+        on:click={(_) => {
+            if (isCurrentElementActive && cell.state == BingoEntryState.Idle)
             {
                 isPrompting = !isPrompting
             } else {
@@ -97,7 +109,7 @@
         class={"bingoCellPrompt"}
         class:bingoCellPromptVisible={isCurrentElementActive && isPrompting}
         class:bingoCellPromptHidden={!(isCurrentElementActive && isPrompting)}
-        on:click|capture={ isPrompting ? (_) => confirmKey(cell.key) : null} >
+        on:click|stopPropagation={onClickConfirm} >
         {$LL.Mobile.ConfirmButton()}
     </div>
     <div class={"bingoCellTimer"}

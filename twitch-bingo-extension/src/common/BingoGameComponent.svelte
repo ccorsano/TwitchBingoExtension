@@ -132,10 +132,13 @@
 
 
     const onStart = (payload: BingoGame) => {
+        pendingResults = []
+        entries = payload.entries
         refreshGrid(payload.gameId, payload.entries)
         gameContext.update(gc => {
             gc.isStarted = true
             gc.onTentative = onTentative
+            gc.game = payload
             return gc
         })
         isStarted = true

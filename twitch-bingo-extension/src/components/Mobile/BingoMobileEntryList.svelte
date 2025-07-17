@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import type { BingoGridCell } from "../../model/BingoEntry";
     import BingoMobileEntry from "./BingoMobileEntry.svelte";
 

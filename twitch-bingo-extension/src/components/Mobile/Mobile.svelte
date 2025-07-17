@@ -21,9 +21,10 @@
     
     let selectedCell: number | null = null
     let sortedEntries: BingoGridCell[] = new Array(0)
+    let minigridCells: BingoGridCell[] = new Array(0)
 
     function onSelectFromGrid(context: BingoGridContext, x: number, y: number) {
-        const [cell,entry] = context.getCell(y, x)
+        const [cell,entry] = $gridContext.getCell(y, x)
         if (!cell)
         {
             console.error(`Could not find cell from minigrid at row ${y}, column ${x}`)
@@ -40,7 +41,7 @@
     }
 
     function onSelectFromList(grid: BingoGrid, key: number) {
-        const cell = grid.cells.find(c => c.key == key)
+        const cell = $gridContext.grid.cells.find(c => c.key == key)
         if (!cell)
         {
             console.error(`Could not find cell from list for key ${key}`)
@@ -66,6 +67,7 @@
             const cellBMult = (cellB.state === BingoEntryState.Idle || cellB.state === BingoEntryState.Pending) ? pendingMultiplier : (cellB.state === BingoEntryState.Confirmed ? confirmedMultiplier : missedMultiplier)
             return (((cellA.row+1)*grid.cols  + cellA.col + 1) * cellAMult) - (((cellB.row + 1)*grid.cols  + cellB.col + 1) * cellBMult)
         })
+        minigridCells = cells.map(c => $gridContext.getCell(c.row, c.col)[0])
     }
 
     function onTentative(key: number) {
@@ -105,11 +107,11 @@
                     {$LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                 </div>
         </div>
-    {:else if $gameContext.isStarted && $gameContext.game && $gridContext.grid && sortedEntries}
+    {:else if $gameContext.isStarted && $gameContext.game && $gridContext.grid && minigridCells}
         <div style:display="grid" style:grid-template-rows="auto 1fr">
             <div style:grid-row={1} style:height="fit-content">
                 <BingoMobileMiniGrid
-                    cells={$gridContext.grid.cells.map(c => $gridContext.getCell(c.row, c.col)[0])}
+                    cells={minigridCells}
                     rows={$gameContext.game.rows}
                     columns={$gameContext.game.columns}
                     canVote={$gameContext.canVote}

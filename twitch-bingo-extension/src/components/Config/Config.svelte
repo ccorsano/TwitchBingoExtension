@@ -112,15 +112,15 @@ onMount(() => {
             refreshLog(activeGame!)
         }, 1000)
     }
-})
 
-onDestroy(() => {
-    Twitch.unlisten('broadcast', onReceiveUpdate)
-    Twitch.unlisten(whisperChannel, onReceiveUpdate)
+    return () => {
+        Twitch.unlisten('broadcast', onReceiveUpdate)
+        Twitch.unlisten(whisperChannel, onReceiveUpdate)
 
-    if (TwitchExtQuery.state == "testing")
-    {
-        clearInterval(timer)
+        if (TwitchExtQuery.state == "testing")
+        {
+            clearInterval(timer)
+        }
     }
 })
 
