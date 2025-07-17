@@ -1,7 +1,7 @@
 <script lang="ts">
     import { seededRand } from "../../common/ExtensionUtils";
     import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
-    const headerTitle = require("../../../assets/BingoHeaderMobile.svg")
+    import headerTitle from "../../../assets/BingoHeaderMobile.svg"
 
     export let cells: Array<BingoGridCell> = new Array(0)
     export let rows: number
@@ -68,7 +68,8 @@
         }
     }
 
-    const entriesInfos = [...Array(rows).keys()].map(row => [...Array(columns).keys()].map(col => getEntryInfos(row, col))).flat(1)
+    let entriesInfos
+    $: entriesInfos = [...Array(rows).keys()].map(row => [...Array(columns).keys()].map(col => getEntryInfos(row, col))).flat(1)
 </script>
 
 <style lang="scss">

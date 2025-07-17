@@ -100,9 +100,9 @@
         on:click|capture={ isPrompting ? (_) => confirmKey(cell.key) : null} >
         {$LL.Mobile.ConfirmButton()}
     </div>
-    <div class={"bingoCellTimer"}>
+    <div class={"bingoCellTimer"}
          class:bingoCellTimerVisible={showTimer && duration > 0}
-         class:bingoCellTimerHidden={!(showTimer && duration > 0)}
+         class:bingoCellTimerHidden={!(showTimer && duration > 0)}>
         <div style:display="inline-block">
             {#if showTimer && duration > 0}
                 <CountdownCircleTimer
