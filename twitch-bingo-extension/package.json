@@ -1,9 +1,9 @@
 {
   "name": "twitch-bingo-extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Customizable Live Bingo Twitch Extension",
   "type": "module",
-  "main": "src/Config.tsx",
+  "main": "src/Config.svelte",
   "author": "Miekyll",
   "license": "ISC",
   "scripts": {
