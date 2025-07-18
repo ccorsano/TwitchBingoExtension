@@ -32,12 +32,14 @@ const fr: Translation = {
 		StartGame: 'Démarrer',
 		LibraryEditor:{
 			Title: "Bibliothèque",
-			TitleSubHeader: "Chargez ou ajoutez toutes vos entrées de bingo ici.",
+			TitleSubHeader: "Chargez, collez ou ajoutez toutes vos entrées de bingo ici.",
 			MessageNoItems: "Aucune entrée dans le Bingo, ajoutez-en !",
 			UploadButtonLabel: "Charger une liste d'entrées",
 			UploadButtonTitle: "Remplacer les entrées en uploadant un fichier .txt",
 			AddEntryButtonLabel: "Ajouter une entrée",
 			AddEntryButtonTitle: "Ajouter une nouvelle entrée à la liste",
+			CopyEntriesToPasteboardLabel: "Copier les entrées",
+			CopyEntriesToPasteboardTitle: "Copier les entrées dans le presse-papier",
 		},
 		StatusCard: {
 			Title: "Status",

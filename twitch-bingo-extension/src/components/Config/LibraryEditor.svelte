@@ -21,8 +21,20 @@ let textInputRef:HTMLInputElement
 $: selectedSet = new Set(selectedEntries);
 $: selectedFlags = entries.map((_, i) => selectedSet.has(i));
 
-console.log("LibraryEditor")
+function onPaste(evt: ClipboardEvent)
+{
+    onEntriesUpload(evt)
+}
+
+async function onCopy()
+{
+    let entriesText = entries.map(e => e.text).join('\n')
+    await navigator.clipboard.writeText(entriesText)
+}
+
 </script>
+
+<svelte:window on:paste={onPaste} />
 
 <Card>
     <PrimaryAction>
@@ -44,6 +56,9 @@ console.log("LibraryEditor")
             on:change={onEntriesUpload} />
         <IconButton on:click={() => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
             <Icon class="material-icons">cloud_upload</Icon>
+        </IconButton>
+        <IconButton on:click={onCopy} aria-label={$LL.Config.LibraryEditor.CopyEntriesToPasteboardLabel()} title={$LL.Config.LibraryEditor.CopyEntriesToPasteboardTitle()}>
+            <Icon class="material-icons">content_copy</Icon>
         </IconButton>
         <IconButton on:click={onAdd} aria-label={$LL.Config.LibraryEditor.AddEntryButtonLabel()} title={$LL.Config.LibraryEditor.AddEntryButtonTitle()}>
             <Icon class="material-icons">library_add</Icon>

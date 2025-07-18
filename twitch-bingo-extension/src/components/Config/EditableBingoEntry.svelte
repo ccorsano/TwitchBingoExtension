@@ -103,7 +103,7 @@ function onClick() {
     <Text
         on:click={onSelectItem}
         on:dblclick={onClick} >
-        <PrimaryText>{value}</PrimaryText>
+        {value}
     </Text>
     <Meta>
         {#if !selected} 

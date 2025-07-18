@@ -43,18 +43,18 @@
         switch(state)
         {
             case BingoEntryState.Confirmed:
-                stateClass = "confirmed";
+                stateClass = "grid-confirmed";
                 countdown = null;
                 break;
             case BingoEntryState.Missed:
-                stateClass = "missed";
+                stateClass = "grid-missed";
                 countdown = null;
                 break;
             case BingoEntryState.Pending:
-                stateClass = "pending";
+                stateClass = "grid-pending";
                 break;
             case BingoEntryState.Rejected:
-                stateClass = "rejected";
+                stateClass = "grid-rejected";
                 countdown = null;
                 break;
             default:

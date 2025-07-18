@@ -109,7 +109,7 @@ type RootTranslation = {
 			 */
 			Title: string
 			/**
-			 * L​o​a​d​ ​o​r​ ​a​d​d​ ​a​l​l​ ​y​o​u​r​ ​b​i​n​g​o​ ​e​n​t​r​i​e​s​ ​h​e​r​e​.
+			 * L​o​a​d​,​ ​p​a​s​t​e​ ​o​r​ ​a​d​d​ ​a​l​l​ ​y​o​u​r​ ​b​i​n​g​o​ ​e​n​t​r​i​e​s​ ​h​e​r​e​.
 			 */
 			TitleSubHeader: string
 			/**
@@ -132,6 +132,14 @@ type RootTranslation = {
 			 * A​d​d​ ​a​ ​n​e​w​ ​e​n​t​r​y​ ​t​o​ ​t​h​e​ ​l​i​s​t
 			 */
 			AddEntryButtonTitle: string
+			/**
+			 * C​o​p​y​ ​e​n​t​r​i​e​s
+			 */
+			CopyEntriesToPasteboardLabel: string
+			/**
+			 * C​o​p​y​ ​e​n​t​r​i​e​s​ ​t​o​ ​c​l​i​p​b​o​a​r​d
+			 */
+			CopyEntriesToPasteboardTitle: string
 		}
 		StatusCard: {
 			/**
@@ -345,7 +353,7 @@ export type TranslationFunctions = {
 			 */
 			Title: () => LocalizedString
 			/**
-			 * Load or add all your bingo entries here.
+			 * Load, paste or add all your bingo entries here.
 			 */
 			TitleSubHeader: () => LocalizedString
 			/**
@@ -368,6 +376,14 @@ export type TranslationFunctions = {
 			 * Add a new entry to the list
 			 */
 			AddEntryButtonTitle: () => LocalizedString
+			/**
+			 * Copy entries
+			 */
+			CopyEntriesToPasteboardLabel: () => LocalizedString
+			/**
+			 * Copy entries to clipboard
+			 */
+			CopyEntriesToPasteboardTitle: () => LocalizedString
 		}
 		StatusCard: {
 			/**

@@ -78,12 +78,12 @@
             </svelte:fragment>
         </Alert>
         {/if}
-        <table>
+        <table style:width="100%">
             <tbody>
                 {#each [...Array(rows).keys()] as r}
                 <tr>
                     {#each [...Array(columns).keys()] as c}
-                    <td>
+                    <td style:width="auto">
                         <Paper className="paper" color={((r * columns + c) < selectedEntriesLength) ? "primary" : ""} elevation={3}>
                             <div style={"background-color: " + ((r * columns + c) < selectedEntriesLength) ? "primary.main" : "error.main"}>
                                 &nbsp;

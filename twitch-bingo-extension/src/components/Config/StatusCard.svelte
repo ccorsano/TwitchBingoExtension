@@ -1,19 +1,19 @@
 <script lang="ts">
-import Card, { Content, Actions } from "@smui/card"
-import Button, { Icon } from "@smui/button"
-import IconButton from "@smui/icon-button"
-import LinearProgress from '@smui/linear-progress'
-import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes";
-import GameLogView from "./GameLogView.svelte";
-import LL from "../../i18n/i18n-svelte";
+    import Card, { Content, Actions } from "@smui/card"
+    import Button, { Icon } from "@smui/button"
+    import IconButton from "@smui/icon-button"
+    import LinearProgress from '@smui/linear-progress'
+    import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes";
+    import GameLogView from "./GameLogView.svelte";
+    import LL from "../../i18n/i18n-svelte";
 
-export let isLoading: boolean
-export let isActive: boolean
-export let entries: BingoEntry[] | undefined
-export let logEntries: BingoLogEntry[]
-export let isLoadingLog: boolean
-export let onRefreshLog: () => void
-export let onStop: () => void
+    export let isLoading: boolean
+    export let isActive: boolean
+    export let entries: BingoEntry[] | undefined
+    export let logEntries: BingoLogEntry[]
+    export let isLoadingLog: boolean
+    export let onRefreshLog: () => void
+    export let onStop: (() => void) | undefined = undefined
 </script>
 
 <Card>
@@ -33,13 +33,6 @@ export let onStop: () => void
         {:else}
         <h2 class="mdc-typography--h5">{$LL.Config.StatusCard.StatusInactive()}</h2>
         {/if}
-    </Content>
-    <Actions>
-        {#if isActive}
-            <Button variant="unelevated" color="secondary" on:click={onStop}>{$LL.Config.StatusCard.StopButton()}</Button>
-        {/if}
-    </Actions>
-    <Content>
         {#if !isLoading && isActive}
         <h2 class="mdc-typography--h5">
             {$LL.Config.GameLog.Header()}
@@ -53,4 +46,9 @@ export let onStop: () => void
             logEntries={logEntries} />
         {/if}
     </Content>
+    <Actions>
+        {#if isActive && onStop}
+            <Button variant="unelevated" color="secondary" on:click={onStop}>{$LL.Config.StatusCard.StopButton()}</Button>
+        {/if}
+    </Actions>
 </Card>

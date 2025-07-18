@@ -47,7 +47,7 @@
  :global(.drawer-container) {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    overflow-y: scroll;
     border-bottom-right-radius: 0.25rem;
     height: 75vh;
 

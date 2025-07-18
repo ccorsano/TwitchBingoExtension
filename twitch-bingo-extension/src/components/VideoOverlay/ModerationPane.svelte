@@ -20,7 +20,7 @@
 </script>
 
 <div>
-    <div style:overflow-y="scroll">
+    <div>
         {#if game}
         <ModerationBingoComponent
             entries={entries ?? Array(0)}

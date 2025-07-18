@@ -47,6 +47,9 @@
             }
             return gc
         })
+        if (hasSharedIdentity) {
+            loadConfig(Twitch.configuration)
+        }
     })
 
     let pendingResults:BingoPendingResult[] = new Array(0)
@@ -150,7 +153,7 @@
             console.error("No game provided to refreshGrid")
             return
         }
-        if (! isAuthorized)
+        if (! hasSharedIdentity)
         {
             console.error("Unidentified user, aborting refresh")
             return
@@ -195,7 +198,7 @@
 
     let onLoadConfig = (configContent: BingoConfiguration) => {
         const activeGameId:string = configContent.activeGameId ?? configContent.activeGame?.gameId ?? ""
-        if ($gameContext.game?.gameId !== activeGameId)
+        if ($gameContext.game?.gameId !== activeGameId && $gameContext.hasSharedIdentity)
         {
             BingoEBS.getGame(activeGameId)
                 .then(game => {

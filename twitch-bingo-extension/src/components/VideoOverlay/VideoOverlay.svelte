@@ -75,7 +75,6 @@
         }
         isShowingIdentityPrompt = false
         isCollapsed = !isCollapsed
-        console.log(isCollapsed ? "collapsed" : "not collapsed")
     }
 
     function onToggleModerationPane() {
