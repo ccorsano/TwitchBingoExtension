@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormatTimeout, type BingoEntry } from "../EBS/BingoService/EBSBingoTypes";
+    import { FormatTimeout, type BingoEntry, type BingoTentative } from "../EBS/BingoService/EBSBingoTypes";
     import { BingoEntryState } from "../model/BingoEntry";
     import LL from "../i18n/i18n-svelte";
     import CountdownCircleTimer from "./CountdownCircleTimer.svelte";
@@ -9,11 +9,12 @@
     export let state: BingoEntryState
     export let isRowCompleted: boolean
     export let isColCompleted: boolean
-    export let onTentative: (entry: BingoEntry) => void
+    export let onTentative: (entry: BingoEntry) => Promise<BingoTentative>
     export let countdown: Date | null = null
     export let isShown: boolean
 
     let confirmationPrompt:boolean = false
+    let tentative: Promise<BingoTentative> | null = null
 
     function handlePrompt(_:any) {
         if (!isShown)
@@ -22,13 +23,21 @@
         }
         if (confirmationPrompt || state == BingoEntryState.Idle)
         {
-            confirmationPrompt = ! confirmationPrompt
+            confirmationPrompt = !confirmationPrompt
         }
     }
 
     function handleTentative(_:any) {
-        onTentative(config)
         confirmationPrompt = false
+        if (! tentative)
+        {
+            tentative = onTentative(config)
+            tentative
+            .catch((error) => console.error(`Error on tentative: ${error}`))
+            .finally(() => {
+                tentative = null
+            })
+        }
     }
 
     function isOfType(t: number)
@@ -36,10 +45,13 @@
         return config.key % 10 == t;
     }
 
-    let entryVariantType = `type${config.key % 10}`
-    let stateClass = confirmationPrompt ? "prompt" : "idle";
+    let stateClass = "idle"
 
     $:{
+        if (confirmationPrompt)
+        {
+            stateClass = "prompt"
+        }
         switch(state)
         {
             case BingoEntryState.Confirmed:
@@ -110,7 +122,7 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
             class="bingoCellPrompt" class:bingoCellPromptVisible={confirmationPrompt} class:bingoCellPromptHidden={!confirmationPrompt}
-            on:click={(isShown && confirmationPrompt) ? handleTentative : null} >
+            on:click|stopPropagation={(isShown && confirmationPrompt) ? handleTentative : null} >
             {$LL.BingoViewerEntry.ConfirmButtonLabel()}
         </div>
         {#if showTimer}

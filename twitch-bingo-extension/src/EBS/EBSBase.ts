@@ -66,7 +66,7 @@ export class EBSBase {
     }
 
     // Generic method to call EBS REST APIs
-    serviceFetch = async <T>(path: string, init: RequestInit = null): Promise<T> => {
+    serviceFetch = async <T>(path: string, init: RequestInit | null = null): Promise<T> => {
         let [] = await this.configuredPromise;
 
         const opts: RequestInit = {

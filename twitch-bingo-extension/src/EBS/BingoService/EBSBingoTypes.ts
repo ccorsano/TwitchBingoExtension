@@ -34,7 +34,7 @@ export interface BingoGameCreationParams {
 export interface BingoTentative {
     entryKey: string;
     confirmed: boolean;
-    tentativeTime: Date;
+    tentativeTime: string; // ISO date
 }
 
 export interface BingoGridCell {

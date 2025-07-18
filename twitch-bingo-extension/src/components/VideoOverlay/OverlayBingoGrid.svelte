@@ -111,9 +111,9 @@
 </div>
 {:else}
 <div class="loadingGridBox" class:collapsed={isCollapsed}>
-        <LinearIndeterminateLoader style="margin-bottom: 1rem; margin-top: 1rem" />
-        <div style="margin-top: 2rem">
-            {$LL.OverlayBingoGrid.WaitingMessage()}
-        </div>
+    <LinearIndeterminateLoader style="margin-bottom: 1rem; margin-top: 1rem" />
+    <div style="margin-top: 2rem">
+        {$LL.OverlayBingoGrid.WaitingMessage()}
     </div>
+</div>
 {/if}

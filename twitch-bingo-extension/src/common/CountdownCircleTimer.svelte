@@ -43,6 +43,13 @@
         return start + goal * currentTime
     }
 
+    $:{
+        if (isPlaying && startTime === undefined)
+        {
+            startTime = Date.now()
+        }
+    }
+
     onMount(() => {
         const interval = setInterval(() => {
             if (isPlaying)
@@ -56,14 +63,17 @@
                 {
                     onUpdate(elapsedTime ?? 0.0)
                 }
-                if (elapsedTime >= duration && onComplete)
+                if (elapsedTime >= duration)
                 {
-                    onComplete(elapsedTime)
+                    if (onComplete)
+                    {
+                        onComplete(elapsedTime)
+                    }
                     elapsedTime = 0.0
                     isPlaying = false
                 }
             }
-        }, 250);
+        }, 100);
 
         return () => clearInterval(interval)
     })

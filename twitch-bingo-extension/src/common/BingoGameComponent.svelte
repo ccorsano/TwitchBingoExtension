@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { DefaultEntry, ParseTimespan, type BingoConfirmationNotification, type BingoEntry, type BingoGame, type BingoGrid } from "../EBS/BingoService/EBSBingoTypes";
+    import { DefaultEntry, ParseTimespan, type BingoConfirmationNotification, type BingoEntry, type BingoGame, type BingoGrid, type BingoTentative } from "../EBS/BingoService/EBSBingoTypes";
     import { type Writable } from "svelte/store";
     import { getContext, onMount } from "svelte";
     import { BingoEntryState, BingoPendingResult, type BingoGridCell } from "../model/BingoEntry";
@@ -26,6 +26,8 @@
     let canVote:boolean = false
     let isAuthorized:boolean = false
     let hasSharedIdentity = false;
+    let pendingResults:BingoPendingResult[] = new Array(0)
+
     
     Twitch.onAuthorized.push((context) => {
         isAuthorized = true;
@@ -52,8 +54,6 @@
         }
     })
 
-    let pendingResults:BingoPendingResult[] = new Array(0)
-
     gameContext.subscribe(context => {
         if (context.game) onReceiveGame(context.game)
     })
@@ -61,7 +61,6 @@
 
     
     function onConfirmationNotification(confirmation: BingoConfirmationNotification) {
-        // console.log(confirmation)
         entries = entries.map(entry => {
                 if (entry.key === confirmation.key)
                 {
@@ -74,11 +73,32 @@
                 }
                 return entry
             })
-        pendingResults = pendingResults.filter(p => p.key != confirmation.key)
+        pendingResults = removePendingResult(confirmation.key)
         if ($gameContext.game)
         {
             refreshGrid($gameContext.game.gameId, entries)
         }
+    }
+
+    function clearPendingResults()
+    {
+        pendingResults.forEach(element => {
+            clearTimeout(element.expireTimeout)
+        });
+        pendingResults = []
+    }
+
+    function removePendingResult(key: number)
+    {
+        var deletedPendingResult = pendingResults.filter(p => p.key === key).at(0);
+
+        if (deletedPendingResult)
+        {
+            clearTimeout(deletedPendingResult.expireTimeout)
+            var pendingResultsRefreshed:BingoPendingResult[] = pendingResults.filter(p => p.key != key);
+            return pendingResultsRefreshed
+        }
+        return pendingResults
     }
     
     function receiveBroadcast(_target: any, _contentType: any, messageStr: string) {
@@ -106,11 +126,15 @@
                 }
                 break;
             case BingoBroadcastEventType.Stop:
-                pendingResults = new Array(0)
+                clearPendingResults()
                 entries = new Array(0)
                 gameContext.update(gc => {
+                    gc.isStarted = false
                     gc.game = undefined
                     return gc
+                })
+                gridContext.update(gc => {
+                    return gc;
                 })
                 console.log("Stopped game");
                 if (onStop)
@@ -135,7 +159,8 @@
 
 
     const onStart = (payload: BingoGame) => {
-        pendingResults = []
+        clearPendingResults()
+        console.log(JSON.stringify(payload))
         entries = payload.entries
         refreshGrid(payload.gameId, payload.entries)
         gameContext.update(gc => {
@@ -165,6 +190,14 @@
                 console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
                 entries = refreshEntries
             }
+            let clearedPendingResults = pendingResults
+            grid.cells.forEach(cell => {
+                if (cell.state != BingoEntryState.Pending)
+                {
+                    clearedPendingResults = removePendingResult(cell.key)
+                }
+            });
+            pendingResults = clearedPendingResults
             setGrid(gridContext, grid)
         }).catch(error => {
             console.error("Error loading grid from EBS: " + error);
@@ -224,7 +257,12 @@
             if (entryResult.length == 1)
             {
                 var entry = entryResult[0];
-                var pending: BingoPendingResult | undefined = pendingResults.find(p => p.key == cell.key);
+                var pending: BingoPendingResult | undefined = pendingResults.find(p => p.key === cell.key);
+                // A bit defensive: in case we still have a pendingResult on a confirmed entry
+                if (pending && entry.confirmedAt)
+                {
+                    pending = undefined
+                }
                 return [
                     {
                         row: row,
@@ -232,7 +270,7 @@
                         key: entry.key,
                         text: entry.text,
                         state: cell.state,
-                        timer: pending?.expireAt ?? null,
+                        timer: pending?.expiresAt ?? null,
                     },
                     entry
                 ];
@@ -263,30 +301,44 @@
     const onTentativeRefresh = (entry: BingoEntry) => {
         console.log(`onTentative, refreshing grid after timeout ${entries.length}`);
         
-        pendingResults = pendingResults.filter(p => p.key != entry.key)
+        pendingResults = removePendingResult(entry.key)
         refreshGrid($gameContext.game!.gameId, null);
     }
     
-    const onTentative = (entry: BingoEntry) => {  
-        if ($gameContext.game)
-        {
-            BingoEBS.tentative($gameContext.game.gameId, entry.key.toString());
-            var cellIndex = $gridContext.grid.cells.findIndex(c => c.key == entry.key);
-            $gridContext.grid.cells[cellIndex].state = BingoEntryState.Pending;
-            var pendingResultsRefreshed:BingoPendingResult[] = pendingResults.filter(p => p.key != entry.key);
+    const onTentative = (entry: BingoEntry):Promise<BingoTentative> => {
+        return new Promise((resolve, reject) => {
+            if ($gameContext.game)
+            {
+                return BingoEBS.tentative($gameContext.game.gameId, entry.key.toString())
+                .then(tentative => {
+                    console.log("Tentative submitted")
+                    if ($gameContext.game)
+                    {
+                        var cellIndex = $gridContext.grid.cells.findIndex(c => c.key == entry.key);
+                        $gridContext.grid.cells[cellIndex].state = BingoEntryState.Pending;
+                        var pendingResultsRefreshed:BingoPendingResult[] = removePendingResult(entry.key)
 
-            var confirmationTimeout = ParseTimespan($gameContext.game.confirmationThreshold) + 500
+                        var confirmationTimeout = ParseTimespan($gameContext.game.confirmationThreshold) + 500
+                        
+                        console.log(tentative.tentativeTime)
+                        let pendingResult = new BingoPendingResult(
+                                entry.key,
+                                new Date(new Date(tentative.tentativeTime).getTime() + confirmationTimeout),
+                                () => onTentativeRefresh(entry)
+                            )
+                        console.log(`Adding tentative refresh on entry ${entry.key} ${JSON.stringify(pendingResult)}`);
+                        pendingResultsRefreshed.push(pendingResult);
+                        pendingResults = pendingResultsRefreshed
+                        console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expiresAt} - ${entries.length}`);
 
-            pendingResultsRefreshed.push({
-                key: entry.key,
-                expireAt: new Date(Date.now() + confirmationTimeout),
-            });
-            pendingResults = pendingResultsRefreshed
-            setTimeout(() => onTentativeRefresh(entry), confirmationTimeout);
-            console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expireAt} - ${entries.length}`);
-
-            setGrid(gridContext, $gridContext.grid)
-        }
+                        setGrid(gridContext, $gridContext.grid)
+                    }
+                    return tentative
+                })
+                .catch((reason) => reject(reason));
+            }
+            reject("NoActiveGame")
+        })
     }
 
     gameContext.update(gc => {

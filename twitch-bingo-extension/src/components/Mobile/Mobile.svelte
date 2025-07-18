@@ -7,7 +7,7 @@
     import type { Writable } from "svelte/store";
     import { setContext } from "svelte";
     import { BingoEntryState, type BingoGridCell } from "../../model/BingoEntry";
-    import type { BingoGrid } from "../../EBS/BingoService/EBSBingoTypes";
+    import type { BingoGrid, BingoTentative } from "../../EBS/BingoService/EBSBingoTypes";
     import LL from '../../i18n/i18n-svelte';
     import LinearIndeterminateLoader from "../../common/LinearIndeterminateLoader.svelte";
     import BingoMobileMiniGrid from "./BingoMobileMiniGrid.svelte";
@@ -70,15 +70,20 @@
         minigridCells = cells.map(c => $gridContext.getCell(c.row, c.col)[0])
     }
 
-    function onTentative(key: number) {
-        if ($gameContext.game)
-        {
-            const entry = $gameContext.game.entries.find(e => e.key === key)
-            if (entry)
+    function onTentative(key: number):Promise<BingoTentative> {
+        return new Promise<BingoTentative>((resolve, reject)=> {
+            if ($gameContext.game)
             {
-                $gameContext.onTentative(entry)
+                const entry = $gameContext.game.entries.find(e => e.key === key)
+                if (entry)
+                {
+                    $gameContext.onTentative(entry)
+                    .then(tentative => resolve(tentative))
+                    .catch(err => reject(err))
+                }
             }
-        }
+            reject("NoActiveGame")
+        })
     }
 </script>
 

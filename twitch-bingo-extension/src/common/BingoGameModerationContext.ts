@@ -3,7 +3,6 @@ import type { BingoEntry, BingoTentativeNotification } from "../EBS/BingoService
 import type { BingoGameContext } from "./BingoGameContext"
 
 export type BingoGameModerationContext = {
-    // gameContext: Readable<BingoGameContext>;
     tentatives: BingoTentativeNotification[];
     onConfirm: (entry: BingoEntry) => void;
     onTentativeExpire: (entry: BingoEntry) => void;

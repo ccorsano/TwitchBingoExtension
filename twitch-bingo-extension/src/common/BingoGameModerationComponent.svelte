@@ -85,7 +85,6 @@
     }
 
     const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
-        console.log(`Confirmation ${confirmation.key}`)
         pendingConfirmations = [... pendingConfirmations, confirmation]
         $moderationContext.tentatives = $moderationContext.tentatives.map(tentative => {
                 if (tentative.gameId == confirmation.gameId && tentative.key == confirmation.key)
