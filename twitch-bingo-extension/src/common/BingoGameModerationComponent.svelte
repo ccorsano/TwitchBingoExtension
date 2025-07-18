@@ -31,16 +31,16 @@
             {
                 clearInterval(notificationInterval)
             }
-            var currentTime = dayjs.utc()
             const confirmationThreshold = ParseTimespan(context.game.confirmationThreshold)
             notificationInterval = setInterval(() => {
+                var currentTime = dayjs.utc()
                 var remaining = new Array<BingoConfirmationNotification>(0)
                 pendingConfirmations.forEach(confirmation => {
                     var confirmationTime = dayjs(confirmation.confirmationTime)
                     var expirationTime = confirmationTime.add(confirmationThreshold, 'ms')
+                    console.log(`${confirmationTime} ${expirationTime} ${currentTime}`)
                     if (currentTime > expirationTime)
                     {
-                        console.log(`Notifying confirmation ${confirmation.key}`)
                         BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
                     }
                     else
