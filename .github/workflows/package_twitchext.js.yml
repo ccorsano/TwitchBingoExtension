@@ -31,8 +31,6 @@ jobs:
       working-directory: ./twitch-bingo-extension
       run: |
         rm -rf node_modules
-        rm -f package-lock.json
-        npm i
         npm ci
         npm run build
     - name: Upload Twitch Extension Package
