@@ -1,6 +1,5 @@
 <script lang="ts">
     import Card, { Actions, Content } from '@smui/card';
-    import LayoutGrid, { Cell, InnerGrid } from '@smui/layout-grid'
     import Slider from '@smui/slider'
     import { onMount } from 'svelte';
     import Paper from '@smui/paper'
@@ -21,28 +20,16 @@
     export let isStarting: boolean
     export let canEnableChat: boolean
 
-    let editingColumns: number = 3
-    let editingRows: number = 3
-    let confirmationTimeout: number = 120
-
-    onMount(() => {
-        editingColumns = columns
-        editingRows = rows
-        confirmationTimeout = confirmationThresholdSeconds
-    })
+    let editingColumns: number = columns
+    let editingRows: number = rows
+    let confirmationTimeout: number = confirmationThresholdSeconds
 
     $: hasEnoughEntries = selectedEntriesLength >= rows * columns
     $: canStart = !isStarting && hasEnoughEntries
 
-    $: {
-        onColumnsChange(editingColumns)
-    }
-    $: {
-        onRowsChange(editingRows)
-    }
-    $: {
-        onConfirmationTimeoutChange(confirmationTimeout)
-    }
+    $: onColumnsChange(editingColumns)
+    $: onRowsChange(editingRows)
+    $: onConfirmationTimeoutChange(confirmationTimeout)
 </script>
 
 <Card>
@@ -95,17 +82,13 @@
                 {/each}
             </tbody>
         </table>
-        <span>
-            {$LL.Config.ConfirmationTime()}: {FormatTimeout(confirmationTimeout)}
-        </span>
+        <span>{$LL.Config.ConfirmationTime()}: {FormatTimeout(confirmationThresholdSeconds)}</span>
         <Slider
-            defaultValue={120}
+            defaultValue={confirmationThresholdSeconds}
             step={10}
             min={30}
-            tickmMarks
+            tickMarks
             max={300}
-            valueLabelDisplay="auto"
-            valueLabelFormat={FormatTimeout(confirmationTimeout)}
             bind:value={confirmationTimeout}
         />
         <div>

@@ -102,7 +102,6 @@
     }
     
     function receiveBroadcast(_target: any, _contentType: any, messageStr: string) {
-        console.log(`Received broadcast: ${messageStr}`)
         let message: BingoBroadcastEvent = JSON.parse(messageStr);
         switch (message.type) {
             case BingoBroadcastEventType.SetConfig:
@@ -160,12 +159,12 @@
 
     const onStart = (payload: BingoGame) => {
         clearPendingResults()
-        console.log(JSON.stringify(payload))
         entries = payload.entries
         refreshGrid(payload.gameId, payload.entries)
         gameContext.update(gc => {
             gc.isStarted = true
             gc.onTentative = onTentative
+            gc.onConfirmation = onConfirmationNotification
             gc.game = payload
             return gc
         })
@@ -184,10 +183,8 @@
             return
         }
         BingoEBS.getGrid(gameId).then(grid => {
-            console.log(`Refreshing grid.`)
             if (refreshEntries)
             {
-                console.log(`Refreshing entries: ${JSON.stringify(refreshEntries)}`)
                 entries = refreshEntries
             }
             let clearedPendingResults = pendingResults
@@ -299,8 +296,6 @@
     }
 
     const onTentativeRefresh = (entry: BingoEntry) => {
-        console.log(`onTentative, refreshing grid after timeout ${entries.length}`);
-        
         pendingResults = removePendingResult(entry.key)
         refreshGrid($gameContext.game!.gameId, null);
     }
@@ -311,7 +306,6 @@
             {
                 return BingoEBS.tentative($gameContext.game.gameId, entry.key.toString())
                 .then(tentative => {
-                    console.log("Tentative submitted")
                     if ($gameContext.game)
                     {
                         var cellIndex = $gridContext.grid.cells.findIndex(c => c.key == entry.key);
@@ -320,16 +314,15 @@
 
                         var confirmationTimeout = ParseTimespan($gameContext.game.confirmationThreshold) + 500
                         
-                        console.log(tentative.tentativeTime)
                         let pendingResult = new BingoPendingResult(
                                 entry.key,
                                 new Date(new Date(tentative.tentativeTime).getTime() + confirmationTimeout),
                                 () => onTentativeRefresh(entry)
                             )
-                        console.log(`Adding tentative refresh on entry ${entry.key} ${JSON.stringify(pendingResult)}`);
+                        // console.log(`Adding tentative refresh on entry ${entry.key} ${JSON.stringify(pendingResult)}`);
                         pendingResultsRefreshed.push(pendingResult);
                         pendingResults = pendingResultsRefreshed
-                        console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expiresAt} - ${entries.length}`);
+                        // console.log(`onTentative, updated cell state, set countdown to ${pendingResultsRefreshed[pendingResultsRefreshed.length - 1].expiresAt} - ${entries.length}`);
 
                         setGrid(gridContext, $gridContext.grid)
                     }
@@ -343,7 +336,6 @@
 
     gameContext.update(gc => {
         gc.promptIdentity = (): void => {
-            console.log("Prompting identity")
             TwitchExtHelper.actions.requestIdShare()
         }
         return gc

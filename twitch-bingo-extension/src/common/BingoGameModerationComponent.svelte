@@ -38,7 +38,6 @@
                 pendingConfirmations.forEach(confirmation => {
                     var confirmationTime = dayjs(confirmation.confirmationTime)
                     var expirationTime = confirmationTime.add(confirmationThreshold, 'ms')
-                    console.log(`${confirmationTime} ${expirationTime} ${currentTime}`)
                     if (currentTime > expirationTime)
                     {
                         BingoEBS.notify(confirmation.gameId, confirmation.key.toString())
@@ -64,6 +63,11 @@
     })
     
     const receiveTentative = (notification: BingoTentativeNotification) => {
+        if (pendingConfirmations.some(c => c.gameId === notification.gameId && c.key === notification.key))
+        {
+            return;
+        }
+
         const tryAddTentative = (currentTentatives: BingoTentativeNotification[]):BingoTentativeNotification[] => {
             // Skip if a tentative is already pending for this key
             if (currentTentatives.some(t => t.gameId == notification.gameId && t.key == notification.key)
@@ -84,20 +88,8 @@
 
     const receiveConfirmation = (confirmation: BingoConfirmationNotification) => {
         pendingConfirmations = [... pendingConfirmations, confirmation]
-        $moderationContext.tentatives = $moderationContext.tentatives.map(tentative => {
-                if (tentative.gameId == confirmation.gameId && tentative.key == confirmation.key)
-                {
-                    return {
-                        gameId: tentative.gameId,
-                        key: tentative.key,
-                        tentativeTime: tentative.tentativeTime,
-                        confirmationTime: confirmation.confirmationTime,
-                        confirmedBy: confirmation.confirmedBy
-                    }
-                }
-                return tentative
-            })
         $moderationContext.tentatives = $moderationContext.tentatives.filter(t => t.key != confirmation.key)
+        $gameContext.onConfirmation(confirmation)
     }
 
     const onReceiveWhisper = (_target: string, _contentType: string, messageStr: string) => {
@@ -116,7 +108,6 @@
                 break;
             case BingoBroadcastEventType.Confirm:
                 var confirm = message.payload as BingoConfirmationNotification
-                console.log(`Received notification of confirmation of key ${confirm.key} by ${confirm.confirmedBy}, game ${$gameContext.game?.gameId}`)
                 receiveConfirmation(confirm)
                 break;
             default:
@@ -155,7 +146,6 @@
 
     const onTentativeExpire = (notification: BingoEntry) =>
     {
-        console.log("Entry expired: " + notification.key + " Active tentatives: " + $moderationContext.tentatives.length)
         $moderationContext.tentatives = $moderationContext.tentatives.filter(t => t.key != notification.key)
     }
 

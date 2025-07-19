@@ -152,7 +152,6 @@
 
     function onAddToSelection(entry: BingoEditableEntry): void
     {
-        console.log('Adding to selection')
         if (! isSelected(entry))
         {
             selectedEntries = selectedEntries.concat(entry.key)
@@ -275,6 +274,7 @@
             {
                 parseEntriesText(entriesText)
             }
+            return
         }
         const target = evt.target as HTMLInputElement;
         var file = target.files![0];
