@@ -19,6 +19,8 @@ const fr: Translation = {
 	BingoModeration:{
 		ConfirmButtonLabel: "Confirmer",
 		ConfirmButton: "Confirmer",
+		ConfirmedLabel: "Confirmé",
+		ConfirmedByMessage: "Confirmé {confirmedAt} par {confirmedBy}",
 		NoEntriesMessage: "Aucune entrée configuré.",
 	},
 	Config:{

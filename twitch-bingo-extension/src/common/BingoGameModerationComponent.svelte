@@ -69,10 +69,8 @@
             if (currentTentatives.some(t => t.gameId == notification.gameId && t.key == notification.key)
                 || pendingConfirmations.some(t => t.gameId == notification.gameId && t.key == notification.key))
             {
-                console.log("Skipped adding tentative " + notification.gameId + " " + notification.key)
                 return currentTentatives
             }
-            console.log("Adding tentative " + notification.gameId + " " + notification.key + " to set of " + currentTentatives.length)
             return [...currentTentatives, notification]
         }
 

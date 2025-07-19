@@ -66,6 +66,16 @@ type RootTranslation = {
 		 */
 		ConfirmButton: string
 		/**
+		 * C​o​n​f​i​r​m​e​d
+		 */
+		ConfirmedLabel: string
+		/**
+		 * C​o​n​f​i​r​m​e​d​ ​{​c​o​n​f​i​r​m​e​d​A​t​}​ ​b​y​ ​{​c​o​n​f​i​r​m​e​d​B​y​}
+		 * @param {unknown} confirmedAt
+		 * @param {unknown} confirmedBy
+		 */
+		ConfirmedByMessage: RequiredParams<'confirmedAt' | 'confirmedBy'>
+		/**
 		 * N​o​ ​e​n​t​r​i​e​s​ ​c​o​n​f​i​g​u​r​e​d​.
 		 */
 		NoEntriesMessage: string
@@ -309,6 +319,14 @@ export type TranslationFunctions = {
 		 * Confirm
 		 */
 		ConfirmButton: () => LocalizedString
+		/**
+		 * Confirmed
+		 */
+		ConfirmedLabel: () => LocalizedString
+		/**
+		 * Confirmed {confirmedAt} by {confirmedBy}
+		 */
+		ConfirmedByMessage: (arg: { confirmedAt: unknown, confirmedBy: unknown }) => LocalizedString
 		/**
 		 * No entries configured.
 		 */
