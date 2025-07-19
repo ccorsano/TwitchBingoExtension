@@ -255,11 +255,6 @@
             {
                 var entry = entryResult[0];
                 var pending: BingoPendingResult | undefined = pendingResults.find(p => p.key === cell.key);
-                // A bit defensive: in case we still have a pendingResult on a confirmed entry
-                if (pending && entry.confirmedAt)
-                {
-                    pending = undefined
-                }
                 return [
                     {
                         row: row,
@@ -304,7 +299,7 @@
         return new Promise((resolve, reject) => {
             if ($gameContext.game)
             {
-                return BingoEBS.tentative($gameContext.game.gameId, entry.key.toString())
+                BingoEBS.tentative($gameContext.game.gameId, entry.key.toString())
                 .then(tentative => {
                     if ($gameContext.game)
                     {
@@ -326,11 +321,14 @@
 
                         setGrid(gridContext, $gridContext.grid)
                     }
-                    return tentative
+                    resolve(tentative)
                 })
                 .catch((reason) => reject(reason));
             }
-            reject("NoActiveGame")
+            else
+            {
+                reject("NoActiveGame")
+            }
         })
     }
 
