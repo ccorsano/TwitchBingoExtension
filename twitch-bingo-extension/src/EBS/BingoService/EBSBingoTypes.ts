@@ -108,6 +108,10 @@ export function ParseTimespan(timeSpan: string): number
 
 export function FormatTimeout(seconds: number): string
 {
+    if (seconds < 0)
+    {
+        return "00:00"
+    }
     const minutes = (Math.floor(seconds / 60))
     const minutesStr = minutes.toFixed(0).padStart(2, "0")
     const secondsStr = Math.floor(seconds - (minutes * 60)).toFixed(0).padStart(2, "0")
