@@ -33,7 +33,6 @@ function edit()
 
 function endEdit()
 {
-    console.log(editingValue)
     if (editingValue === "")
     {
         return
@@ -98,12 +97,11 @@ function onClick() {
         disabled={selected}
         title={selected ? $LL.Config.EditableBingoEntry.DeleteLabelCantRemove() : $LL.Config.EditableBingoEntry.DeleteLabel()}
         sizes="small"
-        class="material-icons">delete
-    </IconButton>
+        class="material-icons">delete</IconButton>
     <Text
         on:click={onSelectItem}
         on:dblclick={onClick} >
-        <PrimaryText>{value}</PrimaryText>
+        {value}
     </Text>
     <Meta>
         {#if !selected} 

@@ -75,13 +75,6 @@
         }
         isShowingIdentityPrompt = false
         isCollapsed = !isCollapsed
-        console.log(isCollapsed ? "collapsed" : "not collapsed")
-    }
-
-    function onToggleModerationPane() {
-        moderationDrawerOpen = !moderationDrawerOpen
-        isModDrawerAutoOpened = false
-        console.log(`Moderation pane ${moderationDrawerOpen ? "open" : "closed" }`)
     }
 
     function onSharedIdentityChange(isShared: boolean) {

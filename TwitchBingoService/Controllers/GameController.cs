@@ -43,7 +43,7 @@ namespace TwitchBingoService.Controllers
         public Task<BingoGame> GetGame(Guid gameId)
         {
             var channelClaim = User.Claims.First(c => c.Type == "channel_id");
-            return _gameService.GetGame(gameId);
+            return _gameService.GetGame(gameId, channelClaim.Value);
         }
 
         [HttpGet("{gameId}/grid")]

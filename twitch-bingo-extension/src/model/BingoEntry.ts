@@ -36,11 +36,13 @@ export enum BingoEntryState {
 }
 
 export class BingoPendingResult {
-    constructor(key: number, expireAt: Date) {
+    constructor(key: number, expiresAt: Date, onExpire:()=>void) {
         this.key = key
-        this.expireAt = expireAt
+        this.expiresAt = expiresAt
+        this.expireTimeout = setTimeout(onExpire, expiresAt.getTime() - Date.now());
     }
 
     public key: number;
-    public expireAt: Date;
+    public expiresAt: Date;
+    public expireTimeout: NodeJS.Timeout;
 }

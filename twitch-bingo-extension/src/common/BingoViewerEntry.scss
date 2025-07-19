@@ -240,7 +240,7 @@
     width: 100%;
 };
 
-:global(.confirmed.bingoCellOverlay) {
+:global(.grid-confirmed.bingoCellOverlay) {
     background-image: url("/assets/Stamp.svg");
     opacity: 100%;
     background-repeat: no-repeat;
@@ -305,21 +305,21 @@
     background-position-y: 42%;
 }
 
-:global(.bingoCell.pending) {
+:global(.bingoCell.grid-pending) {
     background-color: #FFF;
 };
 
-:global(.bingoCell.confirmed) {
+:global(.bingoCell.grid-confirmed) {
     background-color: #FFF;
 };
 
-:global(.bingoCell.missed) {
+:global(.bingoCell.grid-missed) {
     opacity: 0.60;
     background-color: #FFF;
     color: #000;
 };
 
-:global(.bingoCell.rejected) {
+:global(.bingoCell.grid-rejected) {
     opacity: 0.60;
     background-color: #FFF;
     color: #000;

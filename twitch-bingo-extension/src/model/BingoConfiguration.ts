@@ -1,6 +1,7 @@
 import type { BingoGame } from "../EBS/BingoService/EBSBingoTypes";
 import type { BingoEditableEntry } from "./BingoEntry";
 
+// Note: this type is also represented on the EBS, make sure changes are ported over there
 export type BingoConfiguration = {
     nextKey: number
     entries: BingoEditableEntry[]

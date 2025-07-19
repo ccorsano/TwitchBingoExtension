@@ -4,7 +4,6 @@
     import { setLocale } from './i18n/i18n-svelte'
     import { onMount } from "svelte";
     import { loadLocaleAsync } from "./i18n/i18n-util.async";
-    import LL from "./i18n/i18n-svelte"
 
     onMount(async () => {
         const currentLocale = GetCurrentLanguage()

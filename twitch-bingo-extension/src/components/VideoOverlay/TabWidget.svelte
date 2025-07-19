@@ -21,7 +21,11 @@ export let onToggleGrid: () => void
     {#if canModerate}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class:shown class:hidden={!shown} class:pending={hasModNotifications} class="tabWidget" on:click|capture={_ => moderationShown = !moderationShown }>
+        <div class:shown={shown || moderationShown}
+             class:hidden={!shown && !moderationShown}
+             class:pending={hasModNotifications}
+             class="tabWidget"
+             on:click|capture={_ => moderationShown = !moderationShown }>
             <span>⚔</span>
         </div>
     {/if}

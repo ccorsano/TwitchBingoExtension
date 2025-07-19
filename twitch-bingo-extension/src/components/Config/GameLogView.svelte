@@ -4,7 +4,6 @@
     import dayjs from 'dayjs';
     import GameLogItem from "./GameLogItem.svelte";
     import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes"
-    import { onMount } from "svelte";
 
     export let entries: BingoEntry[]
     export let logEntries: BingoLogEntry[]

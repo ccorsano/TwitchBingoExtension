@@ -31,7 +31,6 @@
             {#each tentatives as tentative}
             {#if tentative}
                 <TentativeNotificationComponent
-                    gameId={tentative.gameId}
                     entry={entries.find(e => e.key === tentative.key) ?? DefaultEntry}
                     isConfirmed={tentative.confirmationTime != undefined}
                     referenceTime={tentative.tentativeTime}

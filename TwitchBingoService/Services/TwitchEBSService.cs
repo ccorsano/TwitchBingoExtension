@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -191,5 +192,34 @@ namespace TwitchBingoService.Services
         {
             return (await _apiClient.GetUsersByIdAsync(new string[] { userId })).FirstOrDefault()?.DisplayName;
         }
+
+        public async Task<string> GetExtensionConfigurationBroadcasterSegment(string channelId)
+        {
+            var token = GetChatJWTToken(channelId);
+
+            var httpMessage = new HttpRequestMessage(HttpMethod.Get, $"https://api.twitch.tv/helix/extensions/configurations?extension_id={_options.ExtensionId}&segment=broadcaster&broadcaster_id={channelId}");
+            httpMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            httpMessage.Headers.Add("Client-Id", _options.ExtensionId);
+            var response = await _twitchExtensionClient.SendAsync(httpMessage);
+            response.EnsureSuccessStatusCode();
+            var configurationResponse = await response.Content.ReadFromJsonAsync<ExtensionSegmentResponse>();
+
+            return configurationResponse.data.FirstOrDefault()?.content;
+        }
+
+        public async Task SetExtensionConfigurationBroadcasterSegment(string channelId, string content)
+        {
+            var token = GetChatJWTToken(channelId);
+
+            var httpMessage = new HttpRequestMessage(HttpMethod.Put, $"https://api.twitch.tv/helix/extensions/configurations?extension_id={_options.ExtensionId}&segment=broadcaster&broadcaster_id={channelId}");
+            httpMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            httpMessage.Headers.Add("Client-Id", _options.ExtensionId);
+            var response = await _twitchExtensionClient.SendAsync(httpMessage);
+            response.EnsureSuccessStatusCode();
+        }
+
+        record ExtensionConfigSegment(string segment, string broadcaster_id, string content, string version);
+        record ExtensionSegmentResponse(ExtensionConfigSegment[] data);
+        record ExtensionSegmentUpdate(string extension_id, string segment, string broadcaster_id, string version, string content);
     }
 }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Troschuetz.Random.Generators;
@@ -130,11 +131,24 @@ namespace TwitchBingoService.Services
             }
         }
 
-        public async Task<BingoGame> GetGame(Guid gameId)
+        public async Task<BingoGame> GetGame(Guid gameId, string? channelId)
         {
             var game = await _storage.ReadGame(gameId);
             if (game == null)
             {
+                if (channelId != null)
+                {
+                    _logger.LogWarning("Non-existent game {gameId} detected on channel {channelId}, checking game on configuration", gameId, channelId);
+                    string configurationStr = await _ebsService.GetExtensionConfigurationBroadcasterSegment(channelId);
+                    BingoConfigurationSegment segment = JsonSerializer.Deserialize(configurationStr, ConfigurationSerializerContext.Default.BingoConfigurationSegment);
+                    if (segment.activeGame != null)
+                    {
+                        _logger.LogWarning("Resetting game on configuration for channel {channelId}", channelId);
+                        segment.activeGame = null;
+                        segment.activeGameId = null;
+                        await _ebsService.SetExtensionConfigurationBroadcasterSegment(channelId, JsonSerializer.Serialize(segment, ConfigurationSerializerContext.Default.BingoConfigurationSegment));
+                    }
+                }
                 throw new ArgumentOutOfRangeException("gameId");
             }
 
@@ -475,7 +489,7 @@ namespace TwitchBingoService.Services
             if (notifications.Any(n => n.type == NotificationType.Confirmation))
             {
 
-                tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+                tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new
                 {
                     type = "confirm",
                     payload = new
@@ -497,7 +511,7 @@ namespace TwitchBingoService.Services
             var gridComplete = Task.WhenAll(gridCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
 
             _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colCompleteIds), string.Join(',', rowCompleteIds), string.Join(',', gridCompleteIds));
-            tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+            tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new
             {
                 type = "bingo",
                 payload = new
