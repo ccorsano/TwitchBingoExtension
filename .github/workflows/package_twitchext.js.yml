@@ -30,7 +30,7 @@ jobs:
     - name: Package Extension
       working-directory: ./twitch-bingo-extension
       run: |
-        rm -rf node_modules && npm ci
+        rm -rf node_modules && npm i && npm ci
         npm run build
     - name: Upload Twitch Extension Package
       uses: actions/upload-artifact@v4
