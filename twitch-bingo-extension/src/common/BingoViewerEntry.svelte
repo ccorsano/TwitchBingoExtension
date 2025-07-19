@@ -56,35 +56,24 @@
         {
             case BingoEntryState.Confirmed:
                 stateClass = "grid-confirmed";
-                countdown = null;
                 break;
             case BingoEntryState.Missed:
                 stateClass = "grid-missed";
-                countdown = null;
                 break;
             case BingoEntryState.Pending:
                 stateClass = "grid-pending";
                 break;
             case BingoEntryState.Rejected:
                 stateClass = "grid-rejected";
-                countdown = null;
                 break;
             default:
                 break;
         }
     }
 
-    let showTimer:boolean = false
-    $: showTimer = countdown != null
     let duration = 0
     let remainingTime = 0
-    $:{
-        if (showTimer)
-        {
-            duration = (countdown!.getTime() - Date.now()) / 1000
-            showTimer &&= duration > 0
-        }
-    }
+    $: duration = countdown !== null ? (countdown!.getTime() - Date.now()) / 1000 : 0
 </script>
 
 <style lang="scss">
@@ -125,7 +114,7 @@
             on:click|stopPropagation={(isShown && confirmationPrompt) ? handleTentative : null} >
             {$LL.BingoViewerEntry.ConfirmButtonLabel()}
         </div>
-        {#if showTimer}
+        {#if countdown !== null && duration > 0 && (state == BingoEntryState.Pending || state == BingoEntryState.Idle)}
             <div class="countdownPrompt bingoCellPrompt bingoCellPromptVisible">
                 <div style:font-size="16px">
                     <CountdownCircleTimer
