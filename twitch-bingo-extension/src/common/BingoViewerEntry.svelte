@@ -1,19 +1,33 @@
 <script lang="ts">
+    import { run, stopPropagation } from 'svelte/legacy';
+
     import { FormatTimeout, type BingoEntry, type BingoTentative } from "../EBS/BingoService/EBSBingoTypes";
     import { BingoEntryState } from "../model/BingoEntry";
     import LL from "../i18n/i18n-svelte";
     import CountdownCircleTimer from "./CountdownCircleTimer.svelte";
 
 
-    export let config: BingoEntry
-    export let state: BingoEntryState
-    export let isRowCompleted: boolean
-    export let isColCompleted: boolean
-    export let onTentative: (entry: BingoEntry) => Promise<BingoTentative>
-    export let countdown: Date | null = null
-    export let isShown: boolean
+    interface Props {
+        config: BingoEntry;
+        state: BingoEntryState;
+        isRowCompleted: boolean;
+        isColCompleted: boolean;
+        onTentative: (entry: BingoEntry) => Promise<BingoTentative>;
+        countdown?: Date | null;
+        isShown: boolean;
+    }
 
-    let confirmationPrompt:boolean = false
+    let {
+        config,
+        state,
+        isRowCompleted,
+        isColCompleted,
+        onTentative,
+        countdown = $bindable(null),
+        isShown
+    }: Props = $props();
+
+    let confirmationPrompt:boolean = $state(false)
     let tentative: Promise<BingoTentative> | null = null
 
     function handlePrompt(_:any) {
@@ -45,9 +59,9 @@
         return config.key % 10 == t;
     }
 
-    let stateClass = "idle"
+    let stateClass = $state("idle")
 
-    $:{
+    run(() => {
         if (confirmationPrompt)
         {
             stateClass = "prompt"
@@ -72,19 +86,21 @@
             default:
                 break;
         }
-    }
+    });
 
-    let showTimer:boolean = false
-    $: showTimer = countdown != null
-    let duration = 0
-    let remainingTime = 0
-    $:{
+    let showTimer:boolean = $state(false)
+    run(() => {
+        showTimer = countdown != null
+    });
+    let duration = $state(0)
+    let remainingTime = $state(0)
+    run(() => {
         if (showTimer)
         {
             duration = (countdown!.getTime() - Date.now()) / 1000
             showTimer &&= duration > 0
         }
-    }
+    });
 </script>
 
 <style lang="scss">
@@ -108,8 +124,8 @@
             class:hiddenCell={!isShown}
             class:colConfirmed={isColCompleted}
             class:rowConfirmed={isRowCompleted}
-            on:click={handlePrompt}
-            on:keypress={handlePrompt}>
+            onclick={handlePrompt}
+            onkeypress={handlePrompt}>
         <div class={"bingoCellOverlay " + stateClass}></div>
         <div class="bingoEntry">
             <div class="bingoEntryText" >
@@ -118,11 +134,11 @@
         </div>
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
             class="bingoCellPrompt" class:bingoCellPromptVisible={confirmationPrompt} class:bingoCellPromptHidden={!confirmationPrompt}
-            on:click|stopPropagation={(isShown && confirmationPrompt) ? handleTentative : null} >
+            onclick={stopPropagation((isShown && confirmationPrompt) ? handleTentative : null)} >
             {$LL.BingoViewerEntry.ConfirmButtonLabel()}
         </div>
         {#if showTimer}

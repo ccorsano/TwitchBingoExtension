@@ -1,15 +1,21 @@
 <script lang="ts">
     import Paper, { Content, Title } from '@smui/paper'
     
-    export let severity: string
+    interface Props {
+        severity: string;
+        title?: import('svelte').Snippet;
+        body?: import('svelte').Snippet;
+    }
+
+    let { severity, title, body }: Props = $props();
 </script>
 
 <Paper class={"alert alert-" + severity}>
     <Title class={"alert__title"}>
-        <slot name="title"></slot>
+        {@render title?.()}
     </Title>
     <Content class={"alert__content"}>
-        <slot name="body"></slot>
+        {@render body?.()}
     </Content>
 </Paper>
 

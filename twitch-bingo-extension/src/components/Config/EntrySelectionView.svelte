@@ -6,9 +6,13 @@
     import List, { Item, Text, Meta } from '@smui/list';
     import IconButton from '@smui/icon-button';
 
-    export let entries: BingoEditableEntry[]
-    export let selectedEntries: number[]
-    export let onRemoveFromSelection: (entry: BingoEditableEntry) => void
+    interface Props {
+        entries: BingoEditableEntry[];
+        selectedEntries: number[];
+        onRemoveFromSelection: (entry: BingoEditableEntry) => void;
+    }
+
+    let { entries, selectedEntries, onRemoveFromSelection }: Props = $props();
 
     function onRemoveFromSelectionKey(key: number) {
         const entry = getEntry(key)

@@ -5,9 +5,13 @@
     import GameLogItem from "./GameLogItem.svelte";
     import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoTypes"
 
-    export let entries: BingoEntry[]
-    export let logEntries: BingoLogEntry[]
-    export let isLoading: boolean
+    interface Props {
+        entries: BingoEntry[];
+        logEntries: BingoLogEntry[];
+        isLoading: boolean;
+    }
+
+    let { entries, logEntries, isLoading }: Props = $props();
 </script>
 
 <style lang="scss">

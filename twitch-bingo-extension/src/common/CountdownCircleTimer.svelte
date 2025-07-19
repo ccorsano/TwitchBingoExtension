@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { onMount } from "svelte";
 
     type OnComplete = {
@@ -10,16 +12,33 @@
         newInitialRemainingTime?: number
     }
 
-    export let size:number = 180
-    export let duration:number
-    export let colors: string
-    export let strokeWidth:number = 12
-    export let trailColor: string | undefined = undefined
-    export let trailStrokeWidth:number | undefined = undefined
-    export let isPlaying:boolean = false
-    export let rotation:string = "clockwise"
-    export let onComplete: ((totalElapsedTime: number) => OnComplete | void) | undefined  = undefined
-    export let onUpdate: ((remainingTime: number) => void) | undefined = undefined
+    interface Props {
+        size?: number;
+        duration: number;
+        colors: string;
+        strokeWidth?: number;
+        trailColor?: string | undefined;
+        trailStrokeWidth?: number | undefined;
+        isPlaying?: boolean;
+        rotation?: string;
+        onComplete?: ((totalElapsedTime: number) => OnComplete | void) | undefined;
+        onUpdate?: ((remainingTime: number) => void) | undefined;
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        size = 180,
+        duration,
+        colors,
+        strokeWidth = 12,
+        trailColor = undefined,
+        trailStrokeWidth = undefined,
+        isPlaying = $bindable(false),
+        rotation = "clockwise",
+        onComplete = undefined,
+        onUpdate = undefined,
+        children
+    }: Props = $props();
     
 
     const halfSize = size / 2
@@ -31,8 +50,8 @@
     const pathLength = 2 * Math.PI * arcRadius
     const path = `m ${halfSize},${halfStrokeWith} a ${arcRadius},${arcRadius} 0 ${rotationIndicator} 0,${arcDiameter} a ${arcRadius},${arcRadius} 0 ${rotationIndicator} 0,-${arcDiameter}`
 
-    let elapsedTime:number = 0.0
-    let startTime:number|undefined = undefined
+    let elapsedTime:number = $state(0.0)
+    let startTime:number|undefined = $state(undefined)
 
     function linearEase(time: number, start: number, goal: number, duration:number)
     {
@@ -43,12 +62,12 @@
         return start + goal * currentTime
     }
 
-    $:{
+    run(() => {
         if (isPlaying && startTime === undefined)
         {
             startTime = Date.now()
         }
-    }
+    });
 
     onMount(() => {
         const interval = setInterval(() => {
@@ -121,6 +140,6 @@
     />
     </svg>
     <div class="time-style" style:max-height={size}>
-        <slot/>
+        {@render children?.()}
     </div>
 </div>

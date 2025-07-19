@@ -4,14 +4,25 @@
     import LL from "../i18n/i18n-svelte";
     import CountdownCircleTimer from "./CountdownCircleTimer.svelte";
 
-    export let entry: BingoEntry
-    export let onExpire: (entry: BingoEntry) => void | undefined
-    export let onConfirm: (entry: BingoEntry) => void
-    export let referenceTime: Date
-    export let confirmationTimeout: number
-    export let isConfirmed: boolean
+    interface Props {
+        entry: BingoEntry;
+        onExpire: (entry: BingoEntry) => void | undefined;
+        onConfirm: (entry: BingoEntry) => void;
+        referenceTime: Date;
+        confirmationTimeout: number;
+        isConfirmed: boolean;
+    }
 
-    var remainingTime: number = confirmationTimeout / 1000
+    let {
+        entry,
+        onExpire,
+        onConfirm,
+        referenceTime = $bindable(),
+        confirmationTimeout,
+        isConfirmed = $bindable()
+    }: Props = $props();
+
+    var remainingTime: number = $state(confirmationTimeout / 1000)
     
     const handleConfirm = () => {
         onConfirm(entry)

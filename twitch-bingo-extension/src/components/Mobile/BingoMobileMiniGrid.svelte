@@ -1,20 +1,34 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { seededRand } from "../../common/ExtensionUtils";
     import { BingoEntryState, BingoGridCell } from "../../model/BingoEntry";
     import headerTitle from "../../../assets/BingoHeaderMobile.svg"
 
-    export let cells: Array<BingoGridCell> = new Array(0)
-    export let rows: number
-    export let columns: number
-    export let onSelectCell: (x: number, y: number) => void
-    export let selectedKey: number | null = null
+    interface Props {
+        cells?: Array<BingoGridCell>;
+        rows: number;
+        columns: number;
+        onSelectCell: (x: number, y: number) => void;
+        selectedKey?: number | null;
+    }
+
+    let {
+        cells = new Array(0),
+        rows,
+        columns,
+        onSelectCell,
+        selectedKey = null
+    }: Props = $props();
 
     const cellSizeWithMargin = 900 / Math.max(columns, rows)
     const cellWidthWithMargin = 900 / columns
     const cellSize = cellSizeWithMargin-10
     const height = cellSizeWithMargin * rows + 180
-    let seedStr: string = ""
-    $: seedStr = `${columns}${rows}${cells.map(c => c.key).join('_')}`, [rows, columns]
+    let seedStr: string = $state("")
+    run(() => {
+        seedStr = `${columns}${rows}${cells.map(c => c.key).join('_')}`, [rows, columns]
+    });
     const rand = seededRand(seedStr)
 
     function getEntryInfos(cells: BingoGridCell[], row: number, col: number, selectedKey: number | null) {
@@ -62,8 +76,8 @@
         }
     }
 
-    let entriesInfos: any
-    $: entriesInfos = [...Array(rows).keys()].map(row => [...Array(columns).keys()].map(col => getEntryInfos(cells, row, col, selectedKey))).flat(1)
+    let entriesInfos: any = $derived([...Array(rows).keys()].map(row => [...Array(columns).keys()].map(col => getEntryInfos(cells, row, col, selectedKey))).flat(1))
+    
 </script>
 
 <style lang="scss">
@@ -79,10 +93,10 @@
     <g transform="translate(50,155)">
         {#each entriesInfos as entryInfo}
             {#if entryInfo}
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <g class={entryInfo.classes.join(' ')} style="user-select: 'none';">
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <rect
                         class="background"
                         x={entryInfo.baseX}
@@ -91,7 +105,7 @@
                         height={cellSize}
                         rx={cellSize/5}
                         ry={cellSize/5}
-                        on:click|capture={(_) => onSelectCell(entryInfo.col, entryInfo.row)}
+                        onclickcapture={(_) => onSelectCell(entryInfo.col, entryInfo.row)}
                     />
                     <text x={entryInfo.baseX+cellSizeWithMargin/2} y={entryInfo.baseY+cellSizeWithMargin/2+cellSize/8} font-size={cellSize/2}>{entryInfo.text}</text>
                     {#if entryInfo.cell.state == BingoEntryState.Confirmed}
@@ -99,8 +113,8 @@
                                 cy={entryInfo.randY+entryInfo.baseY+cellSizeWithMargin/2}
                                 r={cellSize/2.25} />
                     {/if}
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <rect
                         x={entryInfo.baseX}
                         y={entryInfo.baseY}
@@ -108,7 +122,7 @@
                         width={cellSize}
                         height={cellSize}
                         fill="rgba(255,255,255,0.0)"
-                        on:click|capture={(_) => onSelectCell(entryInfo.col, entryInfo.row)}
+                        onclickcapture={(_) => onSelectCell(entryInfo.col, entryInfo.row)}
                     />
                 </g>
             {/if}

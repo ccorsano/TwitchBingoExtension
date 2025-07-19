@@ -7,13 +7,25 @@
     import GameLogView from "./GameLogView.svelte";
     import LL from "../../i18n/i18n-svelte";
 
-    export let isLoading: boolean
-    export let isActive: boolean
-    export let entries: BingoEntry[] | undefined
-    export let logEntries: BingoLogEntry[]
-    export let isLoadingLog: boolean
-    export let onRefreshLog: () => void
-    export let onStop: (() => void) | undefined = undefined
+    interface Props {
+        isLoading: boolean;
+        isActive: boolean;
+        entries: BingoEntry[] | undefined;
+        logEntries: BingoLogEntry[];
+        isLoadingLog: boolean;
+        onRefreshLog: () => void;
+        onStop?: (() => void) | undefined;
+    }
+
+    let {
+        isLoading,
+        isActive,
+        entries,
+        logEntries,
+        isLoadingLog,
+        onRefreshLog,
+        onStop = undefined
+    }: Props = $props();
 </script>
 
 <Card>

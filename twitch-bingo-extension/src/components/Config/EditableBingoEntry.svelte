@@ -7,17 +7,27 @@ import HelperText from '@smui/textfield/helper-text';
 import { onMount } from 'svelte';
 import IconButton from '@smui/icon-button';
 
-export let item: BingoEditableEntry
-export let selected: boolean
-export let onDelete: (entry: BingoEditableEntry) => void
-export let onChange: (entry: BingoEditableEntry) => void
-export let onSelect: (entry: BingoEditableEntry) => void
+    interface Props {
+        item: BingoEditableEntry;
+        selected: boolean;
+        onDelete: (entry: BingoEditableEntry) => void;
+        onChange: (entry: BingoEditableEntry) => void;
+        onSelect: (entry: BingoEditableEntry) => void;
+    }
 
-let isEditing = item.isNew
-let value = item.text
-let editingValue = item.isNew ? item.text : ""
+    let {
+        item,
+        selected,
+        onDelete,
+        onChange,
+        onSelect
+    }: Props = $props();
 
-let editField: Textfield
+let isEditing = $state(item.isNew)
+let value = $state(item.text)
+let editingValue = $state(item.isNew ? item.text : "")
+
+let editField: Textfield = $state()
 
 onMount(() => {
     if (item.isNew)
@@ -86,7 +96,9 @@ function onClick() {
         label={$LL.Config.EditableBingoEntry.TextFieldLabel()}
         bind:value={editingValue}
         on:keyup={onKeyUp}>
-        <HelperText slot="helper">{$LL.Config.EditableBingoEntry.TextFieldPlaceholder()}</HelperText>
+        {#snippet helper()}
+            <HelperText >{$LL.Config.EditableBingoEntry.TextFieldPlaceholder()}</HelperText>
+        {/snippet}
     </Textfield>
     <IconButton on:click={endEdit} sizes="small" class="material-icons">check</IconButton>
 </Item>

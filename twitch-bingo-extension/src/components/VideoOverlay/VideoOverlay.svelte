@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run, self } from 'svelte/legacy';
+
     import TabWidget from "./TabWidget.svelte";
     import type { BingoGameContext } from "../../common/BingoGameContext"
     import { ParseTimespan, type BingoGame, type BingoGrid, type BingoTentativeNotification } from "../../EBS/BingoService/EBSBingoTypes";
@@ -12,22 +14,24 @@
     import { createGridContext, GridContextKey } from "../../stores/grid";
     import { TwitchExtHelper } from "../../common/TwitchExtension";
 
-    let isCollapsed = true
-    let isShowingIdentityPrompt = false
-    let isWidgetShown = true
-    let hasModNotifications = false
-    let moderationDrawerOpen = false
+    let isCollapsed = $state(true)
+    let isShowingIdentityPrompt = $state(false)
+    let isWidgetShown = $state(true)
+    let hasModNotifications = $state(false)
+    let moderationDrawerOpen = $state(false)
     let isModDrawerAutoOpened = false
-    let confirmationTimeout:number = 0.0
+    let confirmationTimeout:number = $state(0.0)
 
     const gameContext:Writable<BingoGameContext> = createGameContext()
     setContext(GameContextKey, gameContext)
     const gridContext:Writable<BingoGridContext> = createGridContext()
     setContext(GridContextKey, gridContext)
 
-    $: confirmationTimeout = ParseTimespan($gameContext.game?.confirmationThreshold ?? "00:00:00")
+    run(() => {
+        confirmationTimeout = ParseTimespan($gameContext.game?.confirmationThreshold ?? "00:00:00")
+    });
     
-    let layoutClass = "wide"
+    let layoutClass = $state("wide")
 
     onMount(() => {
         TwitchExtHelper.onContext((context, _) => {
@@ -116,18 +120,18 @@
     onRefreshGrid={onRefreshGrid}
     onSharedIdentity={onSharedIdentityChange}>
 {#if $gameContext}
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div id="bingoRenderingArea" class={layoutClass}>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div id="safeAreaTop" style="grid-column-start: 1; grid-column-end: 4; grid-row: 1; height: '14vh'; width: '100%';" on:click|self={drawingAreaClick}></div>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div id="safeAreaTop" style="grid-column-start: 1; grid-column-end: 4; grid-row: 1; height: '14vh'; width: '100%';" onclick={self(drawingAreaClick)}></div>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div class="action-area"
          class:moderationOpen={moderationDrawerOpen}
          style:grid-column="1"
          style:grid-row="2"
          style:height="75vh"
-         on:click|self={drawingAreaClick}>
+         onclick={self(drawingAreaClick)}>
         <div style:grid-column="2" style:grid-row="1">
             <TabWidget
                 shown={isWidgetShown}
@@ -161,11 +165,11 @@
                     <div style:margin-bottom="2rem" style:margin-top="1rem">
                         {$LL.OverlayBingoGrid.IdentityPromptMessage()}
                     </div>
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <div
                         class="bandeauPrompt bandeauPromptVisible"
                         style:position="unset"
-                        on:click={(_) => $gameContext.promptIdentity()}>
+                        onclick={(_) => $gameContext.promptIdentity()}>
                         {$LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                     </div>
                 </div>
@@ -175,11 +179,11 @@
             layoutClass={layoutClass}
         />
     </div>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div style:grid-column="3" style:grid-row="2" style:width="7rem" style:height="75vh" on:click={drawingAreaClick}>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div style:grid-column="3" style:grid-row="2" style:width="7rem" style:height="75vh" onclick={drawingAreaClick}>
     </div>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div id="safeAreaBottom" style:grid-column-start="1" style:grid-column-end="4" style:grid-row="3" style:height="9vh" style:width="100%" on:click={drawingAreaClick}></div>
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div id="safeAreaBottom" style:grid-column-start="1" style:grid-column-end="4" style:grid-row="3" style:height="9vh" style:width="100%" onclick={drawingAreaClick}></div>
 </div>
 {/if}
 </BingoGameComponent>

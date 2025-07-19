@@ -10,12 +10,23 @@
     import LinearProgress from "@smui/linear-progress";
     import LL from "../i18n/i18n-svelte";
 
-    export let entries: BingoEntry[]
-    export let tentatives: BingoTentativeNotification[]
-    export let confirmationTimeout: number
-    export let onConfirm: (entry: BingoEntry) => void
-    export let onTentativeExpire: (entry: BingoEntry) => void
-    export let onTest: (entry: BingoEntry) => void | undefined
+    interface Props {
+        entries: BingoEntry[];
+        tentatives: BingoTentativeNotification[];
+        confirmationTimeout: number;
+        onConfirm: (entry: BingoEntry) => void;
+        onTentativeExpire: (entry: BingoEntry) => void;
+        onTest: (entry: BingoEntry) => void | undefined;
+    }
+
+    let {
+        entries,
+        tentatives,
+        confirmationTimeout,
+        onConfirm,
+        onTentativeExpire,
+        onTest
+    }: Props = $props();
 
     const moderationContext: Readable<BingoGameModerationContext> = getContext(GameModerationContextKey)
 

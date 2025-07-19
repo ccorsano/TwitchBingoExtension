@@ -8,18 +8,30 @@ import type { BingoEditableEntry } from '../../model/BingoEntry';
 import LL from '../../i18n/i18n-svelte';
 import EditableBingoEntry from './EditableBingoEntry.svelte'
 
-export let entries: BingoEditableEntry[]
-export let selectedEntries: number[]
-export let onAdd: () => void
-export let onDeleteEntry: (key: number) => void
-export let onChangeEntry: (key: number, changedEntry: BingoEditableEntry) => void
-export let onAddToSelection: (selectedEntry: BingoEditableEntry) => void
-export let onEntriesUpload: (evt: Event) => void
+    interface Props {
+        entries: BingoEditableEntry[];
+        selectedEntries: number[];
+        onAdd: () => void;
+        onDeleteEntry: (key: number) => void;
+        onChangeEntry: (key: number, changedEntry: BingoEditableEntry) => void;
+        onAddToSelection: (selectedEntry: BingoEditableEntry) => void;
+        onEntriesUpload: (evt: Event) => void;
+    }
 
-let textInputRef:HTMLInputElement
+    let {
+        entries,
+        selectedEntries,
+        onAdd,
+        onDeleteEntry,
+        onChangeEntry,
+        onAddToSelection,
+        onEntriesUpload
+    }: Props = $props();
 
-$: selectedSet = new Set(selectedEntries);
-$: selectedFlags = entries.map((_, i) => selectedSet.has(i));
+let textInputRef:HTMLInputElement = $state()
+
+let selectedSet = $derived(new Set(selectedEntries));
+let selectedFlags = $derived(entries.map((_, i) => selectedSet.has(i)));
 
 function onPaste(evt: ClipboardEvent)
 {
@@ -34,7 +46,7 @@ async function onCopy()
 
 </script>
 
-<svelte:window on:paste={onPaste} />
+<svelte:window onpaste={onPaste} />
 
 <Card>
     <PrimaryAction>
@@ -53,7 +65,7 @@ async function onCopy()
             type="file"
             style="display: 'none'"
             hidden
-            on:change={onEntriesUpload} />
+            onchange={onEntriesUpload} />
         <IconButton on:click={() => textInputRef.click()} aria-label={$LL.Config.LibraryEditor.UploadButtonLabel()} title={$LL.Config.LibraryEditor.UploadButtonTitle()}>
             <Icon class="material-icons">cloud_upload</Icon>
         </IconButton>

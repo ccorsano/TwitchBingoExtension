@@ -5,10 +5,19 @@ import type { BingoEntry, BingoLogEntry } from "../../EBS/BingoService/EBSBingoT
 import { NotificationType } from "../../EBS/BingoService/EBSBingoTypes"
 import LL from '../../i18n/i18n-svelte';
 
-export let index: number
-export let entry: BingoEntry | undefined
-export let log: BingoLogEntry
-export let parsedTime: Dayjs
+    interface Props {
+        index: number;
+        entry: BingoEntry | undefined;
+        log: BingoLogEntry;
+        parsedTime: Dayjs;
+    }
+
+    let {
+        index,
+        entry,
+        log,
+        parsedTime
+    }: Props = $props();
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss (Z)'
 </script>

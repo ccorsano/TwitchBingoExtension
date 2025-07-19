@@ -12,10 +12,21 @@
     import type { BingoGameContext } from "./BingoGameContext";
     import type { BingoGridContext } from "./BingoGridContext";
 
-    export let onRefreshGrid: (grid: BingoGrid, cells: BingoGridCell[]) => void = (a,b) => {}
-    export let onReceiveGame: (game: BingoGame) => void = (g) => {}
-    export let onStop: () => void = () => {}
-    export let onSharedIdentity: (isShared:boolean) => void
+    interface Props {
+        onRefreshGrid?: (grid: BingoGrid, cells: BingoGridCell[]) => void;
+        onReceiveGame?: (game: BingoGame) => void;
+        onStop?: () => void;
+        onSharedIdentity: (isShared:boolean) => void;
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        onRefreshGrid = (a,b) => {},
+        onReceiveGame = (g) => {},
+        onStop = () => {},
+        onSharedIdentity,
+        children
+    }: Props = $props();
 
     const gameContext: Writable<BingoGameContext> = getContext(GameContextKey)
     const gridContext: Writable<BingoGridContext> = getContext(GridContextKey)
@@ -348,4 +359,4 @@
 
 </script>
 
-<slot></slot>
+{@render children?.()}

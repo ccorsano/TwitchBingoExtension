@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import type { BingoEntry, BingoTentativeNotification } from "src/EBS/BingoService/EBSBingoTypes";
     import { TwitchExtQuery } from "./TwitchExtension";
     import Button, { Group } from "@smui/button";
@@ -6,18 +8,32 @@
     import dayjs from "dayjs";
     import relativeTime from "dayjs/plugin/relativeTime"
 
-    export let tentatives: BingoTentativeNotification[]
-    export let entry: BingoEntry
-    export let onConfirm: (e:BingoEntry) => void
-    export let onTest: (e:BingoEntry) => void
-    export let onForceNotify: (e:BingoEntry) => void
+    interface Props {
+        tentatives: BingoTentativeNotification[];
+        entry: BingoEntry;
+        onConfirm: (e:BingoEntry) => void;
+        onTest: (e:BingoEntry) => void;
+        onForceNotify: (e:BingoEntry) => void;
+    }
+
+    let {
+        tentatives,
+        entry,
+        onConfirm,
+        onTest,
+        onForceNotify
+    }: Props = $props();
 
     dayjs.extend(relativeTime)
 
-    let tentative:BingoTentativeNotification | undefined = undefined
-    let isConfirmed = false
-    $: tentative = tentatives.find(t => t.key == entry.key)
-    $: isConfirmed = entry.confirmedAt != null
+    let tentative:BingoTentativeNotification | undefined = $state(undefined)
+    let isConfirmed = $state(false)
+    run(() => {
+        tentative = tentatives.find(t => t.key == entry.key)
+    });
+    run(() => {
+        isConfirmed = entry.confirmedAt != null
+    });
 </script>
 
 

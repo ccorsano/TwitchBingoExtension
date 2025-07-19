@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import Card, { Actions, Content } from '@smui/card';
     import Slider from '@smui/slider'
     import { onMount } from 'svelte';
@@ -8,28 +10,50 @@
     import { FormatTimeout } from '../../EBS/BingoService/EBSBingoTypes';
     import Button from '@smui/button';
 
-    export let columns: number
-    export let rows : number
-    export let confirmationThresholdSeconds: number
-    export let selectedEntriesLength: number
-    export let onColumnsChange: (value: number) => void
-    export let onRowsChange: (value: number) => void
-    export let onConfirmationTimeoutChange: (value: number) => void
-    export let onSave: () => void
-    export let onStart: () => void
-    export let isStarting: boolean
-    export let canEnableChat: boolean
+    interface Props {
+        columns: number;
+        rows: number;
+        confirmationThresholdSeconds: number;
+        selectedEntriesLength: number;
+        onColumnsChange: (value: number) => void;
+        onRowsChange: (value: number) => void;
+        onConfirmationTimeoutChange: (value: number) => void;
+        onSave: () => void;
+        onStart: () => void;
+        isStarting: boolean;
+        canEnableChat: boolean;
+    }
 
-    let editingColumns: number = columns
-    let editingRows: number = rows
-    let confirmationTimeout: number = confirmationThresholdSeconds
+    let {
+        columns,
+        rows,
+        confirmationThresholdSeconds,
+        selectedEntriesLength,
+        onColumnsChange,
+        onRowsChange,
+        onConfirmationTimeoutChange,
+        onSave,
+        onStart,
+        isStarting,
+        canEnableChat
+    }: Props = $props();
 
-    $: hasEnoughEntries = selectedEntriesLength >= rows * columns
-    $: canStart = !isStarting && hasEnoughEntries
+    let editingColumns: number = $state(columns)
+    let editingRows: number = $state(rows)
+    let confirmationTimeout: number = $state(confirmationThresholdSeconds)
 
-    $: onColumnsChange(editingColumns)
-    $: onRowsChange(editingRows)
-    $: onConfirmationTimeoutChange(confirmationTimeout)
+    let hasEnoughEntries = $derived(selectedEntriesLength >= rows * columns)
+    let canStart = $derived(!isStarting && hasEnoughEntries)
+
+    run(() => {
+        onColumnsChange(editingColumns)
+    });
+    run(() => {
+        onRowsChange(editingRows)
+    });
+    run(() => {
+        onConfirmationTimeoutChange(confirmationTimeout)
+    });
 </script>
 
 <Card>
@@ -59,10 +83,14 @@
         />
         {#if !hasEnoughEntries}
         <Alert severity="error">
-            <h2 slot="title">{$LL.Config.AlertNotEnoughEntriesToFillTheGrid()}</h2>
-            <svelte:fragment slot="body">
-                {$LL.Config.AddEntriesOrReduceGridDimensionsToStartTheGame()}
-            </svelte:fragment>
+            {#snippet title()}
+                                <h2 >{$LL.Config.AlertNotEnoughEntriesToFillTheGrid()}</h2>
+                            {/snippet}
+            {#snippet body()}
+                            
+                    {$LL.Config.AddEntriesOrReduceGridDimensionsToStartTheGame()}
+                
+                            {/snippet}
         </Alert>
         {/if}
         <table style:width="100%">
@@ -94,17 +122,25 @@
         <div>
             {#if canEnableChat}
             <Alert severity="info">
-                <h2 slot="title">{$LL.Config.DeactivateChatIntegrationTitle()}</h2>
-                <svelte:fragment slot="body">
-                    {$LL.Config.DeactivateChatIntegrationText()}
-                </svelte:fragment>
+                {#snippet title()}
+                                        <h2 >{$LL.Config.DeactivateChatIntegrationTitle()}</h2>
+                                    {/snippet}
+                {#snippet body()}
+                                    
+                        {$LL.Config.DeactivateChatIntegrationText()}
+                    
+                                    {/snippet}
             </Alert>
             {:else}
             <Alert severity="warning">
-                <h2 slot="title">{$LL.Config.ActivateChatIntegrationTitle()}</h2>
-                <svelte:fragment slot="body">
-                    {$LL.Config.ActivateChatIntegrationText()}
-                </svelte:fragment>
+                {#snippet title()}
+                                        <h2 >{$LL.Config.ActivateChatIntegrationTitle()}</h2>
+                                    {/snippet}
+                {#snippet body()}
+                                    
+                        {$LL.Config.ActivateChatIntegrationText()}
+                    
+                                    {/snippet}
             </Alert>
             {/if}
         </div>

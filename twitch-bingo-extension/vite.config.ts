@@ -2,8 +2,6 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import { resolve } from 'path';
-// Note: this can go after moving to svelte >5.30.1
-import { svelteSVG } from 'rollup-plugin-svelte-svg';
 
 
 export default defineConfig({
@@ -31,8 +29,5 @@ export default defineConfig({
     plugins: [
         svelte(),
         basicSsl(),
-        svelteSVG({
-            svgo:{}
-        }),
     ]
 });

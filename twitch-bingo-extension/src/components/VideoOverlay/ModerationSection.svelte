@@ -9,10 +9,19 @@
     import type { BingoGameContext } from "../../common/BingoGameContext";
     import { GameContextKey } from "../../stores/game";
 
-    export let open:boolean = false
-    export let confirmationTimeout: number
-    export let onNotificationsEmpty: (() => void) | undefined = undefined
-    export let onReceiveTentative: ((tentative: BingoTentativeNotification) => void) | undefined = undefined
+    interface Props {
+        open?: boolean;
+        confirmationTimeout: number;
+        onNotificationsEmpty?: (() => void) | undefined;
+        onReceiveTentative?: ((tentative: BingoTentativeNotification) => void) | undefined;
+    }
+
+    let {
+        open = false,
+        confirmationTimeout,
+        onNotificationsEmpty = undefined,
+        onReceiveTentative = undefined
+    }: Props = $props();
 
 
     const gameModerationContext:Writable<BingoGameModerationContext> = createGameModerationContext()

@@ -20,16 +20,20 @@
         fontSize: string
     }
 
-    export let isCollapsed: boolean
-    export let layoutClass: string
+    interface Props {
+        isCollapsed: boolean;
+        layoutClass: string;
+    }
+
+    let { isCollapsed, layoutClass }: Props = $props();
 
     const gameContext:Readable<BingoGameContext> = getContext(GameContextKey)
 
     let gridContext:Readable<BingoGridContext> = getContext(GridContextKey)
-    let gridTemplateRows = ""
-    let gridTemplateColumns = ""
+    let gridTemplateRows = $state("")
+    let gridTemplateColumns = $state("")
 
-    let cells:CellModel[] = Array(0)
+    let cells:CellModel[] = $state(Array(0))
 
     gridContext.subscribe(context => {
         cells = [...Array(context.grid.rows).keys()]

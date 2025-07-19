@@ -17,17 +17,17 @@
     import GridConfigurationView from "./GridConfigurationView.svelte";
 
     let nextKey: number = 0
-    let columns: number = 3
-    let rows: number = 3
-    let entries: BingoEditableEntry[] = new Array(0)
-    let selectedEntries: number[] = new Array(0)
-    let confirmationThresholdSeconds: number = 120
-    let activeGame: BingoGame | null = null
-    let isStarting: boolean = false
-    let isLoading: boolean = true
-    let canEnableChat: boolean = false
-    let isLoadingLog: boolean = false
-    let logEntries: BingoLogEntry[] = new Array(0)
+    let columns: number = $state(3)
+    let rows: number = $state(3)
+    let entries: BingoEditableEntry[] = $state(new Array(0))
+    let selectedEntries: number[] = $state(new Array(0))
+    let confirmationThresholdSeconds: number = $state(120)
+    let activeGame: BingoGame | null = $state(null)
+    let isStarting: boolean = $state(false)
+    let isLoading: boolean = $state(true)
+    let canEnableChat: boolean = $state(false)
+    let isLoadingLog: boolean = $state(false)
+    let logEntries: BingoLogEntry[] = $state(new Array(0))
 
     function isSelected(entry: BingoEntry): boolean
     {
@@ -93,8 +93,8 @@
     }
 
     // Setup gameLog refresh whenever a message is received, either broadcast or whisper
-    let whisperChannel: string
-    $: whisperChannel = 'whisper-' + TwitchExtHelper.viewer.opaqueId
+    let whisperChannel: string = $derived('whisper-' + TwitchExtHelper.viewer.opaqueId)
+    
 
     let timer: NodeJS.Timeout
     onMount(() => {

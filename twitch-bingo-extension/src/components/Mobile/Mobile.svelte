@@ -19,9 +19,9 @@
     const gridContext:Writable<BingoGridContext> = createGridContext()
     setContext(GridContextKey, gridContext)
     
-    let selectedCell: number | null = null
-    let sortedEntries: BingoGridCell[] = new Array(0)
-    let minigridCells: BingoGridCell[] = new Array(0)
+    let selectedCell: number | null = $state(null)
+    let sortedEntries: BingoGridCell[] = $state(new Array(0))
+    let minigridCells: BingoGridCell[] = $state(new Array(0))
 
     function onSelectFromGrid(context: BingoGridContext, x: number, y: number) {
         const [cell,entry] = $gridContext.getCell(y, x)
@@ -99,16 +99,16 @@
             </div>
         </div>
     {:else if !$gameContext.hasSharedIdentity}
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div  style:background-color="#FFF" style:color="#000" style:width="100vw" style:height="100vh" style:overflow="hidden">
             <div style:margin-bottom="2rem" style:margin-top="1rem" style:padding="1rem">
                     {$LL.OverlayBingoGrid.IdentityPromptMessage()}
                 </div>
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <div
                     class="bingoCellPrompt bingoCellPromptVisible"
                     style:position="unset" style:max-width="unset" style:text-align="center" style:height="fit-content" style:border-radius="unset"
-                    on:click|capture={(_) => $gameContext.promptIdentity()}>
+                    onclickcapture={(_) => $gameContext.promptIdentity()}>
                     {$LL.OverlayBingoGrid.ShareIdentityButtonLabel()}
                 </div>
         </div>

@@ -1,5 +1,9 @@
 <script lang="ts">
-export let style:string = ""
+	interface Props {
+		style?: string;
+	}
+
+	let { style = "" }: Props = $props();
 </script>
 
 <style lang="scss">

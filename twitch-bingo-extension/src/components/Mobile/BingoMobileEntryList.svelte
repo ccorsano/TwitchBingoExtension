@@ -1,15 +1,26 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import type { BingoGridCell } from "../../model/BingoEntry";
     import BingoMobileEntry from "./BingoMobileEntry.svelte";
 
-    export let entries: BingoGridCell[] = new Array(0)
-    export let selectedKey: number | null = null
-    export let onSelectKey: (key: number) => void
-    export let onTentative: (key: number) => void
+    interface Props {
+        entries?: BingoGridCell[];
+        selectedKey?: number | null;
+        onSelectKey: (key: number) => void;
+        onTentative: (key: number) => void;
+    }
+
+    let {
+        entries = new Array(0),
+        selectedKey = null,
+        onSelectKey,
+        onTentative
+    }: Props = $props();
 
     const entriesRefs:Map<number, any> = new Map<number, any>()
     
-    $:{
+    run(() => {
         if (selectedKey && entriesRefs.has(selectedKey))
         {
             let entryElement = entriesRefs.get(selectedKey)
@@ -20,7 +31,7 @@
                 entryElement.scrollIntoView()
             }
         }
-    }
+    });
 </script>
 
 <style lang="scss">

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import ModerationBingoComponent from "../../common/ModerationBingoComponent.svelte";
     import type { BingoGameModerationContext } from "../../common/BingoGameModerationContext";
     import type { Readable, Writable } from "svelte/store";
@@ -10,15 +12,23 @@
     import LinearIndeterminateLoader from "../../common/LinearIndeterminateLoader.svelte";
     import LL from "../../i18n/i18n-svelte";
 
-    export let confirmationTimeout: number
+    interface Props {
+        confirmationTimeout: number;
+    }
+
+    let { confirmationTimeout }: Props = $props();
 
     let gameModerationContext: Writable<BingoGameModerationContext> = getContext(GameModerationContextKey)
     let gameContext: Readable<BingoGameContext> = getContext(GameContextKey)
-    let game:BingoGame|undefined = undefined
-    let entries:BingoEntry[] = Array(0)
+    let game:BingoGame|undefined = $state(undefined)
+    let entries:BingoEntry[] = $state(Array(0))
 
-    $: game = $gameContext.game
-    $: entries = $gameContext.game?.entries ?? Array(0)
+    run(() => {
+        game = $gameContext.game
+    });
+    run(() => {
+        entries = $gameContext.game?.entries ?? Array(0)
+    });
 </script>
 
 <div>

@@ -13,9 +13,19 @@
     import { BingoEBS } from "../EBS/BingoService/EBSBingoService";
     import type { EBSError } from "src/EBS/EBSBase";
 
-    export let onReceiveTentative: ((notification: BingoTentativeNotification) => void) | undefined = undefined
-    export let onReceiveConfirmation: ((tentative: BingoTentative) => void) | undefined = undefined
-    export let onNotificationsEmpty: (() => void) | undefined = undefined
+    interface Props {
+        onReceiveTentative?: ((notification: BingoTentativeNotification) => void) | undefined;
+        onReceiveConfirmation?: ((tentative: BingoTentative) => void) | undefined;
+        onNotificationsEmpty?: (() => void) | undefined;
+        children?: import('svelte').Snippet;
+    }
+
+    let {
+        onReceiveTentative = undefined,
+        onReceiveConfirmation = undefined,
+        onNotificationsEmpty = undefined,
+        children
+    }: Props = $props();
 
     dayjs.extend(utc);
 
@@ -195,4 +205,4 @@
     })
 </script>
 
-<slot/>
+{@render children?.()}

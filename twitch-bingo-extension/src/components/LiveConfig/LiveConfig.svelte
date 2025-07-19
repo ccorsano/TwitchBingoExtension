@@ -8,10 +8,10 @@
 
     import StatusCard from "../Config/StatusCard.svelte"
 
-    let activeGame: BingoGame | null = null
-    let isLoading: boolean = true
-    let isLoadingLog: boolean = false
-    let logEntries: BingoLogEntry[] = new Array(0)
+    let activeGame: BingoGame | null = $state(null)
+    let isLoading: boolean = $state(true)
+    let isLoadingLog: boolean = $state(false)
+    let logEntries: BingoLogEntry[] = $state(new Array(0))
 
     function loadConfig(broadcasterConfig: TwitchExtensionConfiguration)
     {
@@ -64,8 +64,8 @@
     }
 
     // Setup gameLog refresh whenever a message is received, either broadcast or whisper
-    let whisperChannel: string
-    $: whisperChannel = 'whisper-' + TwitchExtHelper.viewer.opaqueId
+    let whisperChannel: string = $derived('whisper-' + TwitchExtHelper.viewer.opaqueId)
+    
 
     let timer: NodeJS.Timeout
     onMount(() => {

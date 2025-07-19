@@ -1,36 +1,48 @@
 <script lang="ts">
+    import { run, stopPropagation } from 'svelte/legacy';
+
     import CountdownCircleTimer from '../../common/CountdownCircleTimer.svelte';
     import { BingoEntryState, BingoGridCell } from '../../model/BingoEntry';
     import { FormatTimeout } from '../../EBS/BingoService/EBSBingoTypes';
     import LL from '../../i18n/i18n-svelte';
     import { onMount } from 'svelte';
 
-    export let onElementRef: (htmlElement: any) => void
-    export let cell: BingoGridCell
-    export let isSelected: boolean
-    export let onSelect: (key: number) => void
-    export let onConfirm: (key: number) => void
+    interface Props {
+        onElementRef: (htmlElement: any) => void;
+        cell: BingoGridCell;
+        isSelected: boolean;
+        onSelect: (key: number) => void;
+        onConfirm: (key: number) => void;
+    }
+
+    let {
+        onElementRef,
+        cell,
+        isSelected,
+        onSelect,
+        onConfirm
+    }: Props = $props();
 
     const cellId = Symbol().toString()
-    let rootElement:any
+    let rootElement:any = $state()
 
     onMount(() => {
         onElementRef(rootElement)
     })
 
-    let isPrompting = false
-    let isCurrentElementActive:boolean = false
+    let isPrompting = $state(false)
+    let isCurrentElementActive:boolean = $state(false)
 
-    $:{
+    run(() => {
         isCurrentElementActive = isSelected && cell.state == BingoEntryState.Idle
         if (! isSelected && isPrompting)
         {
             isPrompting = false
         }
-    }
+    });
 
-    var bClass = "idle"
-    $:{
+    var bClass = $state("idle")
+    run(() => {
         switch (cell.state) {
             case BingoEntryState.Pending:
                 bClass = "pending"
@@ -47,15 +59,19 @@
             default:
                 break;
         }
-    }
+    });
     
-    var showTimer: boolean = false
-    $: showTimer = cell.timer != null
-    var duration: number = 0
-    $: duration = showTimer ? (cell.timer!.getTime() - Date.now()) / 1000 : 0
-    var classes: string[]
-    var classesStr: string
-    $:{
+    var showTimer: boolean = $state(false)
+    run(() => {
+        showTimer = cell.timer != null
+    });
+    var duration: number = $state(0)
+    run(() => {
+        duration = showTimer ? (cell.timer!.getTime() - Date.now()) / 1000 : 0
+    });
+    var classes: string[] = $state()
+    var classesStr: string = $state()
+    run(() => {
         classes = ["bingoEntry", bClass]
         if (isSelected)
         {
@@ -70,8 +86,8 @@
             classes.push("prompt")
         }
         classesStr = classes.join(" ")
-    }
-    let remainingTime: number = duration
+    });
+    let remainingTime: number = $state(duration)
 
     const confirmKey = (key: number) => {
         isPrompting = false
@@ -88,11 +104,11 @@
 </script>
 
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div id={cellId} bind:this={rootElement}
         class={classesStr}
-        on:click={(_) => {
+        onclick={(_) => {
             if (isCurrentElementActive && cell.state == BingoEntryState.Idle)
             {
                 isPrompting = !isPrompting
@@ -109,7 +125,7 @@
         class={"bingoCellPrompt"}
         class:bingoCellPromptVisible={isCurrentElementActive && isPrompting}
         class:bingoCellPromptHidden={!(isCurrentElementActive && isPrompting)}
-        on:click|stopPropagation={onClickConfirm} >
+        onclick={stopPropagation(onClickConfirm)} >
         {$LL.Mobile.ConfirmButton()}
     </div>
     <div class={"bingoCellTimer"}
