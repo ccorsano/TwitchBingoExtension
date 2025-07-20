@@ -9,7 +9,7 @@
 
 Svelte rewrite: easier dev for me, lighter application to load.
 Please consider this as a minimum viable version of this extension, and check regularly for updates.
-Note: This extension is dependent on a extension service, which for this initial release is not scaled for a large viewing audience.
+Note: This extension is dependent on a extension service, which for now is only tentatively scalable for a large viewing audience.
 
 Customizable & interactive bingo games for streamers communities:
 - Have yourself or your moderation team come up with stream events viewers should pay attention to.
