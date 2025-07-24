@@ -1,4 +1,4 @@
-Review channel: https://www.twitch.tv/blipbloopbot
+Review channel: https://www.twitch.tv/viewersbingo
 
 # Description
 
@@ -47,7 +47,7 @@ This extension is built with Svelte + Typescript + Vite and distributed with inc
 
 ## Source code
 Source code for this release is available on
- https://github.com/ccorsano/TwitchBingoExtension/releases/tag/2025.01-rc1, or upon explicit request.
+ https://github.com/ccorsano/TwitchBingoExtension/releases/tag/2025.01-rc2, or upon explicit request.
 
 The project uses Node 22.x
 To build, download the release source code above, decompress, then:

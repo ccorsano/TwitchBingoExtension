@@ -21,6 +21,8 @@ namespace TwitchBingoService.Storage.Azure
             PartitionKey = game.gameId.ToString();
             ChannelId = game.channelId;
             Game = game;
+            Version = game.version;
+            Language = game.language;
         }
 
         public string PartitionKey { get; set; }
@@ -29,6 +31,11 @@ namespace TwitchBingoService.Storage.Azure
         public ETag ETag { get; set; }
 
         public string ChannelId { get; set; }
+
+        public string Version { get; set; }
+
+        public string Language { get; set; }
+
         public string SerializedGame {
             get {
                 return System.Text.Json.JsonSerializer.Serialize(Game, JsonContext.Default.BingoGame);
@@ -36,6 +43,8 @@ namespace TwitchBingoService.Storage.Azure
             set
             {
                 Game = System.Text.Json.JsonSerializer.Deserialize(value, JsonContext.Default.BingoGame);
+                Game.version = Version;
+                Game.language = Language;
             }
         }
         public string SerializedModerators

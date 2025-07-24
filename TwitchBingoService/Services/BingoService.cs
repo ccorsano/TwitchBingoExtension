@@ -61,6 +61,18 @@ namespace TwitchBingoService.Services
 
         public async Task<BingoGame> CreateGame(string channelId, BingoGameCreationParams gameParams)
         {
+            if (gameParams.language == null)
+            {
+                try
+                {
+                    HelixChannelInfo channelInfo = await _ebsService.GetChannelInfo(channelId);
+                    gameParams.language = channelInfo.BroadcasterLanguage;
+                } catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Could not read channel {channelId} info", channelId);
+                }
+            }
+
             var game = new BingoGame
             {
                 gameId = Guid.NewGuid(),
@@ -70,6 +82,8 @@ namespace TwitchBingoService.Services
                 columns = gameParams.columns,
                 confirmationThreshold = gameParams.confirmationThreshold ?? _options.DefaultConfirmationThreshold,
                 hasChatIntegration = gameParams.enableChatIntegration,
+                version = gameParams.version ?? _options.Version,
+                language = gameParams.language ?? "en",
             };
 
             await _storage.WriteGame(game);
@@ -77,17 +91,7 @@ namespace TwitchBingoService.Services
             var tasks = new List<Task>();
             if (game.hasChatIntegration)
             {
-                tasks.Add(Task.Run(async () =>
-                {
-                    try
-                    {
-                        var chatBot = await ConnectBot(channelId, CancellationToken.None);
-                        await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
-                    } catch(Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to send chat message, channel {channelId}", channelId);
-                    }
-                }));
+                tasks.Add(_ebsService.TrySendChatMessage(channelId, "The Bingo has started !", game.version));
             }
             tasks.Add(_storage.WriteLog(game.gameId, new BingoLogEntry
             {
@@ -316,6 +320,15 @@ namespace TwitchBingoService.Services
 
         public async Task<BingoEntry> Confirm(Guid gameId, ushort key, string userId)
         {
+            Task tentative = Task.Run(async () =>
+            {
+                try
+                {
+                    await AddTentative(gameId, key, userId);
+                }
+                catch(Exception) {}
+            });
+
             (BingoGame game, BingoEntry entry) = await _gameUpdatePolicy.ExecuteAsync(async () =>
             {
                 var updatedGame = await _storage.ReadGame(gameId);
@@ -376,6 +389,7 @@ namespace TwitchBingoService.Services
             }
 
             tasks.Add(ProcessTentatives(game, key));
+            tasks.Add(tentative);
             await Task.WhenAll(tasks);
 
             return entry;
@@ -569,8 +583,11 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            var confirmationMessage = $"✅ {game.entries.First(e => e.key == key).text}";
-            await SendChatMessage(confirmationMessage, game.channelId);
+            foreach(BingoNotification notification in notifications.Where(notification => notification.type == NotificationType.Confirmation).DistinctBy(n => n.key))
+            {
+                var confirmationMessage = $"✅ {game.entries.First(e => e.key == notification.key).text}";
+                await SendChatMessage(confirmationMessage, game.channelId, game.version ?? _options.Version);
+            }
 
             var messageBuilder = new StringBuilder(140, 280);
             if (gridComplete.Result.Count() > 0 && messageBuilder.Length < 200)
@@ -621,13 +638,13 @@ namespace TwitchBingoService.Services
 
             if (messageBuilder.Length > 0)
             {
-                await SendChatMessage(messageBuilder.ToString(), game.channelId);
+                await SendChatMessage(messageBuilder.ToString(), game.channelId, game.version ?? _options.Version);
             }
         }
 
-        private async Task SendChatMessage(string message, string channelId)
+        private async Task SendChatMessage(string message, string channelId, string version)
         {
-            await _ebsService.TrySendChatMessage(channelId, message, _options.Version);
+            await _ebsService.TrySendChatMessage(channelId, message, version);
 
             if (_options.EnableChatBot)
             {
