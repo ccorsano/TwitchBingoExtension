@@ -19,6 +19,8 @@ const en: BaseTranslation = {
 	BingoModeration:{
 		ConfirmButtonLabel: "Confirm",
 		ConfirmButton: "Confirm",
+		ConfirmedLabel: "Confirmed",
+		ConfirmedByMessage: "Confirmed {confirmedAt} by {confirmedBy}",
 		NoEntriesMessage: "No entries configured.",
 	},
 	Config:{
@@ -32,12 +34,14 @@ const en: BaseTranslation = {
 		StartGame: 'Start',
 		LibraryEditor:{
 			Title: "Library",
-			TitleSubHeader: "Load or add all your bingo entries here.",
+			TitleSubHeader: "Load, paste or add all your bingo entries here.",
 			MessageNoItems: "No items in Bingo, go add some !",
 			UploadButtonLabel: "Upload entry list",
 			UploadButtonTitle: "Replace entries by uploading a .txt file",
 			AddEntryButtonLabel: "Add a new entry",
 			AddEntryButtonTitle: "Add a new entry to the list",
+			CopyEntriesToPasteboardLabel: "Copy entries",
+			CopyEntriesToPasteboardTitle: "Copy entries to clipboard",
 		},
 		StatusCard: {
 			Title: "Status",

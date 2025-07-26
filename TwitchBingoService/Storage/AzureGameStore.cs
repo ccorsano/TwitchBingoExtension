@@ -1,6 +1,5 @@
 ﻿using Azure;
 using Azure.Data.Tables;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -48,6 +47,7 @@ namespace TwitchBingoService.Storage
         private string PendingTentativesTableName => $"{_tablesPrefix}pendingtentatives";
         private string NotificationsTableName => $"{_tablesPrefix}notifications";
         private string LogTableName => $"{_tablesPrefix}log";
+        private string ParticipationTableName => $"{_tablesPrefix}participants";
 
         public async Task WriteGame(BingoGame bingoGame)
         {
@@ -304,6 +304,21 @@ namespace TwitchBingoService.Storage
             {
                 _logger.LogError(e, "Failed to read logs for game {gameId}", gameId);
                 throw;
+            }
+        }
+
+        public async Task WriteParticipation(Guid gameId, string channelId, string userId)
+        {
+            _logger.LogInformation("Participant: {gameId}, {channelId}, {userId}", gameId, channelId, userId);
+
+            var client = _storageAccount.GetTableClient(ParticipationTableName);
+            var entity = new BingoGameParticipantEntity(userId, gameId, channelId);
+
+            var result = await client.UpsertEntityAsync(entity);
+            if (result.IsError)
+            {
+                _logger.LogError("Failed to write participant for game {gameId}, userId {userId}", gameId, userId);
+                throw new Exception("Failed to write participant");
             }
         }
     }

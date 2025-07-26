@@ -18,6 +18,7 @@ namespace TwitchBingoService.Storage.Azure
         {
             PartitionKey = userId;
             UserName = userName;
+            RowKey = "";
         }
 
         public string PartitionKey { get; set; }

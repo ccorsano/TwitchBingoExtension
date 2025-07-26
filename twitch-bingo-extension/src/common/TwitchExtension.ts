@@ -97,7 +97,7 @@ export interface TwitchExtensionFeaturesHelper {
 
 export interface TwitchExtensionHelper {
     onAuthorized: (authCallback: (context: TwitchAuthCallbackContext) => void) => void;
-    onContext: (contextCallback: (context: TwitchContext, changedProperties: string[]) => void) => void;
+    onContext: (contextCallback: ((context: TwitchContext, changedProperties: string[]) => void) | null) => void;
     onError: (errorCallback: (error: any) => void) => void;
     onHighlightChanged: (callback: (isHighlighted: boolean) => void) => void;
     onPositionChanged: (callback: (position: TwitchExtensionPosition) => void) => void;
@@ -126,13 +126,13 @@ function readTwitchQueryParameters(): TwitchExtensionQueryParameters
 {
     var queryParams = new URLSearchParams(window.location.search);
     return {
-        anchor: queryParams.get('anchor'),
-        language: queryParams.get('language'),
-        locale: queryParams.get('locale'),
-        mode: queryParams.get('mode'),
-        platform: queryParams.get('platform'),
+        anchor: queryParams.get('anchor')!,
+        language: queryParams.get('language')!,
+        locale: queryParams.get('locale')!,
+        mode: queryParams.get('mode')!,
+        platform: queryParams.get('platform')!,
         popout: queryParams.get('popout') === 'true',
-        state: queryParams.get('state'),
+        state: queryParams.get('state')!,
     }
 }
 

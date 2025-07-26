@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TwitchBingoService.Model;
 
@@ -23,6 +21,7 @@ namespace TwitchBingoService.Storage
         public Task<BingoGame> ReadGame(Guid gameId);
         public Task DeleteGame(Guid gameId);
         public Task WriteTentative(Guid gameId, BingoTentative tentatives);
+        public Task WriteParticipation(Guid gameId, string channelId, string userId);
         public Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime deletionCutoff);
         public Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId);
         public Task QueueNotification(Guid gameId, ushort key, BingoNotification notification);

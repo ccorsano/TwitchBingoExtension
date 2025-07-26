@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using TwitchBingoService.Configuration;
@@ -24,6 +25,12 @@ namespace TwitchBingoService.Model
         public string[] moderators { get; set; }
 
         public bool hasChatIntegration { get; set; } = false;
+
+        [IgnoreDataMember, JsonIgnore]
+        public string version { get; set; }
+
+        [IgnoreDataMember, JsonIgnore]
+        public string language { get; set; } = "en";
 
         [IgnoreDataMember, JsonIgnore]
         internal object StorageObject { get; set; } = null;

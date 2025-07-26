@@ -1,6 +1,5 @@
 import { Twitch } from '../services/TwitchService';
-import { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
-require('../common/TwitchExtension')
+import type { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
 
 export interface EBSError {
     status: number,
@@ -67,7 +66,7 @@ export class EBSBase {
     }
 
     // Generic method to call EBS REST APIs
-    serviceFetch = async <T>(path: string, init: RequestInit = null): Promise<T> => {
+    serviceFetch = async <T>(path: string, init: RequestInit | null = null): Promise<T> => {
         let [] = await this.configuredPromise;
 
         const opts: RequestInit = {
@@ -91,7 +90,7 @@ export class EBSBase {
         return response.json().catch(() => null);
     }
 
-    servicePost = async <T>(path: string, bodyObject: any, init: RequestInit = null): Promise<T> => {
+    servicePost = async <T>(path: string, bodyObject: any, init: RequestInit | null = null): Promise<T> => {
         if (! init)
         {
             init = {
@@ -109,7 +108,7 @@ export class EBSBase {
         
     }
 
-    servicePut = async <T>(path: string, bodyObject: any, init: RequestInit = null): Promise<T> => {
+    servicePut = async <T>(path: string, bodyObject: any, init: RequestInit | null = null): Promise<T> => {
         if (! init)
         {
             init = {
@@ -126,7 +125,7 @@ export class EBSBase {
         return this.serviceFetch<T>(path, init);
     }
 
-    serviceDelete = async <T>(path: string, init: RequestInit = null): Promise<T> => {
+    serviceDelete = async <T>(path: string, init: RequestInit | null = null): Promise<T> => {
         if (! init)
         {
             init = {

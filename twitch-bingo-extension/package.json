@@ -1,74 +1,63 @@
 {
   "name": "twitch-bingo-extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Customizable Live Bingo Twitch Extension",
-  "main": "src/Config.tsx",
+  "type": "module",
+  "main": "src/Config.svelte",
   "author": "Miekyll",
   "license": "ISC",
   "scripts": {
     "test": "jest",
     "typesafe-i18n": "typesafe-i18n",
     "typesafe-i18n-build": "typesafe-i18n --no-watch",
-    "webpack-watch": "webpack --watch",
-    "webpack-serve": "webpack serve --progress",
-    "webpack-build": "webpack --mode=production",
-    "watch": "npm-run-all --parallel webpack-watch typesafe-i18n",
-    "build": "npm-run-all --sequential typesafe-i18n-build webpack-build",
-    "start": "npm-run-all --parallel webpack-serve typesafe-i18n"
+    "vite": "vite",
+    "vite-build": "vite build",
+    "vite-preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "watch": "npm-run-all --parallel vite-preview typesafe-i18n",
+    "build": "npm-run-all --sequential typesafe-i18n-build vite-build",
+    "start": "npm-run-all --parallel vite typesafe-i18n"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.4",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.60",
     "dayjs": "^1.10.7",
-    "jest": "^29.2.5",
+    "jest": "^30.0.4",
     "npm-run-all": "^4.1.5",
     "react": "^17.0.2",
-    "react-countdown-circle-timer": "^2.5.3",
     "react-dom": "^17.0.2",
-    "spinthatshit": "^1.0.4",
-    "typesafe-i18n": "^5.5.2"
+    "svelte-material-ui": "^7.0.0",
+    "typesafe-i18n": "^5.12.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.5",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
-    "css-loader": "^7.0.0",
+    "@material/typography": "^13.0.0",
+    "@smui/button": "^7.0.0",
+    "@smui/card": "^7.0.0",
+    "@smui/icon-button": "^7.0.0",
+    "@smui/layout-grid": "^7.0.0",
+    "@smui/linear-progress": "^7.0.0",
+    "@smui/list": "^7.0.0",
+    "@smui/paper": "^7.0.0",
+    "@smui/slider": "^7.0.0",
+    "@smui/textfield": "^7.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/jest": "^30.0.0",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
+    "css-loader": "^6.2.0",
     "file-loader": "^6.2.0",
-    "fork-ts-checker-webpack-plugin": "^6.2.10",
-    "html-webpack-plugin": "^5.3.1",
-    "mini-css-extract-plugin": "^2.1.0",
     "nth-check": "^2.0.1",
+    "@types/rollup-plugin-svelte-svg": "^1.0.6",
+    "rollup-plugin-svelte-svg": "^1.0.0-beta.6",
     "sass": "^1.34.1",
-    "sass-loader": "^16.0.0",
+    "sass-loader": "^12.0.0",
     "style-loader": "^3.2.1",
-    "ts-jest": "^29.2.5",
+    "svelte": "^4.2.19",
+    "svelte-check": "^4.1.6",
+    "svelte-preprocess": "^6.0.3",
     "ts-loader": "^9.2.2",
-    "typescript": "^4.3.2",
-    "webpack": "^5.95.0",
-    "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.9.2",
-    "ws": ">=8.17.1"
+    "typescript": "^5.8.3",
+    "vite": "^5.4.14"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.(t|j)sx?$": "ts-jest"
-    },
-    "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "tsconfig.json"
-      }
-    }
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.40.0"
   }
 }

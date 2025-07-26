@@ -7,6 +7,13 @@ export interface BingoEntry {
     confirmedBy?: string;
 }
 
+export const DefaultEntry: BingoEntry = {
+    key: 0,
+    text: "",
+    confirmedAt: undefined,
+    confirmedBy: undefined
+}
+
 export interface BingoGame {
     gameId: string;
     channelId: string;
@@ -27,7 +34,7 @@ export interface BingoGameCreationParams {
 export interface BingoTentative {
     entryKey: string;
     confirmed: boolean;
-    tentativeTime: Date;
+    tentativeTime: string; // ISO date
 }
 
 export interface BingoGridCell {
@@ -82,6 +89,12 @@ const TimeSpanRegexp = (/^(-?)((\d+)\.)?(\d{2}):(\d{2}):(\d{2})(\.(\d{7}))?$/);
 export function ParseTimespan(timeSpan: string): number
 {
     var result = TimeSpanRegexp.exec(timeSpan);
+
+    if (result == null)
+    {
+        return NaN;
+    }
+
     var isNegative = result[1] === "-";
     var days = result[2] === undefined ? 0 : Number.parseInt(result[2]);
     var hours = Number.parseInt(result[4]);
@@ -95,6 +108,10 @@ export function ParseTimespan(timeSpan: string): number
 
 export function FormatTimeout(seconds: number): string
 {
+    if (seconds < 0)
+    {
+        return "00:00"
+    }
     const minutes = (Math.floor(seconds / 60))
     const minutesStr = minutes.toFixed(0).padStart(2, "0")
     const secondsStr = Math.floor(seconds - (minutes * 60)).toFixed(0).padStart(2, "0")

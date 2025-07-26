@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Troschuetz.Random.Generators;
@@ -60,6 +61,18 @@ namespace TwitchBingoService.Services
 
         public async Task<BingoGame> CreateGame(string channelId, BingoGameCreationParams gameParams)
         {
+            if (gameParams.language == null)
+            {
+                try
+                {
+                    HelixChannelInfo channelInfo = await _ebsService.GetChannelInfo(channelId);
+                    gameParams.language = channelInfo.BroadcasterLanguage;
+                } catch(Exception ex)
+                {
+                    _logger.LogError(ex, "Could not read channel {channelId} info", channelId);
+                }
+            }
+
             var game = new BingoGame
             {
                 gameId = Guid.NewGuid(),
@@ -69,6 +82,8 @@ namespace TwitchBingoService.Services
                 columns = gameParams.columns,
                 confirmationThreshold = gameParams.confirmationThreshold ?? _options.DefaultConfirmationThreshold,
                 hasChatIntegration = gameParams.enableChatIntegration,
+                version = gameParams.version ?? _options.Version,
+                language = gameParams.language ?? "en",
             };
 
             await _storage.WriteGame(game);
@@ -76,11 +91,7 @@ namespace TwitchBingoService.Services
             var tasks = new List<Task>();
             if (game.hasChatIntegration)
             {
-                tasks.Add(Task.Run(async () =>
-                {
-                    var chatBot = await ConnectBot(channelId, CancellationToken.None);
-                    await chatBot.SendMessageAsync(new OutgoingMessage { Message = "Bingo game started !" }, CancellationToken.None);
-                }));
+                tasks.Add(_ebsService.TrySendChatMessage(channelId, "The Bingo has started !", game.version));
             }
             tasks.Add(_storage.WriteLog(game.gameId, new BingoLogEntry
             {
@@ -124,11 +135,24 @@ namespace TwitchBingoService.Services
             }
         }
 
-        public async Task<BingoGame> GetGame(Guid gameId)
+        public async Task<BingoGame> GetGame(Guid gameId, string? channelId)
         {
             var game = await _storage.ReadGame(gameId);
             if (game == null)
             {
+                if (channelId != null)
+                {
+                    _logger.LogWarning("Non-existent game {gameId} detected on channel {channelId}, checking game on configuration", gameId, channelId);
+                    string configurationStr = await _ebsService.GetExtensionConfigurationBroadcasterSegment(channelId);
+                    BingoConfigurationSegment segment = JsonSerializer.Deserialize(configurationStr, ConfigurationSerializerContext.Default.BingoConfigurationSegment);
+                    if (segment.activeGame != null)
+                    {
+                        _logger.LogWarning("Resetting game on configuration for channel {channelId}", channelId);
+                        segment.activeGame = null;
+                        segment.activeGameId = null;
+                        await _ebsService.SetExtensionConfigurationBroadcasterSegment(channelId, JsonSerializer.Serialize(segment, ConfigurationSerializerContext.Default.BingoConfigurationSegment));
+                    }
+                }
                 throw new ArgumentOutOfRangeException("gameId");
             }
 
@@ -281,6 +305,8 @@ namespace TwitchBingoService.Services
             var game = await _storage.ReadGame(gameId);
             var entry = game.entries.First(e => e.key == key);
 
+            var participation = _storage.WriteParticipation(gameId, game.channelId, userId);
+
             var tentative = new BingoTentative
             {
                 playerId = userId,
@@ -290,12 +316,25 @@ namespace TwitchBingoService.Services
             };
             await _storage.WriteTentative(gameId, tentative);
             await ProcessTentative(game, tentative, entry);
+            try
+            {
+                await participation;
+            } catch (Exception ex) { _logger.LogError(ex, "Failed to save participation for {userId} to game {gameId}", userId, gameId); }
 
             return tentative;
         }
 
         public async Task<BingoEntry> Confirm(Guid gameId, ushort key, string userId)
         {
+            Task tentative = Task.Run(async () =>
+            {
+                try
+                {
+                    await AddTentative(gameId, key, userId);
+                }
+                catch(Exception) {}
+            });
+
             (BingoGame game, BingoEntry entry) = await _gameUpdatePolicy.ExecuteAsync(async () =>
             {
                 var updatedGame = await _storage.ReadGame(gameId);
@@ -356,6 +395,7 @@ namespace TwitchBingoService.Services
             }
 
             tasks.Add(ProcessTentatives(game, key));
+            tasks.Add(tentative);
             await Task.WhenAll(tasks);
 
             return entry;
@@ -469,7 +509,7 @@ namespace TwitchBingoService.Services
             if (notifications.Any(n => n.type == NotificationType.Confirmation))
             {
 
-                tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+                tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new
                 {
                     type = "confirm",
                     payload = new
@@ -483,15 +523,15 @@ namespace TwitchBingoService.Services
             }
 
             // Process completion notifications
-            var colComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
-            var rowComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
-            var gridComplete = Task.WhenAll(notifications.Where(n => n.type == NotificationType.CompletedGrid && !string.IsNullOrEmpty(n.playerId))
-                    .Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var colCompleteIds = notifications.Where(n => n.type == NotificationType.CompletedColumn && !string.IsNullOrEmpty(n.playerId));
+            var colComplete = Task.WhenAll(colCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var rowCompleteIds = notifications.Where(n => n.type == NotificationType.CompletedRow && !string.IsNullOrEmpty(n.playerId));
+            var rowComplete = Task.WhenAll(rowCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
+            var gridCompleteIds = notifications.Where(n => n.type == NotificationType.CompletedGrid && !string.IsNullOrEmpty(n.playerId));
+            var gridComplete = Task.WhenAll(gridCompleteIds.Select(n => _storage.ReadUserName(n.playerId).ContinueWith(t => t.Result ?? "Anonymous")));
 
-            _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colComplete), string.Join(',', rowComplete), string.Join(',', gridComplete));
-            tasks.Add(_ebsService.BroadcastJson(game.channelId, System.Text.Json.JsonSerializer.Serialize(new
+            _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colCompleteIds), string.Join(',', rowCompleteIds), string.Join(',', gridCompleteIds));
+            tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new
             {
                 type = "bingo",
                 payload = new
@@ -549,8 +589,11 @@ namespace TwitchBingoService.Services
                 return;
             }
 
-            var confirmationMessage = $"✅ {game.entries.First(e => e.key == key).text}";
-            await SendChatMessage(confirmationMessage, game.channelId);
+            foreach(BingoNotification notification in notifications.Where(notification => notification.type == NotificationType.Confirmation).DistinctBy(n => n.key))
+            {
+                var confirmationMessage = $"✅ {game.entries.First(e => e.key == notification.key).text}";
+                await SendChatMessage(confirmationMessage, game.channelId, game.version ?? _options.Version);
+            }
 
             var messageBuilder = new StringBuilder(140, 280);
             if (gridComplete.Result.Count() > 0 && messageBuilder.Length < 200)
@@ -601,13 +644,13 @@ namespace TwitchBingoService.Services
 
             if (messageBuilder.Length > 0)
             {
-                await SendChatMessage(messageBuilder.ToString(), game.channelId);
+                await SendChatMessage(messageBuilder.ToString(), game.channelId, game.version ?? _options.Version);
             }
         }
 
-        private async Task SendChatMessage(string message, string channelId)
+        private async Task SendChatMessage(string message, string channelId, string version)
         {
-            await _ebsService.TrySendChatMessage(channelId, message, _options.Version);
+            await _ebsService.TrySendChatMessage(channelId, message, version);
 
             if (_options.EnableChatBot)
             {

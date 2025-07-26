@@ -39,6 +39,7 @@ div.tabWidget.hidden
     width: 0px;
     left: -4rem;
     opacity: 0;
+    transition: all 0.5s;
 }
 
 div.tabWidget.hidden > img
@@ -52,4 +53,10 @@ div.tabWidget.shown
     width: 3rem;
     left: 0px;
     opacity: 1.0;
+    transition: all 0.5s;
+}
+
+div.tabWidget > span
+{
+    font-size: 2rem;
 }

@@ -1,8 +1,9 @@
-import { TwitchAuthCallbackContext, TwitchExtensionConfiguration, TwitchExtHelper } from "../common/TwitchExtension";
+import type { TwitchAuthCallbackContext, TwitchExtensionConfiguration } from "../common/TwitchExtension";
+import { TwitchExtHelper } from "../common/TwitchExtension";
 
 // Array with a callback on push, used to automatically call callback on registration if needed
 class CallbackArray<T> extends Array<T> {
-    onPush: {(item: T):void} = null
+    onPush: {(item: T):void} = (i) => {}
 
     constructor(onPush: {(item: T):void})
     {
@@ -21,7 +22,7 @@ export default class TwitchService {
     onConfiguration: CallbackArray<{(config: TwitchExtensionConfiguration):void}>
 
     configuration: TwitchExtensionConfiguration = { content: "", version: "" };
-    authToken: TwitchAuthCallbackContext = null;
+    authToken: TwitchAuthCallbackContext | undefined = undefined;
 
     authReady: boolean = false
     confReady: boolean = false
@@ -76,7 +77,7 @@ export default class TwitchService {
     _onPushAuthorizedHandler = (cb: {(context: TwitchAuthCallbackContext):void}) => {
         if (this.authReady)
         {
-            cb(this.authToken)
+            cb(this.authToken!)
         }
     }
 
