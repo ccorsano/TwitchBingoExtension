@@ -27,6 +27,9 @@ namespace TwitchBingoService.Storage
         private string GetNotificationsKey(Guid gameId, ushort key) => $"game:{gameId}:{key}:notifications";
         private string GetUserKey(string userId) => $"bingo:username:{userId}";
         private string GetGameLogKey(Guid gameId) => $"game:{gameId}:log";
+        private string GetParticipationKey(string userId) => $"bingo:participations:{userId}";
+
+        record Participation(Guid gameId, string channelId);
 
         public async Task<BingoGame> ReadGame(Guid gameId)
         {
@@ -242,6 +245,22 @@ namespace TwitchBingoService.Storage
                 ++index;
             }
             return log.ToArray();
+        }
+
+        public async Task WriteParticipation(Guid gameId, string channelId, string userId)
+        {
+            _logger.LogInformation("Save bingo game {gameId} tentatives for player {playerId}.", gameId, userId);
+
+            var db = _connection.GetDatabase();
+            var buffer = ArrayPool<byte>.Shared.Rent(256);
+            using (var stream = new MemoryStream(buffer))
+            {
+                ProtoBuf.Serializer.Serialize(stream, new Participation(gameId, channelId));
+                stream.Flush();
+                var serializedTentative = new ReadOnlyMemory<byte>(buffer).Slice(0, (int)stream.Position);
+
+                await db.ListRightPushAsync(GetParticipationKey(userId), serializedTentative);
+            }
         }
     }
 }

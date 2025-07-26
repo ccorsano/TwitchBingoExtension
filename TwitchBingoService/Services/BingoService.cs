@@ -305,6 +305,8 @@ namespace TwitchBingoService.Services
             var game = await _storage.ReadGame(gameId);
             var entry = game.entries.First(e => e.key == key);
 
+            var participation = _storage.WriteParticipation(gameId, game.channelId, userId);
+
             var tentative = new BingoTentative
             {
                 playerId = userId,
@@ -314,6 +316,10 @@ namespace TwitchBingoService.Services
             };
             await _storage.WriteTentative(gameId, tentative);
             await ProcessTentative(game, tentative, entry);
+            try
+            {
+                await participation;
+            } catch (Exception ex) { _logger.LogError(ex, "Failed to save participation for {userId} to game {gameId}", userId, gameId); }
 
             return tentative;
         }
