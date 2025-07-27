@@ -22,6 +22,6 @@ namespace TwitchBingoService.Model
 
         public NotificationType type { get; set; }
 
-        public string playerId { get; set; }
+        public string? playerId { get; set; }
     }
 }

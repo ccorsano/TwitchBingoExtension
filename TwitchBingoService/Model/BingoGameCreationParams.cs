@@ -11,7 +11,7 @@ namespace TwitchBingoService.Model
     {
         public Byte rows { get; set; }
         public Byte columns { get; set; }
-        public BingoEntry[] entries { get; set; }
+        public BingoEntry[] entries { get; set; } = Array.Empty<BingoEntry>();
 
         [JsonConverter(typeof(NullableTimeSpanConverter))]
         public TimeSpan? confirmationThreshold { get; set; }

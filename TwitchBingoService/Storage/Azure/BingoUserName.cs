@@ -1,9 +1,6 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TwitchBingoService.Storage.Azure
 {
@@ -11,7 +8,9 @@ namespace TwitchBingoService.Storage.Azure
     {
         public BingoUserName()
         {
-
+            PartitionKey = string.Empty;
+            RowKey = string.Empty;
+            UserName = string.Empty;
         }
 
         public BingoUserName(string userId, string userName)

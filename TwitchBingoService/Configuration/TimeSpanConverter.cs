@@ -21,7 +21,8 @@ namespace TwitchBingoService.Configuration
             {
                 throw new FormatException("Unexpected JSON token for a TimeSpan value");
             }
-            return TimeSpan.ParseExact(reader.GetString(), "c", CultureInfo.InvariantCulture);
+            // Reader.GetString() is only null if TokenType is JsonTokenType.Null
+            return TimeSpan.ParseExact(reader.GetString()!, "c", CultureInfo.InvariantCulture);
         }
 
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
@@ -43,7 +44,8 @@ namespace TwitchBingoService.Configuration
             {
                 throw new FormatException("Unexpected JSON token for a TimeSpan value");
             }
-            return TimeSpan.ParseExact(reader.GetString(), "c", CultureInfo.InvariantCulture);
+            // Reader.GetString() is only null if TokenType is JsonTokenType.Null
+            return TimeSpan.ParseExact(reader.GetString()!, "c", CultureInfo.InvariantCulture);
         }
 
         public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)

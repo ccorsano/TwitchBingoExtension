@@ -8,7 +8,7 @@ namespace TwitchBingoService.Model
 {
     public class BingoTentative
     {
-        public string playerId { get; set; }
+        public required string playerId { get; set; }
 
         public ushort entryKey { get; set; }
 

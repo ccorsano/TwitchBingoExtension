@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
+using System.Security.Policy;
 
 namespace TwitchBingoService.Storage.Azure
 {
@@ -8,7 +9,8 @@ namespace TwitchBingoService.Storage.Azure
     {
         public BingoGameParticipantEntity()
         {
-
+            UserId = string.Empty;
+            ChannelId = string.Empty;
         }
 
         public BingoGameParticipantEntity(string userId, Guid gameId, string channelId)

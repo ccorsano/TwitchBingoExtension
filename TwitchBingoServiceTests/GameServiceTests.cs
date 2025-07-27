@@ -37,7 +37,7 @@ namespace TwitchBingoServiceTests
             };
         }
 
-        private TwitchEBSService GetEBSService(Func<HttpRequestMessage, HttpResponseMessage> callback = null)
+        private TwitchEBSService GetEBSService(Func<HttpRequestMessage, HttpResponseMessage>? callback = null)
         {
             var handlerMock = new Mock<HttpMessageHandler>();
             handlerMock.Protected()
@@ -83,12 +83,8 @@ namespace TwitchBingoServiceTests
             var storage = new InMemoryGameStore();
             var mockEBS = GetEBSService();
             var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions());
-            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var chatClientBuilder = TwitchChatClientBuilder.Create()
-                .WithOAuthToken("")
-                .WithLoggerFactory(loggerFactory);
-            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
+            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(3, 4);
@@ -106,12 +102,8 @@ namespace TwitchBingoServiceTests
             var storage = new InMemoryGameStore();
             var mockEBS = GetEBSService();
             var options = new OptionsWrapper<BingoServiceOptions>(new BingoServiceOptions());
-            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var chatClientBuilder = TwitchChatClientBuilder.Create()
-                .WithOAuthToken("")
-                .WithLoggerFactory(loggerFactory);
-            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
+            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(2, 3);
@@ -121,7 +113,7 @@ namespace TwitchBingoServiceTests
             var grid01 = await gameService.GetGrid(game.gameId, "Player01");
             var cell_0_0 = grid01.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
             // Add a tentative from player on cell 0,0
-            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
+            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0!.key, "Player01");
             Assert.False(tentative01.confirmed);
 
             // Confirm entry from moderator
@@ -130,17 +122,17 @@ namespace TwitchBingoServiceTests
             // Get updated grid for player
             var grid01_2 = await gameService.GetGrid(game.gameId, "Player01");
             var cell_0_0_2 = grid01_2.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
-            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2.state);
+            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2?.state);
 
             // Get cell 0,1 for player
             var cell_0_1 = grid01_2.cells.FirstOrDefault(c => c.col == 0 && c.row == 1);
 
             // Confirm entry shown at 0,1
-            var confirmedEntry2 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
+            var confirmedEntry2 = await gameService.Confirm(game.gameId, cell_0_1!.key, "Moderator01");
             var grid01_3 = await gameService.GetGrid(game.gameId, "Player01");
             var cell_0_1_2 = grid01_3.cells.FirstOrDefault(c => c.col == 0 && c.row == 1);
 
-            Assert.Equal(BingoCellState.Idle, cell_0_1_2.state);
+            Assert.Equal(BingoCellState.Idle, cell_0_1_2?.state);
 
             // Player add a tentative on cell 0,1 after confirmation
             var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
@@ -148,7 +140,7 @@ namespace TwitchBingoServiceTests
             var grid01_4 = await gameService.GetGrid(game.gameId, "Player01");
             var cell_0_1_3 = grid01_4.cells.FirstOrDefault(c => c.col == 0 && c.row == 1);
 
-            Assert.Equal(BingoCellState.Confirmed, cell_0_1_3.state);
+            Assert.Equal(BingoCellState.Confirmed, cell_0_1_3?.state);
         }
 
         [Fact]
@@ -160,12 +152,8 @@ namespace TwitchBingoServiceTests
             {
                 DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(200)
             });
-            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var chatClientBuilder = TwitchChatClientBuilder.Create()
-                .WithOAuthToken("")
-                .WithLoggerFactory(loggerFactory);
-            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
+            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(2, 3);
@@ -177,25 +165,25 @@ namespace TwitchBingoServiceTests
             var cell_0_1 = grid01.cells.FirstOrDefault(c => c.col == 1 && c.row == 0);
             var cell_0_2 = grid01.cells.FirstOrDefault(c => c.col == 2 && c.row == 0);
             // Add a tentative from player on cell 0,0
-            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
+            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0!.key, "Player01");
             Assert.False(tentative01.confirmed);
 
             // Confirm entry from moderator
-            var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
+            var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0!.key, "Moderator01");
             await Task.Delay(201);
-            var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1.key, "Player01");
+            var tentative02 = await gameService.AddTentative(game.gameId, cell_0_1!.key, "Player01");
             Assert.False(tentative02.confirmed);
-            var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
+            var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1!.key, "Moderator01");
             await Task.Delay(201);
-            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
+            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2!.key, "Player01");
             Assert.False(tentative03.confirmed);
-            var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
+            var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2!.key, "Moderator01");
             await Task.Delay(201);
 
             // Get updated grid for player
             var grid01_2 = await gameService.GetGrid(game.gameId, "Player01");
             var cell_0_0_2 = grid01_2.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
-            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2.state);
+            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2?.state);
             Assert.All(grid01_2.cells.Where(c => c.row == 0), c =>
             {
                 Assert.Equal(BingoCellState.Confirmed, c.state);
@@ -218,12 +206,8 @@ namespace TwitchBingoServiceTests
             {
                 DefaultConfirmationThreshold = TimeSpan.FromMilliseconds(200),
             });
-            var memoryCache = new MemoryCache(new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
             var loggerFactory = new LoggerFactory();
-            var chatClientBuilder = TwitchChatClientBuilder.Create()
-                .WithOAuthToken("")
-                .WithLoggerFactory(loggerFactory);
-            var gameService = new BingoService(storage, mockEBS, chatClientBuilder, memoryCache, options, loggerFactory.CreateLogger<BingoService>());
+            var gameService = new BingoService(storage, mockEBS, options, loggerFactory.CreateLogger<BingoService>());
 
             var channelId = "123456";
             var paramObject = GetParams(2, 3);
@@ -235,25 +219,25 @@ namespace TwitchBingoServiceTests
             var cell_0_1 = grid01.cells.FirstOrDefault(c => c.col == 1 && c.row == 0);
             var cell_0_2 = grid01.cells.FirstOrDefault(c => c.col == 2 && c.row == 0);
             // Add a tentative from player on cell 0,0
-            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0.key, "Player01");
-            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2.key, "Player01");
+            var tentative01 = await gameService.AddTentative(game.gameId, cell_0_0!.key, "Player01");
+            var tentative03 = await gameService.AddTentative(game.gameId, cell_0_2!.key, "Player01");
             Assert.False(tentative01.confirmed);
             Assert.False(tentative03.confirmed);
 
             // Confirm entry from moderator
-            var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0.key, "Moderator01");
-            var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1.key, "Moderator01");
+            var confirmedEntry01 = await gameService.Confirm(game.gameId, cell_0_0!.key, "Moderator01");
+            var confirmedEntry02 = await gameService.Confirm(game.gameId, cell_0_1!.key, "Moderator01");
             await Task.Delay(210);
-            var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2.key, "Moderator01");
+            var confirmedEntry03 = await gameService.Confirm(game.gameId, cell_0_2!.key, "Moderator01");
 
             // Get updated grid for player
             var grid01_2 = await gameService.GetGrid(game.gameId, "Player01");
             var cell_0_0_2 = grid01_2.cells.FirstOrDefault(c => c.col == 0 && c.row == 0);
             var cell_0_1_2 = grid01_2.cells.FirstOrDefault(c => c.col == 1 && c.row == 0);
             var cell_0_2_2 = grid01_2.cells.FirstOrDefault(c => c.col == 2 && c.row == 0);
-            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2.state);
-            Assert.Equal(BingoCellState.Missed, cell_0_1_2.state);
-            Assert.Equal(BingoCellState.Rejected, cell_0_2_2.state);
+            Assert.Equal(BingoCellState.Confirmed, cell_0_0_2?.state);
+            Assert.Equal(BingoCellState.Missed, cell_0_1_2?.state);
+            Assert.Equal(BingoCellState.Rejected, cell_0_2_2?.state);
 
             Assert.DoesNotContain<ushort>(0, grid01_2.completedRows);
             Assert.DoesNotContain<ushort>(1, grid01_2.completedRows);

@@ -20,7 +20,7 @@ namespace TwitchBingoService.Configuration
             }
         }
 
-        public TOptions Get(string name)
+        public TOptions Get(string? name)
         {
             return _options;
         }

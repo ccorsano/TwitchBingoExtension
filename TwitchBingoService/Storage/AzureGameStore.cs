@@ -76,11 +76,11 @@ namespace TwitchBingoService.Storage
             bingoGame.StorageObject = result.Headers.ETag;
         }
 
-        public async Task<BingoGame> ReadGame(Guid gameId)
+        public async Task<BingoGame?> ReadGame(Guid gameId)
         {
             var client = _storageAccount.GetTableClient(GameTableName);
             var result = await client.GetEntityIfExistsAsync<BingoGameEntity>(gameId.ToString(), "");
-            if (! result.HasValue)
+            if (! result.HasValue || result.Value!.Game is null)
             {
                 _logger.LogError("Bingo game {gameId} not found", gameId);
                 return null;
@@ -97,7 +97,7 @@ namespace TwitchBingoService.Storage
         {
             var client = _storageAccount.GetTableClient(GameTableName);
             var result = await client.GetEntityIfExistsAsync<BingoGameEntity>(gameId.ToString(), "");
-            if (! result.HasValue)
+            if (result.Value is null)
             {
                 throw new ArgumentOutOfRangeException($"Game to delete {gameId} does not exist in storage");
             }
@@ -112,7 +112,7 @@ namespace TwitchBingoService.Storage
             }
         }
 
-        public async Task<string> ReadUserName(string userId)
+        public async Task<string?> ReadUserName(string userId)
         {
             var client = _storageAccount.GetTableClient(UserNameTableName);
             var result = await client.GetEntityIfExistsAsync<BingoUserName>(userId.ToLowerInvariant(), "");
@@ -120,7 +120,7 @@ namespace TwitchBingoService.Storage
             {
                 return null;
             }
-            return result.Value.UserName;
+            return result.Value!.UserName;
         }
 
         public async Task WriteUserName(string userId, string userName)

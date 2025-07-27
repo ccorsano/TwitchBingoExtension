@@ -13,7 +13,9 @@ namespace TwitchBingoService.Storage.Azure
     {
         public BingoGameEntity()
         {
-
+            PartitionKey = string.Empty;
+            ChannelId = string.Empty;
+            Language = "en";
         }
 
         public BingoGameEntity(BingoGame game)
@@ -32,7 +34,7 @@ namespace TwitchBingoService.Storage.Azure
 
         public string ChannelId { get; set; }
 
-        public string Version { get; set; }
+        public string? Version { get; set; }
 
         public string Language { get; set; }
 
@@ -43,8 +45,11 @@ namespace TwitchBingoService.Storage.Azure
             set
             {
                 Game = System.Text.Json.JsonSerializer.Deserialize(value, JsonContext.Default.BingoGame);
-                Game.version = Version;
-                Game.language = Language;
+                if (Game is not null)
+                {
+                    Game.version = Version;
+                    Game.language = Language;
+                }
             }
         }
         public string SerializedModerators
@@ -57,12 +62,12 @@ namespace TwitchBingoService.Storage.Azure
             {
                 if (Game != null && !string.IsNullOrEmpty(value))
                 {
-                    Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(value, JsonContext.Default.StringArray);
+                    Game.moderators = System.Text.Json.JsonSerializer.Deserialize<string[]>(value, JsonContext.Default.StringArray) ?? Array.Empty<string>();
                 }
             }
         }
 
         [IgnoreDataMember]
-        public BingoGame Game { get; set; }
+        public BingoGame? Game { get; set; }
     }
 }

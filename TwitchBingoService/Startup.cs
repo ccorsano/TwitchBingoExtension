@@ -58,7 +58,7 @@ namespace TwitchBingoService
                 {
                     TwitchOptions twitchOptions = new TwitchOptions();
                     Configuration.GetSection("twitch").Bind(twitchOptions);
-                    var signingKey = new SymmetricSecurityKey(Convert.FromBase64String(twitchOptions.ExtensionSecret));
+                    var signingKey = new SymmetricSecurityKey(Convert.FromBase64String(twitchOptions.ExtensionSecret!));
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey = signingKey,
@@ -73,6 +73,12 @@ namespace TwitchBingoService
                         {
                             var token = validationContext.SecurityToken as JsonWebToken;
 
+                            if (token == null)
+                            {
+                                validationContext.Fail("Could not process token");
+                                return Task.CompletedTask;
+                            }
+
                             var claims = new List<Claim>
                             {
                                 new Claim(ClaimTypes.Role, token.GetPayloadValue<string>("role"))
@@ -85,14 +91,14 @@ namespace TwitchBingoService
                             validationContext.Request.HttpContext.Items.Add("jwtPayload", System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(token.EncodedPayload)));
 
                             var identity = new ClaimsIdentity(claims);
-                            validationContext.Principal.AddIdentity(identity);
+                            validationContext.Principal!.AddIdentity(identity);
 
                             return Task.CompletedTask;
                         },
                         OnAuthenticationFailed = (context) =>
                         {
                             var logger = context.HttpContext.RequestServices.GetService<ILogger<Startup>>();
-                            logger.LogWarning("Rejected request");
+                            logger?.LogWarning("Rejected request");
                             return Task.CompletedTask;
                         }
                     };
@@ -100,7 +106,7 @@ namespace TwitchBingoService
                     options.TokenValidationParameters.NameClaimTypeRetriever = (token, _) =>
                     {
                         var jwtToken = token as JsonWebToken;
-                        if (jwtToken.TryGetPayloadValue("user_id", out string userId))
+                        if (jwtToken is not null && jwtToken.TryGetPayloadValue("user_id", out string userId))
                         {
                             return "user_id";
                         }
@@ -132,16 +138,11 @@ namespace TwitchBingoService
             services.AddSingleton(s =>
                 Twitch.Authenticate()
                     .FromAppCredentials(
-                        s.GetService<IOptions<TwitchOptions>>().Value.ClientId,
-                        s.GetService<IOptions<TwitchOptions>>().Value.ClientSecret)
+                        s.GetService<IOptions<TwitchOptions>>()!.Value.ClientId,
+                        s.GetService<IOptions<TwitchOptions>>()!.Value.ClientSecret)
                     .Build()
             );
-            services.Configure<TwitchChatClientOptions>(Configuration.GetSection("twitch").GetSection("IrcOptions"));
-            services.AddTransient(s => TwitchChatClientBuilder.Create()
-                .WithOAuthToken(s.GetService<IOptions<TwitchChatClientOptions>>().Value.OAuthToken)
-                .WithLoggerFactory(s.GetRequiredService<ILoggerFactory>()));
             services.AddTransient<ITwitchAPIClient, TwitchAPIClient>();
-            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -14,6 +14,6 @@ namespace TwitchBingoService.Model
 
         public DateTime confirmationCutoff { get; set; }
 
-        public string confirmedBy { get; set; }
+        public required string confirmedBy { get; set; }
     }
 }

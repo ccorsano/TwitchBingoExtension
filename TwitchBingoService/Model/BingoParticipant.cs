@@ -8,8 +8,8 @@ namespace TwitchBingoService.Model
 {
     public class BingoParticipant
     {
-        public string participantId { get; set; }
+        public required string participantId { get; set; }
 
-        public BingoTentative[] tentatives { get; set; }
+        public BingoTentative[] tentatives { get; set; } = Array.Empty<BingoTentative>();
     }
 }

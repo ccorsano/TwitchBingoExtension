@@ -31,7 +31,7 @@ namespace TwitchBingoService.Storage
 
         record Participation(Guid gameId, string channelId);
 
-        public async Task<BingoGame> ReadGame(Guid gameId)
+        public async Task<BingoGame?> ReadGame(Guid gameId)
         {
             _logger.LogInformation("Read bingo game {gameId}", gameId);
 
@@ -83,7 +83,7 @@ namespace TwitchBingoService.Storage
 
         public async Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            _logger.LogInformation("Save bingo game {gameId} tentatives for player {playerId}.", gameId, tentative?.playerId);
+            _logger.LogInformation("Save bingo game {gameId} tentatives for player {playerId}.", gameId, tentative.playerId);
 
             var db = _connection.GetDatabase();
             var buffer = ArrayPool<byte>.Shared.Rent(256);
@@ -112,7 +112,7 @@ namespace TwitchBingoService.Storage
 
             var tentatives = new List<BingoTentative>();
             var index = 0;
-            RedisValue[] results = null;
+            RedisValue[]? results = null;
             var indexToDelete = new List<int>();
             while(results == null || results?.Length == batchSize)
             {
@@ -193,7 +193,7 @@ namespace TwitchBingoService.Storage
             return notifications.ToArray();
         }
 
-        public async Task<string> ReadUserName(string userId)
+        public async Task<string?> ReadUserName(string userId)
         {
             var db = _connection.GetDatabase();
             var userValue = await db.StringGetAsync(GetUserKey(userId));

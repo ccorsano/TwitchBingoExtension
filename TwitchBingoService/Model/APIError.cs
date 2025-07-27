@@ -7,6 +7,6 @@ namespace TwitchBingoService.Model
 {
     public class APIError
     {
-        public string Error { get; set; }
+        public required string Error { get; set; }
     }
 }

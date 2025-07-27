@@ -35,7 +35,7 @@ namespace TwitchBingoService.Services
             _twitchExtensionClient.DefaultRequestHeaders.Add("client-id", _options.ExtensionId);
             _apiClient = apiClient;
 
-            var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_options.ExtensionSecret));
+            var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_options.ExtensionSecret!));
             _jwtSigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
 
@@ -46,9 +46,9 @@ namespace TwitchBingoService.Services
 
         public class TwitchExtError
         {
-            public string error { get; set; }
+            public required string error { get; set; }
             public int status { get; set; }
-            public string message { get; set; }
+            public required string message { get; set; }
         }
 
         public string GetUserJWTToken(string userId, string channelId, string role)
@@ -137,7 +137,7 @@ namespace TwitchBingoService.Services
             if (! response.IsSuccessStatusCode)
             {
                 var error  = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
-                _logger.LogError($"Could not broadcast message: {error.error} - {error.message} ({error.status})");
+                _logger.LogError($"Could not broadcast message: {error?.error} - {error?.message} ({error?.status})");
             }
             if (throwOnError)
             {
@@ -171,7 +171,7 @@ namespace TwitchBingoService.Services
             if (!response.IsSuccessStatusCode)
             {
                 var error = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
-                _logger.LogError($"Could not send chat message: {error.error} - {error.message} ({error.status})");
+                _logger.LogError($"Could not send chat message: {error?.error} - {error?.message} ({error?.status})");
             }
             return response.IsSuccessStatusCode;
         }
@@ -188,10 +188,10 @@ namespace TwitchBingoService.Services
 
         public async Task<string> GetUserDisplayName(string userId)
         {
-            return (await _apiClient.GetUsersByIdAsync(new string[] { userId })).FirstOrDefault()?.DisplayName;
+            return (await _apiClient.GetUsersByIdAsync([userId])).FirstOrDefault()?.DisplayName ?? "Anonymous";
         }
 
-        public async Task<string> GetExtensionConfigurationBroadcasterSegment(string channelId)
+        public async Task<string?> GetExtensionConfigurationBroadcasterSegment(string channelId)
         {
             var token = GetChatJWTToken(channelId);
 
@@ -202,7 +202,7 @@ namespace TwitchBingoService.Services
             response.EnsureSuccessStatusCode();
             var configurationResponse = await response.Content.ReadFromJsonAsync<ExtensionSegmentResponse>();
 
-            return configurationResponse.data.FirstOrDefault()?.content;
+            return configurationResponse?.data?.FirstOrDefault()?.content;
         }
 
         public async Task SetExtensionConfigurationBroadcasterSegment(string channelId, string content)

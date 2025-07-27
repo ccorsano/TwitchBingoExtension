@@ -53,7 +53,7 @@ namespace TwitchBingoService.Controllers
             var userId = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
             if (userId == null)
             {
-                _logger.LogError("Missing user id, token payload: {tokenPayload}", HttpContext.Items.TryGetValue("jwtPayload", out object payload) ? payload : "empty");
+                _logger.LogError("Missing user id, token payload: {tokenPayload}", HttpContext.Items.TryGetValue("jwtPayload", out object? payload) ? payload : "empty");
                 throw new ArgumentOutOfRangeException("Missing user id");
             }
             var opaqueId = User.Claims.First(c => c.Type == "opaque_user_id").Value;
@@ -85,11 +85,11 @@ namespace TwitchBingoService.Controllers
         {
             try
             {
-                return new ObjectResult(await _gameService.Confirm(gameId, key, User.Identity.Name));
+                return new ObjectResult(await _gameService.Confirm(gameId, key, User.Identity!.Name ?? "Anonymous"));
             }
             catch(InvalidOperationException ex)
             {
-                _logger.LogError(ex, "Error in confirmation of game {gameId} for key {key} by player {playerName}", gameId, key, User.Identity.Name);
+                _logger.LogError(ex, "Error in confirmation of game {gameId} for key {key} by player {playerName}", gameId, key, User.Identity!.Name);
                 return new ConflictObjectResult(new APIError
                 {
                     Error = ex.Message
@@ -109,7 +109,7 @@ namespace TwitchBingoService.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogError(ex, "Error triggering notifications for game {gameId} for key {key} by moderator {playerName}", gameId, key, User.Identity.Name);
+                _logger.LogError(ex, "Error triggering notifications for game {gameId} for key {key} by moderator {playerName}", gameId, key, User?.Identity?.Name);
                 return new ConflictObjectResult(new APIError
                 {
                     Error = ex.Message

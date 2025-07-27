@@ -10,7 +10,8 @@ namespace TwitchBingoService.Storage.Azure
     {
         public BingoLogEntity()
         {
-
+            RowKey = string.Empty;
+            PlayersNames = string.Empty;
         }
 
         public BingoLogEntity(Guid gameId, BingoLogEntry log)
@@ -60,7 +61,7 @@ namespace TwitchBingoService.Storage.Azure
                 key = (ushort)Key,
                 type = (NotificationType)Type,
                 playersCount = PlayersCount,
-                playerNames = JsonSerializer.Deserialize(PlayersNames, JsonContext.Default.StringArray)
+                playerNames = JsonSerializer.Deserialize(PlayersNames, JsonContext.Default.StringArray) ?? Array.Empty<string>(),
             };
         }
     }

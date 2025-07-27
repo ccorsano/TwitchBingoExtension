@@ -13,9 +13,11 @@ namespace TwitchBingoService.Storage.Azure
         public static string TentativePartitionKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";
         public static string TentativePartitionKey(Guid gameId, ushort entryKey) => $"{gameId}:{entryKey.ToString("00000")}";
 
-        public BingoTentativeEntity()
+        public BingoTentativeEntity() 
         {
-
+            PartitionKey = string.Empty;
+            RowKey = "00000";
+            PlayerId = string.Empty;
         }
 
         public BingoTentativeEntity(Guid gameId, string playerId, BingoTentative tentative)

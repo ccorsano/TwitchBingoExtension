@@ -10,10 +10,10 @@ namespace TwitchBingoService.Model
     {
         public UInt16 key { get; set; }
 
-        public string text { get; set; }
+        public required string text { get; set; }
 
         public DateTime? confirmedAt { get; set; }
 
-        public string confirmedBy { get; set; }
+        public string? confirmedBy { get; set; }
     }
 }

@@ -21,14 +21,14 @@ namespace TwitchBingoService.Storage
         public string GetPendingTentativeKey(Guid gameId, ushort key) => $"{gameId}:{key}";
         public string GetNotificationKey(Guid gameId, ushort key) => $"{gameId}:{key}";
 
-        public Task<BingoGame> ReadGame(Guid gameId)
+        public Task<BingoGame?> ReadGame(Guid gameId)
         {
-            if (Store.TryGetValue(gameId, out BingoGame value))
+            if (Store.TryGetValue(gameId, out BingoGame? value))
             {
-                return Task.FromResult(value);
+                return Task.FromResult<BingoGame?>(value);
             }
 
-            return Task.FromResult<BingoGame>(null);
+            return Task.FromResult<BingoGame?>(null);
         }
 
         public Task DeleteGame(Guid gameId)
@@ -46,8 +46,9 @@ namespace TwitchBingoService.Storage
                     }
                     if (Notifications.TryRemove(GetNotificationKey(gameId, entry.key), out var notifications))
                     {
-                        foreach (var notification in notifications)
+                        foreach (BingoNotification notification in notifications)
                         {
+                            if (notification.playerId is null) continue;
                             Tentatives.TryRemove(GetTentativeKey(gameId, notification.playerId), out var _);
                         }
                     }
@@ -58,28 +59,28 @@ namespace TwitchBingoService.Storage
 
         public Task<BingoTentative[]> ReadGameState(Guid gameId, string playerId)
         {
-            if (Tentatives.TryGetValue(GetTentativeKey(gameId, playerId), out BingoTentative[] bingoTentative))
+            if (Tentatives.TryGetValue(GetTentativeKey(gameId, playerId), out BingoTentative[]? bingoTentative))
             {
                 return Task.FromResult(bingoTentative);
             }
-            return Task.FromResult<BingoTentative[]>(null);
+            return Task.FromResult<BingoTentative[]>([]);
         }
 
         public Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId)
         {
-            if (Tentatives.TryGetValue(GetTentativeKey(gameId, playerId), out BingoTentative[] tentatives))
+            if (Tentatives.TryGetValue(GetTentativeKey(gameId, playerId), out BingoTentative[]? tentatives))
             {
                 return Task.FromResult(tentatives);
             }
-            return Task.FromResult(new BingoTentative[0]);
+            return Task.FromResult(Array.Empty<BingoTentative>());
         }
 
         public Task<BingoTentative[]> ReadPendingTentatives(Guid gameId, ushort key, DateTime deletionCutoff)
         {
             var pendingKey = GetPendingTentativeKey(gameId, key);
-            var tentatives = PendingTentatives.GetOrAdd(pendingKey, new BingoTentative[0]);
+            var tentatives = PendingTentatives.GetOrAdd(pendingKey, []);
 
-            tentatives = PendingTentatives.GetValueOrDefault(pendingKey);
+            tentatives = PendingTentatives.GetValueOrDefault(pendingKey) ?? [];
 
             var updatedTentatives = tentatives.Where(t => t.tentativeTime >= deletionCutoff).ToArray();
 
@@ -102,11 +103,11 @@ namespace TwitchBingoService.Storage
 
         public Task WriteTentative(Guid gameId, BingoTentative tentative)
         {
-            PendingTentatives.AddOrUpdate(GetPendingTentativeKey(gameId, tentative.entryKey), new BingoTentative[] { tentative }, (key, existing) =>
-                existing.Where(e => tentative.entryKey != e.entryKey).Concat(new BingoTentative[] { tentative }).ToArray()
+            PendingTentatives.AddOrUpdate(GetPendingTentativeKey(gameId, tentative.entryKey), [tentative], (key, existing) =>
+                existing.Where(e => tentative.entryKey != e.entryKey).Concat([tentative]).ToArray()
             );
-            Tentatives.AddOrUpdate(GetTentativeKey(gameId, tentative.playerId), new BingoTentative[] { tentative }, (key, existing) =>
-                existing.Where(e => tentative.entryKey != e.entryKey).Concat(new BingoTentative[] { tentative }).ToArray()
+            Tentatives.AddOrUpdate(GetTentativeKey(gameId, tentative.playerId), [tentative], (key, existing) =>
+                existing.Where(e => tentative.entryKey != e.entryKey).Concat([tentative]).ToArray()
             );
 
             return Task.CompletedTask;
@@ -121,26 +122,26 @@ namespace TwitchBingoService.Storage
 
         public Task<BingoNotification[]> UnqueueNotifications(Guid gameId, ushort key)
         {
-            if (!Notifications.Remove(GetNotificationKey(gameId, key), out ConcurrentQueue<BingoNotification> queue))
+            if (!Notifications.Remove(GetNotificationKey(gameId, key), out ConcurrentQueue<BingoNotification>? queue))
             {
                 return Task.FromResult(new BingoNotification[0]);
             }
 
-            var notifs = new List<BingoNotification>();
-            while(queue.TryDequeue(out BingoNotification notif))
+            List<BingoNotification> notifs = new();
+            while(queue.TryDequeue(out BingoNotification? notif))
             {
                 notifs.Add(notif);
             }
             return Task.FromResult(notifs.ToArray());
         }
 
-        public Task<string> ReadUserName(string userId)
+        public Task<string?> ReadUserName(string userId)
         {
-            if (UserNames.TryGetValue(userId, out string userName))
+            if (UserNames.TryGetValue(userId, out string? userName))
             {
-                return Task.FromResult(userName);
+                return Task.FromResult<string?>(userName);
             }
-            return Task.FromResult<string>(null);
+            return Task.FromResult<string?>(null);
         }
 
         public Task WriteUserName(string userId, string userName)

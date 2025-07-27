@@ -7,7 +7,7 @@ namespace TwitchBingoService.Configuration
 {
     public class AzureStorageOptions
     {
-        public string ConnectionString { get; set; }
+        public required string ConnectionString { get; set; }
         public string Prefix { get; set; } = "bingo";
     }
 }

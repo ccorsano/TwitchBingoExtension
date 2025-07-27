@@ -18,7 +18,7 @@ namespace TwitchBingoService.Storage
         /// <param name="bingoGame"></param>
         /// <returns></returns>
         public Task WriteGame(BingoGame bingoGame);
-        public Task<BingoGame> ReadGame(Guid gameId);
+        public Task<BingoGame?> ReadGame(Guid gameId);
         public Task DeleteGame(Guid gameId);
         public Task WriteTentative(Guid gameId, BingoTentative tentatives);
         public Task WriteParticipation(Guid gameId, string channelId, string userId);
@@ -26,7 +26,7 @@ namespace TwitchBingoService.Storage
         public Task<BingoTentative[]> ReadTentatives(Guid gameId, string playerId);
         public Task QueueNotification(Guid gameId, ushort key, BingoNotification notification);
         public Task<BingoNotification[]> UnqueueNotifications(Guid gameId, ushort key);
-        public Task<string> ReadUserName(string userId);
+        public Task<string?> ReadUserName(string userId);
         public Task WriteUserName(string userId, string userName);
         public Task WriteLog(Guid gameid, BingoLogEntry entry);
         public Task<BingoLogEntry[]> ReadLog(Guid gameId);

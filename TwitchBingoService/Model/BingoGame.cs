@@ -10,9 +10,9 @@ namespace TwitchBingoService.Model
     {
         public Guid gameId { get; set; }
 
-        public string channelId { get; set; }
+        public required string channelId { get; set; }
 
-        public BingoEntry[] entries { get; set; }
+        public BingoEntry[] entries { get; set; } = Array.Empty<BingoEntry>();
 
         public Byte rows { get; set; }
 
@@ -22,17 +22,17 @@ namespace TwitchBingoService.Model
         public TimeSpan confirmationThreshold { get; set; }
 
         [IgnoreDataMember,JsonIgnore]
-        public string[] moderators { get; set; }
+        public string[] moderators { get; set; } = Array.Empty<string>();
 
         public bool hasChatIntegration { get; set; } = false;
 
         [IgnoreDataMember, JsonIgnore]
-        public string version { get; set; }
+        public string? version { get; set; }
 
         [IgnoreDataMember, JsonIgnore]
         public string language { get; set; } = "en";
 
         [IgnoreDataMember, JsonIgnore]
-        internal object StorageObject { get; set; } = null;
+        internal object? StorageObject { get; set; } = null;
     }
 }

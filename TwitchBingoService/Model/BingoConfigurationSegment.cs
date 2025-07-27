@@ -6,7 +6,7 @@ namespace TwitchBingoService.Model
     public class BingoEditableEntry
     {
         public int key { get; set; }
-        public string text { get; set; }
+        public string text { get; set; } = string.Empty;
         public bool isNew { get; set; }
     }
 

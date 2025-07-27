@@ -9,7 +9,8 @@ namespace TwitchBingoService.Storage.Azure
     {
         public BingoNotificationEntity()
         {
-
+            PartitionKey = string.Empty;
+            RowKey = DateTime.MinValue.InvertedTicks();
         }
 
         public BingoNotificationEntity(Guid gameId, DateTime notificationTime, BingoNotification notification)
@@ -46,6 +47,6 @@ namespace TwitchBingoService.Storage.Azure
 
         public Int32 Type { get; set; }
 
-        public string PlayerId { get; set; }
+        public string? PlayerId { get; set; }
     }
 }

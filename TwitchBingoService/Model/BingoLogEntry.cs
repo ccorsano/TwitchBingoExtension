@@ -12,7 +12,7 @@ namespace TwitchBingoService.Model
         public ushort key { get; set; }
         public NotificationType type { get; set; }
         public int playersCount { get; set; }
-        public string[] playerNames { get; set; }
+        public string[] playerNames { get; set; } = Array.Empty<string>();
         public DateTime timestamp { get; set; }
     }
 }
