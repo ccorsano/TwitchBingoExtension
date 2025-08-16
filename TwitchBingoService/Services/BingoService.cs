@@ -1,6 +1,8 @@
 ﻿using Conceptoire.Twitch.API;
+using Conceptoire.Twitch.IGDB.Generated;
 using Conceptoire.Twitch.IRC;
 using Force.Crc32;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Troschuetz.Random.Generators;
 using TwitchBingoService.Configuration;
@@ -372,18 +375,11 @@ namespace TwitchBingoService.Services
             {
                 _logger.LogWarning($"Sending confirmation notification to {string.Join(",", game.moderators)}");
                 tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators,
-                    new
-                    {
-                        type = "confirm",
-                        payload = new
-                        {
-                            gameId = game.gameId,
-                            key = key,
-                            confirmationTime = new DateTimeOffset(entry.confirmedAt.Value),
-                            confirmedBy = entry.confirmedBy,
-                        }
-                    }
-                ));
+                    new WhisperMessage<WhisperConfirmPayload>(
+                        "confirm",
+                        new WhisperConfirmPayload(game.gameId, key, new DateTimeOffset(entry.confirmedAt.Value), entry.confirmedBy)),
+                    BingoServiceContext.Default.WhisperMessageWhisperConfirmPayload)
+                );
             }
 
             tasks.Add(ProcessTentatives(game, key));
@@ -439,17 +435,13 @@ namespace TwitchBingoService.Services
             {
                 _logger.LogWarning($"Sending tentative notification to {string.Join(",", game.moderators!)}");
                 tasks.Add(_ebsService.TryWhisperJson(game.channelId, game.moderators!,
-                    new
-                    {
-                        type = "tentative",
-                        payload = new
-                        {
-                            gameId = game.gameId,
-                            key = tentative.entryKey,
-                            tentativeTime = new DateTimeOffset(tentatives.FirstOrDefault()?.tentativeTime ?? tentative.tentativeTime),
-                        }
-                    }
-                ));
+                    new WhisperMessage<WhisperTentativePayload>(
+                        "tentative",
+                        new WhisperTentativePayload(
+                            game.gameId,
+                            tentative.entryKey,
+                            new DateTimeOffset(tentatives.FirstOrDefault()?.tentativeTime ?? tentative.tentativeTime)))
+                    , BingoServiceContext.Default.WhisperMessageWhisperTentativePayload));
             }
 
             if (state == BingoCellState.Confirmed)
@@ -501,17 +493,12 @@ namespace TwitchBingoService.Services
             if (notifications.Any(n => n.type == NotificationType.Confirmation))
             {
 
-                tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new
-                {
-                    type = "confirm",
-                    payload = new
-                    {
-                        gameId = gameId,
-                        key = key,
-                        confirmationTime = confirmedEntry.confirmedAt,
-                        confirmedBy = confirmedEntry.confirmedBy,
-                    }
-                })));
+                tasks.Add(_ebsService.BroadcastJson(game.channelId,
+                    JsonSerializer.Serialize(
+                        new WhisperMessage<WhisperConfirmPayload>(
+                            "confirm",
+                            new WhisperConfirmPayload(gameId, key, confirmedEntry.confirmedAt, confirmedEntry.confirmedBy))
+                        , BingoServiceContext.Default.WhisperMessageWhisperConfirmPayload)));
             }
 
             // Process completion notifications
@@ -523,18 +510,10 @@ namespace TwitchBingoService.Services
             var gridComplete = Task.WhenAll(gridCompleteIds.Select(n => _storage.ReadUserName(n.playerId!).ContinueWith(t => t.Result ?? "Anonymous")));
 
             _logger.LogInformation("Notification game {gameId} key {key} completed cols: {colComplete}, rows: {rowComplete}, grid: {gridComplete}", gameId, key, string.Join(',', colCompleteIds), string.Join(',', rowCompleteIds), string.Join(',', gridCompleteIds));
-            tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new
-            {
-                type = "bingo",
-                payload = new
-                {
-                    gameId = gameId,
-                    key = key,
-                    colComplete = (await colComplete),
-                    rowComplete = (await rowComplete),
-                    gridComplete = (await gridComplete),
-                }
-            })));
+            tasks.Add(_ebsService.BroadcastJson(game.channelId, JsonSerializer.Serialize(new WhisperMessage<WhisperCompletionPayload>(
+                "bingo",
+                new WhisperCompletionPayload(gameId, key, (await colComplete), (await rowComplete), (await gridComplete))), BingoServiceContext.Default.WhisperMessageWhisperCompletionPayload
+            )));
             if ((await colComplete).Length > 0)
             {
                 tasks.Add(_storage.WriteLog(gameId, new BingoLogEntry
@@ -650,4 +629,14 @@ namespace TwitchBingoService.Services
             return await _storage.ReadLog(gameId);
         }
     }
+
+    record WhisperTentativePayload(Guid gameId, uint key, DateTimeOffset? tenativeTime);
+    record WhisperConfirmPayload(Guid gameId, uint key, DateTimeOffset? confirmationTime, string? confirmedBy);
+    record WhisperCompletionPayload(Guid gameId, uint key, string[] colComplete, string[] rowComplete, string[] gridComplete);
+    record WhisperMessage<TWhisperPayload>(string type, TWhisperPayload payload);
+
+    [JsonSerializable(typeof(WhisperMessage<WhisperTentativePayload>))]
+    [JsonSerializable(typeof(WhisperMessage<WhisperConfirmPayload>))]
+    [JsonSerializable(typeof(WhisperMessage<WhisperCompletionPayload>))]
+    internal partial class BingoServiceContext : JsonSerializerContext { }
 }
