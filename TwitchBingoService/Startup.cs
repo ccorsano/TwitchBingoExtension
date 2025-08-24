@@ -1,3 +1,4 @@
+using Azure.Core;
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
@@ -205,8 +206,7 @@ namespace TwitchBingoService
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllers();
-
+                // Post Game
                 endpoints.MapPost("/game", (
                     HttpRequest request,
                     [FromServices] BingoService gameService,
@@ -216,6 +216,7 @@ namespace TwitchBingoService
                     return gameService.CreateGame(channelClaim.Value, gameParams);
                 }).RequireAuthorization("gamemaster");
 
+                // Delete Game
                 endpoints.MapDelete("/game/{gameId}", (
                     HttpRequest request,
                     [FromServices] BingoService gameService,
@@ -225,6 +226,7 @@ namespace TwitchBingoService
                     return gameService.DeleteGame(gameId);
                 }).RequireAuthorization("gamemaster");
 
+                // Get Game
                 endpoints.MapGet("/game/{gameId}", (
                     HttpRequest request,
                     [FromServices] BingoService gameService,
@@ -232,8 +234,9 @@ namespace TwitchBingoService
                 {
                     Claim channelClaim = request.HttpContext.User.Claims.First(c => c.Type == "channel_id");
                     return gameService.GetGame(gameId, channelClaim.Value);
-                });
+                }).RequireAuthorization("player");
 
+                // Get Grid
                 endpoints.MapGet("/game/{gameId}/grid", async(
                     HttpRequest request,
                     ILogger < Startup > logger,
@@ -254,8 +257,83 @@ namespace TwitchBingoService
                     }
                     var userTask = gameService.RegisterPlayer(userId);
                     return await gameService.GetGrid(gameId, userId);
-                });
+                }).RequireAuthorization("player");
 
+                // Post Tentative
+                endpoints.MapPost("/game/{gameId}/{key}/tentative", async (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    Guid gameId,
+                    ushort key) =>
+                {
+                    var user = request.HttpContext.User;
+                    var userId = user.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                    if (userId == null)
+                    {
+                        throw new ArgumentOutOfRangeException("Missing user id");
+                    }
+                    return Results.Json(await gameService.AddTentative(gameId, key, userId), JsonContext.Default.BingoTentative);
+                }).RequireAuthorization("player");
+
+                // Post Confirmation
+                endpoints.MapPost("/game/{gameId}/{key}/confirm", async (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    [FromServices] ILogger<Startup> logger,
+                    Guid gameId,
+                    ushort key) =>
+                {
+                    var user = request.HttpContext.User;
+                    try
+                    {
+                        return Results.Json(await gameService.Confirm(gameId, key, user.Identity!.Name ?? "Anonymous"), JsonContext.Default.BingoEntry);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        logger.LogError(ex, "Error in confirmation of game {gameId} for key {key} by player {playerName}", gameId, key, user.Identity!.Name);
+
+                        return Results.Conflict(new APIError
+                        {
+                            Error = ex.Message
+                        });
+                    }
+                }).RequireAuthorization("player");
+
+                // Notify
+                endpoints.MapPost("/game/{gameId}/{key}/notify", async (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    [FromServices] ILogger<Startup> logger,
+                    Guid gameId,
+                    ushort key
+                    ) =>
+                {
+                    var user = request.HttpContext.User;
+                    try
+                    {
+                        await gameService.HandleNotifications(gameId, key);
+                        return Results.Empty;
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        logger.LogError(ex, "Error triggering notifications for game {gameId} for key {key} by moderator {playerName}", gameId, key, user?.Identity?.Name);
+                        return Results.Conflict(new APIError
+                        {
+                            Error = ex.Message
+                        });
+                    }
+                }).RequireAuthorization("gamemaster");
+
+                // Get Logs
+                endpoints.MapGet("/game/{gameId}/log", async (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    [FromServices] ILogger<Startup> logger,
+                    Guid gameId
+                    ) =>
+                {
+                    return Results.Json(await gameService.GetGameLog(gameId), JsonContext.Default.BingoEntryArray);
+                }).RequireAuthorization("gamemasters");
 
                 if (env.IsDevelopment())
                 {

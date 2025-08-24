@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
-namespace TwitchBingoService
+namespace TwitchBingoService.Endpoints
 {
     public static class ViewerEndpoints
     {
