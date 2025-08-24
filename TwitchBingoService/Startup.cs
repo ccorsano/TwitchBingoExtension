@@ -3,8 +3,11 @@ using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +18,15 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
 using TwitchBingoService.Configuration;
+using TwitchBingoService.Model;
 using TwitchBingoService.Services;
 using TwitchBingoService.Storage;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace TwitchBingoService
 {
@@ -49,7 +55,6 @@ namespace TwitchBingoService
                 return new StaticOptions<OpenApiOptions>(options);
             });
             services.AddOpenApi("v1");
-            services.AddControllers();
 
             services.AddApplicationInsightsTelemetry();
 
@@ -116,6 +121,16 @@ namespace TwitchBingoService
                         }
                     };
                 });
+
+            services.AddAuthorizationBuilder()
+              .AddPolicy("gamemaster", policy =>
+                policy
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .RequireRole("broadcaster", "moderator"))
+              .AddPolicy("player", policy =>
+                policy
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .RequireRole("viewer", "broadcaster", "moderator"));
 
             var azureConnectionString = Configuration.GetValue<string>("azure:ConnectionString");
             if (string.IsNullOrEmpty(azureConnectionString))
@@ -190,7 +205,58 @@ namespace TwitchBingoService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                //endpoints.MapControllers();
+
+                endpoints.MapPost("/game", (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    [FromBody] BingoGameCreationParams gameParams) =>
+                    {
+                    var channelClaim = request.HttpContext.User.Claims.First(c => c.Type == "channel_id");
+                    return gameService.CreateGame(channelClaim.Value, gameParams);
+                }).RequireAuthorization("gamemaster");
+
+                endpoints.MapDelete("/game/{gameId}", (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    Guid gameId
+                    ) =>
+                {
+                    return gameService.DeleteGame(gameId);
+                }).RequireAuthorization("gamemaster");
+
+                endpoints.MapGet("/game/{gameId}", (
+                    HttpRequest request,
+                    [FromServices] BingoService gameService,
+                    Guid gameId) =>
+                {
+                    Claim channelClaim = request.HttpContext.User.Claims.First(c => c.Type == "channel_id");
+                    return gameService.GetGame(gameId, channelClaim.Value);
+                });
+
+                endpoints.MapGet("/game/{gameId}/grid", async(
+                    HttpRequest request,
+                    ILogger < Startup > logger,
+                    [FromServices] BingoService gameService,
+                    Guid gameId) =>
+                {
+                    var user = request.HttpContext.User;
+                    var userId = user.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                    if (userId == null)
+                    {
+                        logger.LogError("Missing user id, token payload: {tokenPayload}", request.HttpContext.Items.TryGetValue("jwtPayload", out object? payload) ? payload : "empty");
+                        throw new ArgumentOutOfRangeException("Missing user id");
+                    }
+                    var opaqueId = user.Claims.First(c => c.Type == "opaque_user_id").Value;
+                    if (user.IsInRole("moderator") || user.IsInRole("broadcaster"))
+                    {
+                        await gameService.RegisterModerator(gameId, opaqueId);
+                    }
+                    var userTask = gameService.RegisterPlayer(userId);
+                    return await gameService.GetGrid(gameId, userId);
+                });
+
+
                 if (env.IsDevelopment())
                 {
                     endpoints.MapOpenApi();

@@ -3,9 +3,14 @@
 namespace TwitchBingoService.Configuration
 {
     public class StaticOptions<TOptions> : IOptionsSnapshot<TOptions>
-    where TOptions : class
+    where TOptions : class,new()
     {
         private readonly TOptions _options;
+
+        public StaticOptions()
+        {
+            _options = new TOptions();
+        }
 
         public StaticOptions(TOptions options)
         {
