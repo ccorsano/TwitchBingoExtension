@@ -10,7 +10,10 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Web;
 using TwitchAchievementTrackerBackend.Configuration;
@@ -42,13 +45,6 @@ namespace TwitchBingoService.Services
         public async Task<HelixChannelInfo> GetChannelInfo(string channelId)
         {
             return await _apiClient.GetChannelInfoAsync(channelId, CancellationToken.None);
-        }
-
-        public class TwitchExtError
-        {
-            public required string error { get; set; }
-            public int status { get; set; }
-            public required string message { get; set; }
         }
 
         public string GetUserJWTToken(string userId, string channelId, string role)
@@ -96,10 +92,10 @@ namespace TwitchBingoService.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public Task<bool> TryWhisperJson(string channelId, string[] userIds, object payload)
+        public Task<bool> TryWhisperJson<TPayloadType>(string channelId, string[] userIds, TPayloadType payload, JsonTypeInfo<TPayloadType> jsonTypeInfo)
         {
             // https://discord.com/channels/504015559252377601/523676096277905419/776561330110857236
-            var jsonPayload = JsonSerializer.Serialize(payload);
+            var jsonPayload = JsonSerializer.Serialize(payload, jsonTypeInfo);
             return TryWhisperJson(channelId, userIds, jsonPayload);
         }
 
@@ -113,30 +109,18 @@ namespace TwitchBingoService.Services
             return BroadcastExtensionJson(channelId, new string[] { "broadcast" }, jsonPayload, true);
         }
 
-        public async Task BroadcastJson(string channelId, object payload)
-        {
-            var contentStr = JsonSerializer.Serialize(payload);
-            await BroadcastJson(channelId, contentStr);
-        }
-
         public async Task<bool> BroadcastExtensionJson(string channelId, string[] targets, string jsonPayload, bool throwOnError)
         {
             var token = GetJWTToken(channelId);
-            var requestBody = new
-            {
-                content_type = "application/json",
-                message = jsonPayload,
-                target = targets,
-                broadcaster_id = channelId
-            };
-            var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            ExtensionPubSubMessage requestBody = new ("application/json", jsonPayload, targets, channelId);
+            var content = new StringContent(JsonSerializer.Serialize(requestBody, EBSSerializerContext.Default.ExtensionPubSubMessage), Encoding.UTF8, "application/json");
             var message = new HttpRequestMessage(HttpMethod.Post, "pubsub");
             message.Content = content;
             message.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var response = await _twitchExtensionClient.SendAsync(message);
             if (! response.IsSuccessStatusCode)
             {
-                var error  = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
+                var error = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync(), EBSSerializerContext.Default.TwitchExtError);
                 _logger.LogError($"Could not broadcast message: {error?.error} - {error?.message} ({error?.status})");
             }
             if (throwOnError)
@@ -155,13 +139,8 @@ namespace TwitchBingoService.Services
             _logger.LogInformation("Sending chat message for {channelId}: {message}", channelId, message);
 
             var token = GetChatJWTToken(channelId);
-            var payload = new
-            {
-                text = message,
-                extension_id = _options.ExtensionId,
-                extension_version = version,
-            };
-            var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            ExtensionChatPayload payload = new (message, _options.ExtensionId!, version);
+            var content = new StringContent(JsonSerializer.Serialize(payload, EBSSerializerContext.Default.ExtensionChatPayload), Encoding.UTF8, "application/json");
             var httpMessage = new HttpRequestMessage(HttpMethod.Post, $"https://api.twitch.tv/helix/extensions/chat?broadcaster_id={HttpUtility.UrlEncode(channelId)}");
 
             httpMessage.Content = content;
@@ -170,7 +149,7 @@ namespace TwitchBingoService.Services
             var response = await _twitchExtensionClient.SendAsync(httpMessage);
             if (!response.IsSuccessStatusCode)
             {
-                var error = JsonSerializer.Deserialize<TwitchExtError>(await response.Content.ReadAsByteArrayAsync());
+                TwitchExtError? error = JsonSerializer.Deserialize(await response.Content.ReadAsByteArrayAsync(), EBSSerializerContext.Default.TwitchExtError);
                 _logger.LogError($"Could not send chat message: {error?.error} - {error?.message} ({error?.status})");
             }
             return response.IsSuccessStatusCode;
@@ -200,7 +179,7 @@ namespace TwitchBingoService.Services
             httpMessage.Headers.Add("Client-Id", _options.ExtensionId);
             var response = await _twitchExtensionClient.SendAsync(httpMessage);
             response.EnsureSuccessStatusCode();
-            var configurationResponse = await response.Content.ReadFromJsonAsync<ExtensionSegmentResponse>();
+            ExtensionSegmentResponse? configurationResponse = await response.Content.ReadFromJsonAsync(EBSSerializerContext.Default.ExtensionSegmentResponse);
 
             return configurationResponse?.data?.FirstOrDefault()?.content;
         }
@@ -216,8 +195,25 @@ namespace TwitchBingoService.Services
             response.EnsureSuccessStatusCode();
         }
 
-        record ExtensionConfigSegment(string segment, string broadcaster_id, string content, string version);
-        record ExtensionSegmentResponse(ExtensionConfigSegment[] data);
-        record ExtensionSegmentUpdate(string extension_id, string segment, string broadcaster_id, string version, string content);
     }
+
+    public class TwitchExtError
+    {
+        public required string error { get; set; }
+        public int status { get; set; }
+        public required string message { get; set; }
+    }
+
+    record ExtensionPubSubMessage(string content_type, string message, string[] targets, string broadcaster_id);
+    record ExtensionChatPayload(string text, string extension_id, string extension_version);
+    record ExtensionConfigSegment(string segment, string broadcaster_id, string content, string version);
+    record ExtensionSegmentResponse(ExtensionConfigSegment[] data);
+    record ExtensionSegmentUpdate(string extension_id, string segment, string broadcaster_id, string version, string content);
+
+
+    [JsonSerializable(typeof(ExtensionChatPayload))]
+    [JsonSerializable(typeof(ExtensionPubSubMessage))]
+    [JsonSerializable(typeof(ExtensionSegmentResponse))]
+    [JsonSerializable(typeof(TwitchExtError))]
+    internal partial class EBSSerializerContext : JsonSerializerContext { }
 }

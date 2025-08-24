@@ -279,7 +279,7 @@ namespace TwitchBingoService.Storage
             var result = await client.AddEntityAsync(entity);
             if (result.IsError)
             {
-                _logger.LogError("Failed to write log for game {gameId}, log {log}", gameId, JsonSerializer.Serialize(entry));
+                _logger.LogError("Failed to write log for game {gameId}, log {key}, type {type}, {time}", gameId, entry.key, entry.type, entry.timestamp);
                 throw new Exception("Failed to write log");
             }
         }
