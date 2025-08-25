@@ -3,6 +3,7 @@ using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Conceptoire.Twitch.IRC;
 using Microsoft.ApplicationInsights.Channel;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -18,9 +19,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using TwitchAchievementTrackerBackend.Configuration;
 using TwitchBingoService.Configuration;
@@ -49,6 +52,11 @@ namespace TwitchBingoService
             services.Configure<BingoServiceOptions>(Configuration.GetSection("bingo"));
             services.Configure<TwitchOptions>(Configuration.GetSection("twitch"));
             services.Configure<AzureStorageOptions>(Configuration.GetSection("azure"));
+            services.ConfigureHttpJsonOptions(configure =>
+            {
+                configure.SerializerOptions.TypeInfoResolverChain.Add(JsonContext.Default);
+            });
+            services.AddCors();
 
             services.AddSingleton<IOptionsSnapshot<OpenApiOptions>>(sp =>
             {
@@ -94,7 +102,7 @@ namespace TwitchBingoService
                                 claims.Add(new Claim(ClaimTypes.Role, "viewer"));
                             }
 
-                            validationContext.Request.HttpContext.Items.Add("jwtPayload", System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(token.EncodedPayload)));
+                            validationContext.Request.HttpContext.Items.Add("jwtPayload", Encoding.UTF8.GetString(Base64UrlTextEncoder.Decode(token.EncodedPayload)));
 
                             var identity = new ClaimsIdentity(claims);
                             validationContext.Principal!.AddIdentity(identity);
@@ -227,13 +235,13 @@ namespace TwitchBingoService
                 }).RequireAuthorization("gamemaster");
 
                 // Get Game
-                endpoints.MapGet("/game/{gameId}", (
+                endpoints.MapGet("/game/{gameId}", async (
                     HttpRequest request,
                     [FromServices] BingoService gameService,
                     Guid gameId) =>
                 {
                     Claim channelClaim = request.HttpContext.User.Claims.First(c => c.Type == "channel_id");
-                    return gameService.GetGame(gameId, channelClaim.Value);
+                    return Results.Json(await gameService.GetGame(gameId, channelClaim.Value), JsonContext.Default.BingoGame);
                 }).RequireAuthorization("player");
 
                 // Get Grid
@@ -260,7 +268,7 @@ namespace TwitchBingoService
                 }).RequireAuthorization("player");
 
                 // Post Tentative
-                endpoints.MapPost("/game/{gameId}/{key}/tentative", async (
+                endpoints.MapPost("/game/{gameId}/{key}/tentative", (
                     HttpRequest request,
                     [FromServices] BingoService gameService,
                     Guid gameId,
@@ -272,7 +280,7 @@ namespace TwitchBingoService
                     {
                         throw new ArgumentOutOfRangeException("Missing user id");
                     }
-                    return Results.Json(await gameService.AddTentative(gameId, key, userId), JsonContext.Default.BingoTentative);
+                    return gameService.AddTentative(gameId, key, userId);
                 }).RequireAuthorization("player");
 
                 // Post Confirmation
