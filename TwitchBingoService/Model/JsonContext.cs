@@ -8,6 +8,7 @@ namespace TwitchBingoService.Model
     [JsonSerializable(typeof(BingoGrid))]
     [JsonSerializable(typeof(BingoGridCell))]
     [JsonSerializable(typeof(BingoLogEntry))]
+    [JsonSerializable(typeof(BingoLogEntry[]))]
     [JsonSerializable(typeof(BingoNotification))]
     [JsonSerializable(typeof(BingoParticipant))]
     [JsonSerializable(typeof(BingoPendingConfirmation))]
