@@ -204,7 +204,7 @@ namespace TwitchBingoService.Services
         public required string message { get; set; }
     }
 
-    record ExtensionPubSubMessage(string content_type, string message, string[] targets, string broadcaster_id);
+    record ExtensionPubSubMessage(string content_type, string message, string[] target, string broadcaster_id);
     record ExtensionChatPayload(string text, string extension_id, string extension_version);
     record ExtensionConfigSegment(string segment, string broadcaster_id, string content, string version);
     record ExtensionSegmentResponse(ExtensionConfigSegment[] data);
