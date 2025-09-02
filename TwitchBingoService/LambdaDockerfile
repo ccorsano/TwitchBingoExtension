@@ -1,6 +1,11 @@
 FROM public.ecr.aws/lambda/dotnet:9 AS base
 
 FROM public.ecr.aws/lambda/dotnet:9 as build
+
+RUN sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+RUN sudo wget -O /etc/yum.repos.d/microsoft-prod.repo https://packages.microsoft.com/config/fedora/37/prod.repo
+RUN sudo dnf install -y dotnet-sdk-9.0
+
 WORKDIR /src
 COPY ["TwitchBingoService.csproj", "TwitchBingoService/"]
 RUN dotnet restore "TwitchBingoService/TwitchBingoService.csproj"
