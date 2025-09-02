@@ -1,0 +1,66 @@
+name: AWS Lambda Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "GitHub environment to use (e.g. staging, production)"
+        required: true
+        type: string
+      branch:
+        description: "Branch to deploy"
+        required: false
+        type: string
+        default: main
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION:
+        required: true
+      AWS_STACK_NAME:
+        required: true
+      AWS_DEPLOYMENT_S3_BUCKET:
+        required: true
+      AWS_LAMBDA_REPOSITORY:
+        required: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - uses: actions/setup-python@v5
+
+      - name: Setup AWS SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build SAM template
+        working-directory: TwitchBingoService/
+        run: sam build -t ./serverless.template --use-container
+
+      - name: Deploy Lambda application
+        working-directory: TwitchBingoService/
+        run: |
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --stack-name ${{ secrets.AWS_STACK_NAME }} \
+            --s3-prefix "TwitchBingoService/" \
+            --s3-bucket ${{ secrets.AWS_DEPLOYMENT_S3_BUCKET }} \
+            --region ${{ secrets.AWS_REGION }} \
+            --image-repository ${{ secrets.AWS_LAMBDA_REPOSITORY }} \
+            --capabilities CAPABILITY_IAM
