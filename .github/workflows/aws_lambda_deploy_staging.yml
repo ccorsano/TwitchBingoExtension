@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/lambda_deploy.yml
     with:
       environment: "AWS Staging Lambda"
       branch: ${{ github.event.inputs.branch }}
