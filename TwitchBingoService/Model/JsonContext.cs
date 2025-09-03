@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Amazon.Lambda.APIGatewayEvents;
+using System.Text.Json.Serialization;
 
 namespace TwitchBingoService.Model
 {
@@ -14,6 +15,7 @@ namespace TwitchBingoService.Model
     [JsonSerializable(typeof(BingoPendingConfirmation))]
     [JsonSerializable(typeof(BingoTentative))]
     [JsonSerializable(typeof(NotificationType))]
+    [JsonSerializable(typeof(APIGatewayProxyRequest))]
     internal partial class JsonContext : JsonSerializerContext
     {
     }
