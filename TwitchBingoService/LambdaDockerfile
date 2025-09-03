@@ -1,10 +1,13 @@
 FROM public.ecr.aws/lambda/dotnet:9 AS base
 
-FROM public.ecr.aws/lambda/dotnet:9 as build
-
-RUN sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-RUN sudo wget -O /etc/yum.repos.d/microsoft-prod.repo https://packages.microsoft.com/config/fedora/37/prod.repo
-RUN sudo dnf install -y dotnet-sdk-9.0
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build
+RUN mkdir /sysroot
+RUN dnf install -y wget
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
+RUN wget -O /etc/yum.repos.d/microsoft-prod.repo https://packages.microsoft.com/config/fedora/38/prod.repo
+RUN dnf install -y dotnet-sdk-9.0
+RUN dnf install -y clang zlib-devel
+RUN dotnet --list-sdks
 
 WORKDIR /src
 COPY ["TwitchBingoService.csproj", "TwitchBingoService/"]
@@ -18,7 +21,7 @@ FROM build AS publish
 RUN dotnet publish "TwitchBingoService.csproj" \
             --configuration Release \ 
             --runtime linux-x64 \
-            --self-contained false \ 
+            --self-contained true \ 
             --output /app/publish \
             -p:PublishReadyToRun=true  
 
