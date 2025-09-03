@@ -11,7 +11,7 @@
         "PackageType": "Image",
         "ImageConfig": {
           "EntryPoint": [
-            "/lambda-entrypoint.sh"
+            "./TwitchBingoService"
           ],
           "Command": [
             "TwitchBingoService::TwitchBingoService.LambdaEntryPoint::FunctionHandlerAsync"
