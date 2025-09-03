@@ -7,7 +7,6 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc
 RUN wget -O /etc/yum.repos.d/microsoft-prod.repo https://packages.microsoft.com/config/fedora/38/prod.repo
 RUN dnf install -y dotnet-sdk-9.0
 RUN dnf install -y clang zlib-devel
-RUN dotnet --list-sdks
 
 WORKDIR /src
 COPY ["TwitchBingoService.csproj", "TwitchBingoService/"]
@@ -23,8 +22,9 @@ RUN dotnet publish "TwitchBingoService.csproj" \
             --runtime linux-x64 \
             --self-contained true \ 
             --output /app/publish \
-            -p:PublishReadyToRun=true  
+            /p:PublishAot=true
 
-FROM base AS final
-WORKDIR /var/task
-COPY --from=publish /app/publish .
+FROM public.ecr.aws/lambda/provided:al2023
+RUN dnf install -y libicu
+COPY --from=publish /app/publish/* ${LAMBDA_TASK_ROOT}/
+ENTRYPOINT [ "./TwitchBingoService" ]
