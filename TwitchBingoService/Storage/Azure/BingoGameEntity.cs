@@ -1,16 +1,16 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoGameEntity : ITableEntity
     {
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(BingoGameEntity))]
         public BingoGameEntity()
         {
             PartitionKey = string.Empty;
@@ -37,7 +37,7 @@ namespace TwitchBingoService.Storage.Azure
         public string? Version { get; set; }
 
         public string Language { get; set; }
-
+        
         public string SerializedGame {
             get {
                 return System.Text.Json.JsonSerializer.Serialize(Game, JsonContext.Default.BingoGame);

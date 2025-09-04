@@ -1,10 +1,11 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
-using System.Security.Policy;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TwitchBingoService.Storage.Azure
 {
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoGameParticipantEntity : ITableEntity
     {
         public BingoGameParticipantEntity()

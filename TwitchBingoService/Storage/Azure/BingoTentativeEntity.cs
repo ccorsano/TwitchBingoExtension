@@ -1,13 +1,12 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoTentativeEntity : ITableEntity
     {
         public static string TentativePartitionKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";

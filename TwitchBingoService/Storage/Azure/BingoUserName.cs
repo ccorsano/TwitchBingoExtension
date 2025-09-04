@@ -1,9 +1,11 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TwitchBingoService.Storage.Azure
 {
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoUserName : ITableEntity
     {
         public BingoUserName()
