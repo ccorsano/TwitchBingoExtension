@@ -16,6 +16,7 @@ namespace TwitchBingoService.Model
     [JsonSerializable(typeof(BingoTentative))]
     [JsonSerializable(typeof(NotificationType))]
     [JsonSerializable(typeof(APIGatewayProxyRequest))]
+    [JsonSerializable(typeof(APIGatewayProxyResponse))]
     internal partial class JsonContext : JsonSerializerContext
     {
     }
