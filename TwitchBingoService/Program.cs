@@ -1,4 +1,5 @@
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Conceptoire.Twitch;
 using Conceptoire.Twitch.API;
 using Microsoft.ApplicationInsights.Channel;
@@ -54,7 +55,7 @@ services.AddSingleton<IOptionsSnapshot<OpenApiOptions>>(sp =>
 });
 services.AddOpenApi("v1");
 
-services.AddApplicationInsightsTelemetry();
+services.AddOpenTelemetry().UseAzureMonitor();
 
 services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -335,7 +336,7 @@ if (app.Environment.IsDevelopment())
 
 
 var hostLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-// Explicitely flush Telemetry channel on shutdown, else when running on Lambda we will lose exceptions & more
+// Explicitly flush Telemetry channel on shutdown, else when running on Lambda we will lose exceptions & more
 hostLifetime.ApplicationStopping.Register(() =>
 {
     var channel = app.Services.GetRequiredService<ITelemetryChannel>();
