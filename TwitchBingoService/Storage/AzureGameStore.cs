@@ -71,6 +71,7 @@ namespace TwitchBingoService.Storage
             }
             if (result.IsError)
             {
+                _logger.LogError("Error writing game {bingoGame}. Entity: {PartitionKey} {RowKey}", JsonSerializer.Serialize(bingoGame, JsonContext.Default.BingoGame), entity.PartitionKey, entity.RowKey);
                 throw new Exception("Could not save game to storage");
             }
             bingoGame.StorageObject = result.Headers.ETag;
