@@ -53,6 +53,7 @@ namespace TwitchBingoService.Storage
         {
             var client = _storageAccount.GetTableClient(GameTableName);
             var entity = new BingoGameEntity(bingoGame);
+            _logger.LogWarning("Writing game {bingoGame}. Entity: {PartitionKey} {RowKey}", JsonSerializer.Serialize(bingoGame, JsonContext.Default.BingoGame), entity.PartitionKey, entity.RowKey);
             Response result;
             ETag? etagValue = (ETag?)bingoGame.StorageObject;
             if (etagValue.HasValue)
@@ -71,7 +72,6 @@ namespace TwitchBingoService.Storage
             }
             if (result.IsError)
             {
-                _logger.LogError("Error writing game {bingoGame}. Entity: {PartitionKey} {RowKey}", JsonSerializer.Serialize(bingoGame, JsonContext.Default.BingoGame), entity.PartitionKey, entity.RowKey);
                 throw new Exception("Could not save game to storage");
             }
             bingoGame.StorageObject = result.Headers.ETag;
