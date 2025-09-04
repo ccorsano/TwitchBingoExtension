@@ -28,7 +28,7 @@ namespace TwitchBingoService.Storage.Azure
         }
 
         public string PartitionKey { get; set; }
-        public string RowKey { get; set; } = "";
+        public string RowKey { get; set; } = "Game";
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
 
