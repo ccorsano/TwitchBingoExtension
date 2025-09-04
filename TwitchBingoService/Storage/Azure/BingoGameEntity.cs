@@ -7,10 +7,9 @@ using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoGameEntity : ITableEntity
     {
-        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(BingoGameEntity))]
         public BingoGameEntity()
         {
             PartitionKey = string.Empty;

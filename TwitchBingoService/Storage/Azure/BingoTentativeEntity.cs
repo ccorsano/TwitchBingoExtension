@@ -6,7 +6,7 @@ using TwitchBingoService.Model;
 
 namespace TwitchBingoService.Storage.Azure
 {
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoTentativeEntity : ITableEntity
     {
         public static string TentativePartitionKey(Guid gameId, string playerId) => $"{gameId}:{playerId}";

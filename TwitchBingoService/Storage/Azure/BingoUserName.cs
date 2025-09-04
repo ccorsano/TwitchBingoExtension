@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace TwitchBingoService.Storage.Azure
 {
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicProperties)]
     public class BingoUserName : ITableEntity
     {
         public BingoUserName()
