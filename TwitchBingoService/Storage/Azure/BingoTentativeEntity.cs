@@ -66,5 +66,17 @@ namespace TwitchBingoService.Storage.Azure
         public bool Confirmed { get; set; }
 
         public DateTime TentativeTime { get; set; }
+
+        public TableEntity ToEntity()
+        {
+            TableEntity entity = new TableEntity(PartitionKey, RowKey);
+            entity.Add("GameId", GameId);
+            entity.Add("PlayerId", PlayerId);
+            entity.Add("EntryKey", EntryKey);
+            entity.Add("Confirmed", Confirmed);
+            entity.Add("TentativeTime", TentativeTime);
+
+            return entity;
+        }
     }
 }

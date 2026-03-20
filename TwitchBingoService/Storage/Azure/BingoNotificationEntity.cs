@@ -50,5 +50,17 @@ namespace TwitchBingoService.Storage.Azure
         public Int32 Type { get; set; }
 
         public string? PlayerId { get; set; }
+
+        public TableEntity ToEntity()
+        {
+            TableEntity entity = new TableEntity(PartitionKey, RowKey);
+            entity.Add("GameId", GameId);
+            entity.Add("NotificationTIme", NotificationTime);
+            entity.Add("Key", Key);
+            entity.Add("Type", Type);
+            entity.Add("PlayerId", PlayerId);
+
+            return entity;
+        }
     }
 }

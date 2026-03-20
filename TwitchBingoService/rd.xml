@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Directives>
+	<Application>
+		<Assembly Name="Azure.Data.Tables">
+			<Type Name="Azure.Data.Tables.TableEntity" Dynamic="Required All" />
+		</Assembly>
+		<Assembly Name="Azure.Core">
+			<!--<Type Name="Azure.Core.TypeBinder`1+Azure.Core.BoundMemberInfo`1[System.Collections.Generic.IDictionary`2[System.String,System.Object],System.Nullable`1[System.DateTimeOffset]]" Dynamic="Required All" />-->
+		</Assembly>
+	</Application>
+</Directives>

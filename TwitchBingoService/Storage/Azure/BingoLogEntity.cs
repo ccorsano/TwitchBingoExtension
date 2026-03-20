@@ -66,5 +66,30 @@ namespace TwitchBingoService.Storage.Azure
                 playerNames = JsonSerializer.Deserialize(PlayersNames, JsonContext.Default.StringArray) ?? Array.Empty<string>(),
             };
         }
+
+        public static BingoLogEntry FromTableEntity(TableEntity entity)
+        {
+            return new BingoLogEntry
+            {
+                gameId = entity.GetGuid("GameId")!.Value,
+                timestamp = entity.GetDateTime("NotificationTime")!.Value,
+                key = (ushort) entity.GetInt32("Key")!.Value,
+                type = (NotificationType) entity.GetInt32("Type")!.Value,
+                playersCount = entity.GetInt32("PlayersCount")!.Value,
+                playerNames = JsonSerializer.Deserialize(entity.GetString("PlayersCount"), JsonContext.Default.StringArray) ?? Array.Empty<string>(),
+            };
+        }
+
+        public TableEntity ToEntity()
+        {
+            TableEntity entity = new TableEntity(PartitionKey, RowKey);
+            entity.Add("GameId", GameId);
+            entity.Add("NotificationTime", NotificationTime);
+            entity.Add("Key", Key);
+            entity.Add("Type", Type);
+            entity.Add("PlayersCount", PlayersCount);
+            entity.Add("PlayersName", PlayersNames);
+            return entity;
+        }
     }
 }

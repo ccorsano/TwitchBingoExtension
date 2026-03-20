@@ -4,6 +4,7 @@ var urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('state') == "testing")
 {
     server = "https://localhost:5001"
+    // server = "https://bingo-ebs-staging.conceptoire.com"
 }
 
 

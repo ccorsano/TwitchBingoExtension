@@ -52,15 +52,22 @@ namespace TwitchBingoService.Storage
         public async Task WriteGame(BingoGame bingoGame)
         {
             var client = _storageAccount.GetTableClient(GameTableName);
-            var entity = new BingoGameEntity(bingoGame);
-            _logger.LogWarning("Writing game {bingoGame}. Entity: {PartitionKey} {RowKey}", JsonSerializer.Serialize(bingoGame, JsonContext.Default.BingoGame), entity.PartitionKey, entity.RowKey);
+            var tableEntity = new TableEntity(bingoGame.gameId.ToString(), "");
+            tableEntity.Add("ChannelId", bingoGame.channelId);
+            tableEntity.Add("Version", bingoGame.version);
+            tableEntity.Add("Language", bingoGame.language);
+            tableEntity.Add("SerializedGame", JsonSerializer.Serialize(bingoGame, JsonContext.Default.BingoGame));
+            tableEntity.Add("SerializedModerators", JsonSerializer.Serialize(bingoGame.moderators, JsonContext.Default.StringArray));
+
+            //var entity = new BingoGameEntity(bingoGame);
+            //_logger.LogWarning("Writing game {bingoGame}. Entity: {PartitionKey} {RowKey}", JsonSerializer.Serialize(bingoGame, JsonContext.Default.BingoGame), entity.PartitionKey, entity.RowKey);
             Response result;
             ETag? etagValue = (ETag?)bingoGame.StorageObject;
             if (etagValue.HasValue)
             {
                 try
                 {
-                    result = await client.UpdateEntityAsync(entity, etagValue.Value, TableUpdateMode.Replace);
+                    result = await client.UpdateEntityAsync(tableEntity, etagValue.Value, TableUpdateMode.Replace);
                 } catch (RequestFailedException ex) when (ex.Status == 412)
                 {
                     throw new ConcurrentGameUpdateException();
@@ -68,7 +75,7 @@ namespace TwitchBingoService.Storage
             }
             else
             {
-                result = await client.AddEntityAsync(entity);
+                result = await client.AddEntityAsync(tableEntity);
             }
             if (result.IsError)
             {
@@ -127,7 +134,9 @@ namespace TwitchBingoService.Storage
         public async Task WriteUserName(string userId, string userName)
         {
             var client = _storageAccount.GetTableClient(UserNameTableName);
-            var result = await client.UpsertEntityAsync(new BingoUserName(userId, userName));
+            TableEntity userNameEntity = new TableEntity(userId, "");
+            userNameEntity.Add("UserName", userName);
+            var result = await client.UpsertEntityAsync(userNameEntity);
             if (result.IsError)
             {
                 throw new Exception("Could not save username to storage");
@@ -138,8 +147,8 @@ namespace TwitchBingoService.Storage
         {
             var userTentativeTable = _storageAccount.GetTableClient(TentativesTableName);
             var pendingTentativeTable = _storageAccount.GetTableClient(PendingTentativesTableName);
-            var userTask = userTentativeTable.AddEntityAsync(new BingoTentativeEntity(gameId, tentative.playerId, tentative));
-            var pendingTask = pendingTentativeTable.AddEntityAsync(new BingoTentativeEntity(gameId, tentative.entryKey, tentative));
+            var userTask = userTentativeTable.AddEntityAsync(new BingoTentativeEntity(gameId, tentative.playerId, tentative).ToEntity());
+            var pendingTask = pendingTentativeTable.AddEntityAsync(new BingoTentativeEntity(gameId, tentative.entryKey, tentative).ToEntity());
             var result = await userTask;
             if (result.IsError)
             {
@@ -227,7 +236,7 @@ namespace TwitchBingoService.Storage
             var client = _storageAccount.GetTableClient(NotificationsTableName);
             var entity = new BingoNotificationEntity(gameId, DateTime.UtcNow, notification);
 
-            var result = await client.AddEntityAsync(entity);
+            var result = await client.AddEntityAsync(entity.ToEntity());
             if (result.IsError)
             {
                 _logger.LogError("Failed to write notification for game {gameId}, key {entryKey}", gameId, key);
@@ -277,7 +286,7 @@ namespace TwitchBingoService.Storage
             var client = _storageAccount.GetTableClient(LogTableName);
             var entity = new BingoLogEntity(gameId, entry);
 
-            var result = await client.AddEntityAsync(entity);
+            var result = await client.AddEntityAsync(entity.ToEntity());
             if (result.IsError)
             {
                 _logger.LogError("Failed to write log for game {gameId}, log {key}, type {type}, {time}", gameId, entry.key, entry.type, entry.timestamp);
@@ -293,13 +302,13 @@ namespace TwitchBingoService.Storage
                 // Note: The ToString here is important, as the FormattableString will read the typed argument and we can get a type mismatch in the query
                 var query = TableClient.CreateQueryFilter($"PartitionKey eq {gameId.ToString()}");
 
-                var entityList = new List<BingoLogEntity>();
-                await foreach(var entity in client.QueryAsync<BingoLogEntity>(query))
+                var entityList = new List<BingoLogEntry>();
+                await foreach(var entity in client.QueryAsync<TableEntity>(query))
                 {
-                    entityList.Add(entity);
+                    entityList.Add(BingoLogEntity.FromTableEntity(entity));
                 }
 
-                return entityList.Select(e => e.ToLogEntry()).ToArray();
+                return entityList.ToArray();
             }
             catch (RequestFailedException e)
             {
@@ -315,7 +324,7 @@ namespace TwitchBingoService.Storage
             var client = _storageAccount.GetTableClient(ParticipationTableName);
             var entity = new BingoGameParticipantEntity(userId, gameId, channelId);
 
-            var result = await client.UpsertEntityAsync(entity);
+            var result = await client.UpsertEntityAsync(entity.ToEntity());
             if (result.IsError)
             {
                 _logger.LogError("Failed to write participant for game {gameId}, userId {userId}", gameId, userId);

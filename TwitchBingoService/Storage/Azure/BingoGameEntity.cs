@@ -13,6 +13,7 @@ namespace TwitchBingoService.Storage.Azure
         public BingoGameEntity()
         {
             PartitionKey = string.Empty;
+            RowKey = "Game";
             ChannelId = string.Empty;
             Language = "en";
         }
@@ -20,6 +21,7 @@ namespace TwitchBingoService.Storage.Azure
         public BingoGameEntity(BingoGame game)
         {
             PartitionKey = game.gameId.ToString();
+            RowKey = "Game";
             ChannelId = game.channelId;
             Game = game;
             Version = game.version;
@@ -29,7 +31,7 @@ namespace TwitchBingoService.Storage.Azure
         public string PartitionKey { get; set; }
         public string RowKey { get; set; } = "Game";
         public DateTimeOffset? Timestamp { get; set; }
-        public ETag ETag { get; set; }
+        public ETag ETag { get; set; } = ETag.All;
 
         public string ChannelId { get; set; }
 
